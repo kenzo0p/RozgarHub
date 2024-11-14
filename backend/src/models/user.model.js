@@ -1,4 +1,3 @@
-import { Schema } from "mongoose";
 import mongoose from "mongosee";
 
 const userSchema = new mongoose.Schema(
@@ -16,7 +15,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phoneNo: {
+    phoneNumber: {
       type: Number,
       required: true,
     },
