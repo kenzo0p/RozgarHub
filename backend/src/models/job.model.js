@@ -43,10 +43,10 @@ const jobSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:'User'
   },
-  appliction:{
+  applictions:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Application"
-  }
+  }]
 },{timestamps:{createdAt:true,updatedAt:true}});
 
 export const Job = mongoose.model("Job", jobSchema);
