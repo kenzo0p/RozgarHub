@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 export const registerUser = async (req, res) => {
   try {
     const { fullname, username, email, password, phoneNumber, role } = req.body;
+    console.log(fullname, username, email, password, phoneNumber, role)
     if (
       !fullname ||
       !email ||
@@ -105,7 +106,7 @@ export const loginUser = async (req, res) => {
         sameSite: "strict",
       })
       .json({
-        message: `WELCOME BACK ${user.fullname}`,
+        message: `Welcome back ${user.fullname}`,
         user,
         success: true,
       });

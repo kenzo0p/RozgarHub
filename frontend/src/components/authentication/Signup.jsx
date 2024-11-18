@@ -1,10 +1,12 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { USER_API_END_POINT } from "@/utils/constant.js";
+import { toast } from "sonner";
+import axios from "axios";
 
 function Signup() {
   const [input, setInput] = useState({
@@ -16,7 +18,7 @@ function Signup() {
     role: "",
     file: "",
   });
-
+  const navigate = useNavigate();
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -25,10 +27,33 @@ function Signup() {
     setInput({ ...input, file: e.target.files?.[0] });
   };
 
-  const submitHandler =async (e) =>{
+  const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(input)
-  }
+    const formData = new FormData();
+    formData.append("fullname", input.fullname);
+    formData.append("username", input.username);
+    formData.append("email", input.email);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("password", input.password);
+    formData.append("role", input.role);
+    if (input.file) {
+      formData.append("file", input.file);
+    }
+    try {
+      const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        //coming from backend
+        navigate("/");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error, "ERROR IN SIGNUP PAGE");
+      toast.error(error.response.data.message)
+    }
+  };
 
   return (
     <div>
@@ -97,7 +122,7 @@ function Signup() {
                 <Input
                   type="radio"
                   name="role"
-                  checked={input.role === 'employee'}
+                  checked={input.role === "employee"}
                   onChange={changeEventHandler}
                   value="employee"
                   className="cursor-pointer"
@@ -109,7 +134,7 @@ function Signup() {
                   type="radio"
                   name="role"
                   value="employer"
-                  checked={input.role === 'employer'}
+                  checked={input.role === "employer"}
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
@@ -131,7 +156,7 @@ function Signup() {
           </Button>
           <span className="text-sm">
             Alreadt have an account{" "}
-            <Link to="login" className="text-blue-600">
+            <Link to="/login" className="text-blue-600">
               Login
             </Link>
           </span>
@@ -140,6 +165,5 @@ function Signup() {
     </div>
   );
 }
-
 
 export default Signup;

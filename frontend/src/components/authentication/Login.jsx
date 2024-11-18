@@ -3,7 +3,13 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { USER_API_END_POINT } from "@/utils/constant";
+import axios from "axios";
+import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "@/redux/authSlice";
+import { Loader2 } from "lucide-react";
 
 function Login() {
   const [input, setInput] = useState({
@@ -12,14 +18,33 @@ function Login() {
     password: "",
     role: "",
   });
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading } = useSelector((store) => store.auth);
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(input);
+    try {
+      dispatch(setLoading(true));
+      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        Headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        navigate("/");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
   return (
     <div>
@@ -45,48 +70,63 @@ function Login() {
           <div className="my-2">
             <Label>Enter your email</Label>
             <Input
-            value={input.email}
-            name="email"
-            onChange={changeEventHandler} type="email" placeholder="xyz@gmail.com" />
+              value={input.email}
+              name="email"
+              onChange={changeEventHandler}
+              type="email"
+              placeholder="xyz@gmail.com"
+            />
           </div>
           <div className="my-2">
             <Label>Enter your password</Label>
-            <Input 
-            value={input.password}
-            name="password"
-            onChange={changeEventHandler} type="password" placeholder="password" />
+            <Input
+              value={input.password}
+              name="password"
+              onChange={changeEventHandler}
+              type="password"
+              placeholder="password"
+            />
           </div>
           <div className="flex items-center justify-between">
             <RadioGroup className="flex  my-5 items-center gap-4">
               <div className="flex items-center space-x-2">
                 <Input
-                    type="radio"
-                    name="role"
-                    checked={input.role === 'employee'}
-                    onChange={changeEventHandler}
-                    value="employee"
-                    className="cursor-pointer"
+                  type="radio"
+                  name="role"
+                  checked={input.role === "employee"}
+                  onChange={changeEventHandler}
+                  value="employee"
+                  className="cursor-pointer"
                 />
                 <Label htmlFor="r1">Employee</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Input
-                 type="radio"
-                 name="role"
-                 value="employer"
-                 checked={input.role === 'employer'}
-                 onChange={changeEventHandler}
-                 className="cursor-pointer"
+                  type="radio"
+                  name="role"
+                  value="employer"
+                  checked={input.role === "employer"}
+                  onChange={changeEventHandler}
+                  className="cursor-pointer"
                 />
                 <Label htmlFor="r2">Employer</Label>
               </div>
             </RadioGroup>
           </div>
-          <Button type="submit" className="w-full my-4">
-            Login
-          </Button>
+
+          {loading ?
+            <Button className="w-full my-4">
+              <Loader2 className="mr-2  h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+           : 
+            <Button type="submit" className="w-full my-4">
+              Login
+            </Button>
+        }
+
           <span className="text-sm">
-            Don't have an account
+            Don't have an account &nbsp;
             <Link to="/signup" className="text-blue-600">
               Signup
             </Link>
