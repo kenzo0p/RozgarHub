@@ -62,7 +62,7 @@ function Navbar() {
                 <div className="flex flex-col my-4 gap-4 ">
                   <div className="flex items-center gap-2">
                     <User2 />
-                    <Button variant="link">View Profile</Button>
+                    <Button variant="link"><Link to="/profile">View Profile</Link></Button>
                   </div>
                   <div className="flex items-center gap-2">
                     <LogOut />
