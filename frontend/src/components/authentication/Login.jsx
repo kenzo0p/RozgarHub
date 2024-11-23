@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUser } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
+import Navbar from "../shared/Navbar";
 
 function Login() {
   const [input, setInput] = useState({
@@ -50,7 +51,7 @@ function Login() {
   return (
     <div>
       <div>
-        ROZAGAR<span>HUB</span>
+        <Navbar/>
       </div>
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
@@ -121,7 +122,7 @@ function Login() {
               Please wait
             </Button>
            : 
-            <Button type="submit" className="w-full my-4">
+            <Button type="submit" className="w-full my-4 bg-blue-500">
               Login
             </Button>
         }

@@ -10,6 +10,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import store from "@/redux/store";
 import { setLoading } from "@/redux/authSlice";
+import Navbar from "../shared/Navbar";
 
 function Signup() {
   const [input, setInput] = useState({
@@ -66,7 +67,7 @@ function Signup() {
   return (
     <div>
       <div>
-        ROZAGAR<span>HUB</span>
+        <Navbar/>
       </div>
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
@@ -165,7 +166,7 @@ function Signup() {
               Please wait
             </Button>
            : 
-            <Button type="submit" className="w-full my-4">
+            <Button type="submit" className="w-full my-4 bg-blue-500">
               Signup
             </Button>
         }
