@@ -3,12 +3,29 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { LogOut, User2 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { setUser } from "@/redux/authSlice";
 // import { Link } from "react-router-dom";
 
 function Navbar() {
   const {user} = useSelector(store=>store.auth)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const logoutHandler = async()=>{
+    try {
+      const response = await axios.get(`${USER_API_END_POINT}/logout`,{withCredentials:true})
+      if(response.data.success){
+        dispatch(setUser(null))
+        navigate("/")
+        toast.success(response.data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.response.data.message)
+    }
+  }
   return (
     <div className="bg-white">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16">
@@ -66,7 +83,7 @@ function Navbar() {
                   </div>
                   <div className="flex items-center gap-2">
                     <LogOut />
-                    <Button variant="link">Logout</Button>
+                    <Button onClick={logoutHandler} variant="link">Logout</Button>
                   </div>
                 </div>
               </PopoverContent>

@@ -1,11 +1,13 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getDataUri from "../utils/dataUri.js";
+import claudinary from "../utils/cloudinary.js";
 
 export const registerUser = async (req, res) => {
   try {
     const { fullname, username, email, password, phoneNumber, role } = req.body;
-    console.log(fullname, username, email, password, phoneNumber, role)
+    console.log(fullname, username, email, password, phoneNumber, role);
     if (
       !fullname ||
       !email ||
@@ -129,9 +131,11 @@ export const logOut = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, username, email, phoneNumber, bio, skills } = req.body;
-    const file = req.file;
 
-    //cloudinary aayega
+    const file = req.file;
+    // claudinary
+    const fileUri = getDataUri(file);
+    const cloudResponse = await claudinary.uploader.upload(fileUri.content);
     let skillsArray;
     if (skills) {
       skillsArray = skills.split(",");
@@ -155,6 +159,10 @@ export const updateProfile = async (req, res) => {
     if (bio) user.profile.bio = bio;
 
     // resume comes later here....
+    if(cloudResponse){
+      user.profile.resume = cloudResponse.secure_url  //save the cloudinary url
+      user.profile.resumeOriginalName = file.originalname  //save the original file name
+    }
 
     await user.save();
 
