@@ -55,6 +55,7 @@ RozgarHub focuses on bridging the gap between employers and skilled workers by p
    ```bash
    git clone https://github.com/kenzo0p/RozgarHub.git
    cd rozgarhub
+   cd frontend (also cd backend in another terminal)
    npm install
    npm run dev
    ```
