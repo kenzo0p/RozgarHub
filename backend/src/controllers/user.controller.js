@@ -7,7 +7,6 @@ import claudinary from "../utils/cloudinary.js";
 export const registerUser = async (req, res) => {
   try {
     const { fullname, username, email, password, phoneNumber, role } = req.body;
-    console.log(fullname, username, email, password, phoneNumber, role);
     if (
       !fullname ||
       !email ||
@@ -22,6 +21,23 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({
+        message: "FILE IS REQUIRED.",
+        success: false,
+      });
+    }
+
+    const fileUri = getDataUri(file);
+    const cloudResponse = await claudinary.uploader.upload(fileUri.content);
+    if (!cloudResponse) {
+      return res.status(500).json({
+        message: "CLOUDINARY UPLOAD FAILED.",
+        success: false,
+      });
+    }
+
     const user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
       return res.status(400).json({
@@ -31,15 +47,30 @@ export const registerUser = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+    if (!hashPassword) {
+      return res.status(500).json({
+        message: "PASSWORD HASHING FAILED.",
+        success: false,
+      });
+    }
 
-    await User.create({
+    const newUser = await User.create({
       fullname,
       username,
       email,
       password: hashPassword,
       phoneNumber,
       role,
+      profile: {
+        profilePhoto: cloudResponse.secure_url,
+      },
     });
+    if (!newUser) {
+      return res.status(500).json({
+        message: "USER CREATION FAILED.",
+        success: false,
+      });
+    }
 
     return res.status(201).json({
       message: "ACCOUNT CREATED SUCCESSFULLY",
@@ -47,6 +78,10 @@ export const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error, "REGISTER USER ERROR");
+    return res.status(500).json({
+      message: "INTERNAL SERVER ERROR.",
+      success: false,
+    });
   }
 };
 
@@ -159,9 +194,9 @@ export const updateProfile = async (req, res) => {
     if (bio) user.profile.bio = bio;
 
     // resume comes later here....
-    if(cloudResponse){
-      user.profile.resume = cloudResponse.secure_url  //save the cloudinary url
-      user.profile.resumeOriginalName = file.originalname  //save the original file name
+    if (cloudResponse) {
+      user.profile.resume = cloudResponse.secure_url; //save the cloudinary url
+      user.profile.resumeOriginalName = file.originalname; //save the original file name
     }
 
     await user.save();

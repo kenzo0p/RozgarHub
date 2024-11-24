@@ -8,9 +8,9 @@ import { USER_API_END_POINT } from "@/utils/constant.js";
 import { toast } from "sonner";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import store from "@/redux/store";
 import { setLoading } from "@/redux/authSlice";
 import Navbar from "../shared/Navbar";
+import { Loader2 } from "lucide-react";
 
 function Signup() {
   const [input, setInput] = useState({
@@ -52,8 +52,7 @@ function Signup() {
         withCredentials: true,
       });
       if (res.data.success) {
-        //coming from backend
-        navigate("/");
+        navigate("/login");
         toast.success(res.data.message);
       }
     } catch (error) {

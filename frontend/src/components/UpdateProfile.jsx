@@ -7,18 +7,21 @@ import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import axios from "axios";
+import { USER_API_END_POINT } from "../utils/constant";
+
 
 function UpdateProfile({ open, setOpen }) {
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const [input, setInput] = useState({
-    fullname: user?.fullname,
-    email: user?.email,
-    phoneNumber: user?.phoneNumber,
+    fullname: user?.fullname || "",
+    email: user?.email || "",
+    phoneNumber: user?.phoneNumber || "",
     bio: user?.profile?.bio,
-    skills: user?.profile?.skills?.map((skill) => skill),
-    file: user?.profile?.resume,
+    skills: user?.profile?.skills?.map((skill) => skill) || "",
+    file: user?.profile?.resume || "",
   });
 
   const changeEventHandler = (e) => {
@@ -135,11 +138,10 @@ function UpdateProfile({ open, setOpen }) {
                 <Input
                   type="file"
                   id="file"
+                  name="file"
                   onChange={fileChangeHandler}
-                  value={input.file}
                   accept="application/pdf"
                   className="col-span-3"
-                  name="file"
                 />
               </div>
             </div>

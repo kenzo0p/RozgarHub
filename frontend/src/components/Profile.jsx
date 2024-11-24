@@ -20,7 +20,7 @@ function Profile() {
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage
-                src="https://plus.unsplash.com/premium_photo-1682096259050-361e2989706d?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8eW91bmclMjBtYW58ZW58MHx8MHx8fDA%3D"
+                src={user?.profile?.profilePhoto}
                 alt="profile"
               />
             </Avatar>
@@ -60,7 +60,7 @@ function Profile() {
           </div>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label classaName="text-md font-bold">Resume</Label>
+          <Label className="text-md font-bold">Resume</Label>
           {isResume ? (
             <a
               href={user?.profile?.resume}
