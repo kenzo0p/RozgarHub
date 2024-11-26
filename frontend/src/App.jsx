@@ -6,6 +6,11 @@ import Jobs from './components/Jobs'
 import Browse from './components/Browse'
 import Profile from './components/Profile'
 import JobDetails from './components/JobDetails'
+import Companies from './components/employer/Companies'
+import CreateCompany from './components/employer/CreateCompany'
+import CompanySetup from './components/employer/CompanySetup'
+import EmployerJobs from './components/employer/EmployerJobs'
+import PostJob from './components/employer/PostJob'
 
 const appRouter = createBrowserRouter([
   {
@@ -35,15 +40,33 @@ const appRouter = createBrowserRouter([
   {
     path:"/profile",
     element:<Profile/>
+  },
+  // for employer
+  {
+    path:"/admin/companies",
+    element:<Companies/>
+  },{
+    path:"/admin/companies/create",
+    element:<CreateCompany/>
+  },
+  {
+    path:"/admin/companies/:id",
+    element:<CompanySetup/>
+  },
+  {
+    path:"/admin/jobs",
+    element:<EmployerJobs/>
+  },
+  {
+    path:"/admin/jobs/create",
+    element:<PostJob/>
   }
 ])
 function App() {
 
   return (
     <>
-     <RouterProvider router={appRouter}>
-
-     </RouterProvider>
+     <RouterProvider router={appRouter}/>
     </>
   )
 }
