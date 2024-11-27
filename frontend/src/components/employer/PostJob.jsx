@@ -13,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import axios from "axios";
+import { JOB_API_END_POINT } from "@/utils/constant";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const companyArray = [];
 function PostJob() {
@@ -27,23 +32,46 @@ function PostJob() {
     position: 0,
     companyId: "",
   });
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { companies } = useSelector((store) => store.company);
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
-  const selectChangeHandler = (value) =>{
-    const selectedCompany = companies.find((company) => company.name.toLowerCase() === value)
-    setInput({...input,companyId:selectedCompany._id})
-  }
-  const submitHandler = (e) =>{
-    e.preventDefault()
-    
-  }
+  const selectChangeHandler = (value) => {
+    const selectedCompany = companies.find(
+      (company) => company.name.toLowerCase() === value
+    );
+    setInput({ ...input, companyId: selectedCompany._id });
+  };
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate("/admin/jobs");
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div>
       <Navbar />
       <div className="flex items-center justify-center w-screen my-5">
-        <form onSubmit={submitHandler} className="p-8 max-w-4xl border border-gray-200 shadow-lg rounded-md">
+        <form
+          onSubmit={submitHandler}
+          className="p-8 max-w-4xl border border-gray-200 shadow-lg rounded-md"
+        >
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label>Title</Label>
@@ -61,7 +89,7 @@ function PostJob() {
                 value={input.description}
                 onChange={changeEventHandler}
                 type="text"
-                name="Description"
+                name="description"
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 ,my-1"
               />
             </div>
@@ -125,30 +153,38 @@ function PostJob() {
                 className="focus-visible:ring-offset-0 focus-visible:ring-0 ,my-1"
               />
             </div>
-          {companies.length > 0 && (
-
-            <Select onValueChange ={selectChangeHandler}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a company" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {companies.map((company) => {
-                    return (
-                      <SelectItem key={company._id} value={company.name.toLowerCase()}>
-                        {company.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          )}
+            {companies.length > 0 && (
+              <Select onValueChange={selectChangeHandler}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a company" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {companies.map((company) => {
+                      return (
+                        <SelectItem
+                          key={company._id}
+                          value={company.name.toLowerCase()}
+                        >
+                          {company.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-
-          <Button className="bg-blue-500 w-full mt-5" type="subit">
-            Post New Job
-          </Button>
+          {loading ? (
+            <Button className="w-full my-4">
+              <Loader2 className="mr-2  h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full my-4 bg-blue-500">
+              Post new job
+            </Button>
+          )}
           {companies.length === 0 && (
             <p className="text-xs text-red-600 font-bold text-center my-3">
               *Please register company first before posting a job
