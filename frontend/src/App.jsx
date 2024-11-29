@@ -12,6 +12,7 @@ import CompanySetup from './components/employer/CompanySetup'
 import EmployerJobs from './components/employer/EmployerJobs'
 import PostJob from './components/employer/PostJob'
 import Applicants from './components/employer/Applicants'
+import ProtectedRoute from './components/employer/ProtectedRoute'
 
 const appRouter = createBrowserRouter([
   {
@@ -45,7 +46,7 @@ const appRouter = createBrowserRouter([
   // for employer
   {
     path:"/admin/companies",
-    element:<Companies/>
+    element:<ProtectedRoute><Companies/></ProtectedRoute>
   },{
     path:"/admin/companies/create",
     element:<CreateCompany/>

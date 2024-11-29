@@ -13,6 +13,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
+import { toast } from "sonner";
 const shortListingStatus = ["Accepted", "Rejected"];
 function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application);
