@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import {Link as LinkScroll} from "react-scroll"
 
-const Footer = () => {
+function Footer()  {
   return (
     <footer className="bg-gray-100 text-gray-600 border border-t">
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -11,19 +13,19 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-800">Company</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="/about" className="hover:text-gray-900">
+                <LinkScroll to="about" className="hover:text-gray-900 cursor-pointer">
                   About Us
-                </a>
+                </LinkScroll>
               </li>
               <li>
-                <a href="/careers" className="hover:text-gray-900">
+                <Link to="/careers" className="hover:text-gray-900">
                   Careers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/blog" className="hover:text-gray-900">
+                <Link to="/blog" className="hover:text-gray-900">
                   Blog
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -33,19 +35,19 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-800">Support</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="/help-center" className="hover:text-gray-900">
+                <Link to="/help-center" className="hover:text-gray-900">
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="hover:text-gray-900">
+                <Link to="/contact" className="hover:text-gray-900">
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/faq" className="hover:text-gray-900">
+                <Link to="/faq" className="hover:text-gray-900">
                   FAQs
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -55,19 +57,19 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-800">Discover</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="/jobs" className="hover:text-gray-900">
+                <Link to="/jobs" className="hover:text-gray-900">
                   Jobs
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/workers" className="hover:text-gray-900">
+                <Link to="/workers" className="hover:text-gray-900">
                   Skilled Workers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/employers" className="hover:text-gray-900">
+                <Link to="/employers" className="hover:text-gray-900">
                   Employers
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -77,14 +79,14 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-800">Legal</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="/privacy-policy" className="hover:text-gray-900">
+                <Link to="/privacy-policy" className="hover:text-gray-900">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms-of-service" className="hover:text-gray-900">
+                <Link to="/terms-of-service" className="hover:text-gray-900">
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -134,12 +136,12 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center text-sm">
           <p>© {new Date().getFullYear()} RozgarHub. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
-            <a href="/privacy-policy" className="mr-4 hover:text-gray-900">
+            <Link to="/privacy-policy" className="mr-4 hover:text-gray-900">
               Privacy Policy
-            </a>
-            <a href="/terms-of-service" className="hover:text-gray-900">
+            </Link>
+            <Link to="/terms-of-service" className="hover:text-gray-900">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
