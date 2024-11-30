@@ -1,10 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {Link as LinkScroll} from "react-scroll"
+import { Link as LinkScroll } from "react-scroll";
 
-function Footer()  {
+function Footer() {
   return (
     <footer className="bg-gray-100 text-gray-600 border border-t">
+      <div className=" text-center sm:text-left max-w-7xl mx-auto p-4 pt-10">
+        <Link to="/">
+          <h1 className="text-2xl font-bold text-blue-600">
+            ROZGAR<span className="text-blue-700">HUB</span>
+          </h1>
+        </Link>
+      </div>
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Footer Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
@@ -13,7 +20,10 @@ function Footer()  {
             <h3 className="text-sm font-semibold text-gray-800">Company</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <LinkScroll to="about" className="hover:text-gray-900 cursor-pointer">
+                <LinkScroll
+                  to="about"
+                  className="hover:text-gray-900 cursor-pointer"
+                >
                   About Us
                 </LinkScroll>
               </li>
@@ -147,6 +157,6 @@ function Footer()  {
       </div>
     </footer>
   );
-};
+}
 
 export default Footer;

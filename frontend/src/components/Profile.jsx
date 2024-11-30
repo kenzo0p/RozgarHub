@@ -19,14 +19,14 @@ function Profile() {
       <Navbar />
       <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl my-5 p-8">
         <div className="flex justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage
                 src={user?.profile?.profilePhoto}
                 alt="profile"
               />
             </Avatar>
-            <div>
+            <div className="text-center sm:text-left">
               <h1 className="font-medium text-xl">{user?.fullname}</h1>
               <p>{user?.profile?.bio}</p>
             </div>
@@ -39,7 +39,7 @@ function Profile() {
             <Pen />
           </Button>
         </div>
-        <div className="my-5">
+        <div className="my-7">
           <div className="flex items-center gap-3 my-2">
             <Mail />
             <span>{user?.email}</span>

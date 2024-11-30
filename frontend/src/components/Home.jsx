@@ -8,6 +8,7 @@ import useGetAllJobs from "@/hooks/useGetAllJobs";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AboutUs from "./AboutUs";
+import FAQAccordion from "./FAQAccordian";
 
 function Home() {
   useGetAllJobs();
@@ -25,6 +26,7 @@ function Home() {
       <CategoryCaraousal />
       <LatestJobs />
       <AboutUs/>
+      <FAQAccordion/>
       <Footer />
     </div>
   );
