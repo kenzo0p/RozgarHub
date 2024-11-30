@@ -7,8 +7,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setUser } from "@/redux/authSlice";
-import {USER_API_END_POINT} from '../../utils/constant.js'
-import axios from 'axios'
+import { USER_API_END_POINT } from "../../utils/constant.js";
+import axios from "axios";
+import { Link as LinkScroll } from "react-scroll";
 // import { Link } from "react-router-dom";
 
 function Navbar() {
@@ -62,6 +63,9 @@ function Navbar() {
                 <Link to="/browse">
                   <li>Browse</li>
                 </Link>
+                <LinkScroll className="cursor-pointer" to="about" smooth={true} duration={500} offset={-50}>
+                  About us
+                </LinkScroll>
               </>
             )}
           </ul>
@@ -102,14 +106,14 @@ function Navbar() {
                   </div>
                 </div>
                 <div className="flex flex-col my-4 gap-4 ">
-                  {
-                    user && user.role === 'employee' && (  <div className="flex items-center gap-2">
+                  {user && user.role === "employee" && (
+                    <div className="flex items-center gap-2">
                       <User2 />
                       <Button variant="link">
                         <Link to="/profile">View Profile</Link>
                       </Button>
-                    </div>)
-                  }
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <LogOut />
                     <Button onClick={logoutHandler} variant="link">
