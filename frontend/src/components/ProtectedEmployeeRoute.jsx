@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
   const [toastDisplayed, setToastDisplayed] = useState(false);
 
   useEffect(() => {
-    if (user === null || user.role !== "employer") {
+    if (user === null || user.role !== "employee") {
       if (!toastDisplayed) {
         setToastDisplayed(true);
         navigate("/");

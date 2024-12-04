@@ -13,6 +13,7 @@ import EmployerJobs from "./components/employer/EmployerJobs";
 import PostJob from "./components/employer/PostJob";
 import Applicants from "./components/employer/Applicants";
 import ProtectedRoute from "./components/employer/ProtectedRoute";
+import ProtectedEmployeeRoute from "./components/ProtectedEmployeeRoute";
 
 const appRouter = createBrowserRouter([
   {
@@ -29,19 +30,35 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/jobs",
-    element: <Jobs />,
+    element: (
+      <ProtectedEmployeeRoute>
+        <Jobs />
+      </ProtectedEmployeeRoute>
+    ),
   },
   {
     path: "/details/:id",
-    element: <JobDetails />,
+    element: (
+      <ProtectedEmployeeRoute>
+        <JobDetails />
+      </ProtectedEmployeeRoute>
+    ),
   },
   {
     path: "/browse",
-    element: <Browse />,
+    element: (
+      <ProtectedEmployeeRoute>
+        <Browse />
+      </ProtectedEmployeeRoute>
+    ),
   },
   {
     path: "/profile",
-    element: <Profile />,
+    element: (
+      <ProtectedEmployeeRoute>
+        <Profile />
+      </ProtectedEmployeeRoute>
+    ),
   },
   // for employer
   {
@@ -54,23 +71,43 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/admin/companies/create",
-    element: <CreateCompany />,
+    element: (
+      <ProtectedRoute>
+        <CreateCompany />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/admin/companies/:id",
-    element: <CompanySetup />,
+    element: (
+      <ProtectedRoute>
+        <CompanySetup />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/admin/jobs",
-    element: <EmployerJobs />,
+    element: (
+      <ProtectedRoute>
+        <EmployerJobs />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/admin/jobs/create",
-    element: <PostJob />,
+    element: (
+      <ProtectedRoute>
+        <PostJob />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/admin/jobs/:id/applicants",
-    element: <Applicants />,
+    element: (
+      <ProtectedRoute>
+        <Applicants />
+      </ProtectedRoute>
+    ),
   },
 ]);
 function App() {
