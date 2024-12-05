@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import AboutUs from "./AboutUs";
 import FAQAccordion from "./FAQAccordian";
 
+
+
 function Home() {
   useGetAllJobs();
   const { user } = useSelector((store) => store.auth);
