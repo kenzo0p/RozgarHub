@@ -12,23 +12,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { MoreHorizontal } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { APPLICATION_API_END_POINT } from "@/utils/constant";
+import {
+  APPLICATION_API_END_POINT,
+  MESSAGE_API_END_POINT,
+} from "@/utils/constant";
 import { toast } from "sonner";
+import { useNavigate, useParams } from "react-router-dom";
 const shortListingStatus = ["Accepted", "Rejected"];
 function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application);
+  const navigate = useNavigate();
+  const params = useParams();
 
-  const statusHandler = async(status,id) =>{
+  const statusHandler = async (status, id) => {
     try {
-        axios.defaults.withCredentials = true;
-        const res = await axios.post(`${APPLICATION_API_END_POINT}/status/${id}/update`,{status});
-        if(res.data.success){
-            toast.success(res.data.message)
-        }
+      axios.defaults.withCredentials = true;
+      const res = await axios.post(
+        `${APPLICATION_API_END_POINT}/status/${id}/update`,
+        { status }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+      }
     } catch (error) {
-        toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
     }
-  }
+  };
   return (
     <div>
       <Table>
@@ -75,7 +84,8 @@ function ApplicantsTable() {
                     <PopoverContent className="w-32">
                       {shortListingStatus.map((status, index) => {
                         return (
-                          <div onClick={()=>statusHandler(status,item._id)}
+                          <div
+                            onClick={() => statusHandler(status, item._id)}
                             key={index}
                             className="flex w-fit items-center my-2 cursor-pointer"
                           >
@@ -83,6 +93,12 @@ function ApplicantsTable() {
                           </div>
                         );
                       })}
+                      {/* <p
+                        onClick={sendMessageHandler}
+                        className="cursor-pointer"
+                      >
+                        Message
+                      </p> */}
                     </PopoverContent>
                   </Popover>
                 </TableCell>
