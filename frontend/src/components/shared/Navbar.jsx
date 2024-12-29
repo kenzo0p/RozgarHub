@@ -49,7 +49,7 @@ function Navbar() {
           <ul className="flex font-medium items-center gap-5">
             {user && user.role === "employer" ? (
               <>
-                <Link to="/chat">Chat</Link>
+    
                 <Link to="/admin/companies">
                   <li>Companies</li>
                 </Link>

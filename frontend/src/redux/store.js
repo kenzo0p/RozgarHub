@@ -3,8 +3,7 @@ import authSlice from "./authSlice.js";
 import jobSlice from "./jobSlice.js";
 import companySlice from "./companySlice.js";
 import applicationSlice from "./applicationSlice.js";
-import socketSlice from "./socketSlice.js";
-import chatSlice from "./chatSlice.js";
+
 import {
   persistStore,
   persistReducer,
@@ -28,8 +27,6 @@ const rootReducer = combineReducers({
   job: jobSlice,
   company: companySlice,
   application: applicationSlice,
-  socketio: socketSlice,
-  chat: chatSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
