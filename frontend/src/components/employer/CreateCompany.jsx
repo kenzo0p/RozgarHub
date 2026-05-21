@@ -17,7 +17,7 @@ function CreateCompany() {
   const registerNewCompany = async () => {
     try {
       const res = await axios.post(
-        `${COMPANY_API_END_POINT}/register`,
+        `${COMPANY_API_END_POINT}`,
         { companyName },
         {
           headers: { "Content-Type": "application/json" },
@@ -25,9 +25,9 @@ function CreateCompany() {
         }
       );
       if (res?.data?.success) {
-        dispatch(setSingleCompany(res.data.company));
+        dispatch(setSingleCompany(res.data.data.company));
         toast.success(res.data.message);
-        const companyId = res?.data?.company?._id
+        const companyId = res?.data?.data?.company?._id
         navigate(`/admin/companies/${companyId}`);
       }
     } catch (error) {

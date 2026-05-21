@@ -10,12 +10,11 @@ function useGetAppliedJobs() {
   useEffect(() => {
     const fetechAppliedJobs = async () => {
       try {
-        const res = await axios.get(`${APPLICATION_API_END_POINT}/get`, {
+        const res = await axios.get(`${APPLICATION_API_END_POINT}`, {
           withCredentials:true
         });
-        console.log(res.data)
         if (res.data.success) {
-          dispatch(setAllAppliedJobs(res.data.application));
+          dispatch(setAllAppliedJobs(res.data.data.applications));
         }
       } catch (error) {
         console.log(error);
