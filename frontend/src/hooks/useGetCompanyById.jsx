@@ -10,11 +10,11 @@ function useGetCompanyById(companyId) {
   useEffect(() => {
     const fetchSingleCompany = async () => {
       try {
-        const res = await axios.get(`${COMPANY_API_END_POINT}/get/${companyId}`, {
+        const res = await axios.get(`${COMPANY_API_END_POINT}/${companyId}`, {
           withCredentials: true,
         });
         if (res.data.success) {
-          dispatch(setSingleCompany(res.data.company));
+          dispatch(setSingleCompany(res.data.data.company));
         }
       } catch (error) {
         console.log(error);

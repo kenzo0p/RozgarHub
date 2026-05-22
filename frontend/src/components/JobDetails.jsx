@@ -23,8 +23,9 @@ function JobDetails() {
 
   const applyJobHandler = async () => {
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         `${APPLICATION_API_END_POINT}/apply/${jobId}`,
+        {},
         { withCredentials: true }
       );
 
@@ -46,13 +47,13 @@ function JobDetails() {
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
-        const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, {
+        const res = await axios.get(`${JOB_API_END_POINT}/${jobId}`, {
           withCredentials: true,
         });
         if (res.data.success) {
-          dispatch(setSingleJob(res.data.job));
+          dispatch(setSingleJob(res.data.data.job));
           setIsApplied(
-            res.data.job.applications.some(
+            res.data.data.job.applications.some(
               (application) => application.applicant === user?._id
             )
           ); // Ensure the state is in sync with fetched data

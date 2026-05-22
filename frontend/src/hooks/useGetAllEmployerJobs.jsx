@@ -9,11 +9,11 @@ function useGetAllEmployerJobs() {
   useEffect(() => {
     const fetchAllEmployerJobs = async () => {
       try {
-        const res = await axios.get(`${JOB_API_END_POINT}/getadminjob`, {
+        const res = await axios.get(`${JOB_API_END_POINT}/admin`, {
           withCredentials: true,
         });
         if (res.data.success) {
-          dispatch(setAllEmployerJobs(res.data.jobs));
+          dispatch(setAllEmployerJobs(res.data.data.jobs));
         }
       } catch (error) {
         console.log(error);

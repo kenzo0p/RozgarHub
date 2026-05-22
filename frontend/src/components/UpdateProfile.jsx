@@ -47,7 +47,7 @@ function UpdateProfile({ open, setOpen }) {
     }
     try {
       setLoading(true);
-      const res = await axios.post(
+      const res = await axios.put(
         `${USER_API_END_POINT}/profile/update`,
         formData,
         {
@@ -58,7 +58,7 @@ function UpdateProfile({ open, setOpen }) {
         }
       );
       if (res.data.success) {
-        dispatch(setUser(res.data.user));
+        dispatch(setUser(res.data.data.user));
         toast.success(res.data.message);
       }
     } catch (error) {
