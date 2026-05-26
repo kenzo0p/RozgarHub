@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/database.js';
 import { corsOptions } from './config/cors.js';
+import './config/redis.js'; // Initialize Redis client on startup
+import { disconnectRedis } from './config/redis.js';
 import { APP_CONSTANTS } from './utils/constants.js';
 import logger from './utils/logger.js';
 
@@ -68,7 +70,10 @@ const startServer = async (): Promise<void> => {
 
       server.close(async () => {
         logger.info('HTTP server closed');
-        await disconnectDB();
+        await Promise.all([
+          disconnectDB(),
+          disconnectRedis(),
+        ]);
         process.exit(0);
       });
 

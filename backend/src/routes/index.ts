@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
+import mongoose from 'mongoose';
 import v1Routes from './v1/index.js';
 import { APP_CONSTANTS } from '../utils/constants.js';
+import { isRedisConnected } from '../config/redis.js';
 
 const router = Router();
 
@@ -17,15 +19,57 @@ const router = Router();
  */
 router.use(`/${APP_CONSTANTS.CURRENT_API_VERSION}`, v1Routes);
 
-// Health check at API root
+/**
+ * Health check endpoint.
+ *
+ * Reports status of all dependent services (database, cache).
+ * Used by:
+ * - Load balancers (determines if instance should receive traffic)
+ * - Docker HEALTHCHECK (restarts unhealthy containers)
+ * - Monitoring dashboards (uptime tracking, alerting)
+ * - CI/CD pipelines (verifies deployment success)
+ *
+ * GET /api/health
+ */
 router.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({
+  const memoryUsage = process.memoryUsage();
+
+  const mongoState = mongoose.connection.readyState;
+  const mongoStatus: Record<number, string> = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+
+  const health = {
     success: true,
     message: 'RozgarHub API is running',
     version: APP_CONSTANTS.CURRENT_API_VERSION,
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
+    uptime: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || 'development',
+    services: {
+      database: {
+        status: mongoStatus[mongoState] || 'unknown',
+        healthy: mongoState === 1,
+      },
+      cache: {
+        status: isRedisConnected() ? 'connected' : 'disconnected',
+        healthy: isRedisConnected(),
+        required: false, // App works without Redis
+      },
+    },
+    memory: {
+      heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+      heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`,
+      rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
+    },
+  };
+
+  // Return 503 if critical services are down
+  const statusCode = health.services.database.healthy ? 200 : 503;
+  res.status(statusCode).json(health);
 });
 
 export default router;

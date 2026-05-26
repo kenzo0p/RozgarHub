@@ -44,6 +44,9 @@ export const jobQuerySchema = z.object({
   salaryMax: z.string().transform(Number).optional(),
   page: z.string().transform(Number).optional(),
   limit: z.string().transform(Number).optional(),
+  sortBy: z.enum(['createdAt', 'salary', 'position']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+  cursor: z.string().optional(), // For cursor-based pagination
 });
 
 export type CreateJobInput = z.infer<typeof createJobSchema>;

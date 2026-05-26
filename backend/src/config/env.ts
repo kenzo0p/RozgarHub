@@ -31,6 +31,9 @@ const envSchema = z.object({
 
   // CORS
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
+
+  // Redis (optional — app works without it, just no caching)
+  REDIS_URL: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

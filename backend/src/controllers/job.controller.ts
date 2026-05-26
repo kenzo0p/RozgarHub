@@ -12,12 +12,43 @@ export const postJob = asyncHandler(async (req: AuthRequest, res: Response) => {
   );
 });
 
+/**
+ * Offset-based job listing with full pagination metadata.
+ * Used by traditional page navigation UIs.
+ */
 export const getAllJobs = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { jobs, total, page, limit } = await jobService.getAllJobs(req.query as Record<string, string>);
-
-  res.status(200).json(
-    ApiResponse.paginated(jobs, total, page, limit, 'Jobs retrieved successfully'),
+  const { jobs, pagination } = await jobService.getAllJobs(
+    req.query as Record<string, string>,
   );
+
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: 'Jobs retrieved successfully',
+    data: jobs,
+    pagination,
+  });
+});
+
+/**
+ * Cursor-based job listing for infinite scroll.
+ * Returns jobs + nextCursor + hasMore instead of page numbers.
+ */
+export const getJobsCursor = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { jobs, nextCursor, hasMore } = await jobService.getJobsWithCursor(
+    req.query as Record<string, string>,
+  );
+
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: 'Jobs retrieved successfully',
+    data: jobs,
+    cursor: {
+      next: nextCursor,
+      hasMore,
+    },
+  });
 });
 
 export const getJobById = asyncHandler(async (req: AuthRequest, res: Response) => {
