@@ -4,18 +4,27 @@ import { authenticate } from '../../middlewares/auth.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import { singleUpload } from '../../middlewares/upload.middleware.js';
 import { authRateLimiter } from '../../middlewares/rateLimiter.middleware.js';
-import { registerSchema, loginSchema } from '../../validators/auth.validator.js';
+import { auditLog } from '../../middlewares/audit.middleware.js';
+import {
+  registerSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from '../../validators/auth.validator.js';
 
 const router = Router();
 
 /**
  * Auth Routes
  *
- * POST /register — Create a new account (rate limited, file upload for profile photo)
- * POST /login    — Authenticate and receive JWT cookie (rate limited)
- * POST /logout   — Clear JWT cookie (requires auth)
- *
- * Rate limiting is stricter on auth endpoints to prevent brute-force attacks.
+ * POST /register        — Create a new account
+ * POST /login           — Authenticate and receive dual token cookies
+ * POST /logout          — Revoke refresh token, clear cookies
+ * POST /logout-all      — Revoke all sessions, clear cookies
+ * POST /refresh         — Exchange refresh token for new token pair
+ * POST /forgot-password — Generate password reset token
+ * POST /reset-password  — Reset password using valid token
+ * GET  /sessions        — List active sessions
  */
 router.post(
   '/register',
@@ -32,6 +41,27 @@ router.post(
   authController.login,
 );
 
-router.post('/logout', authenticate, authController.logout);
+router.post('/logout', authController.logout);
+
+router.post('/logout-all', authenticate, authController.logoutAll);
+
+router.post('/refresh', authRateLimiter, authController.refresh);
+
+router.post(
+  '/forgot-password',
+  authRateLimiter,
+  validate(forgotPasswordSchema),
+  authController.forgotPassword,
+);
+
+router.post(
+  '/reset-password',
+  authRateLimiter,
+  validate(resetPasswordSchema),
+  auditLog('User'),
+  authController.resetPassword,
+);
+
+router.get('/sessions', authenticate, authController.getSessions);
 
 export default router;

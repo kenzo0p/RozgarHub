@@ -49,6 +49,9 @@ const userSchema = new Schema<IUser>(
       company: { type: Schema.Types.ObjectId, ref: 'Company' },
       profilePhoto: { type: String, default: '' },
     },
+    // Password reset fields
+    passwordResetToken: { type: String, default: undefined },
+    passwordResetExpires: { type: Date, default: undefined },
   },
   {
     timestamps: true,

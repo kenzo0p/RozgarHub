@@ -63,7 +63,27 @@ export const updateProfileSchema = z.object({
   skills: z.string().optional(), // Comma-separated string, parsed in service layer
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ error: 'Email is required' })
+    .email('Invalid email format')
+    .toLowerCase()
+    .trim(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z
+    .string({ error: 'Reset token is required' })
+    .min(1, 'Token is required'),
+  password: z
+    .string({ error: 'New password is required' })
+    .min(6, 'Password must be at least 6 characters'),
+});
+
 // Infer TypeScript types from schemas
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+

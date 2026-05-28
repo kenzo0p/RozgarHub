@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
+import { APP_CONSTANTS } from '../utils/constants.js';
 import { UnauthorizedError } from '../utils/ApiError.js';
 import type { AuthRequest } from '../types/express.js';
 
@@ -11,12 +12,12 @@ interface JWTPayload {
 /**
  * JWT authentication middleware.
  *
- * Improvements over original:
- * - Uses typed AuthRequest instead of mutating req with arbitrary properties
- * - Throws UnauthorizedError instead of manually sending responses
- *   (lets centralized error handler format it consistently)
- * - Validates JWT_SECRET from config (not raw process.env)
- * - Properly handles all JWT error cases (expired, malformed, etc.)
+ * Updated for dual-token strategy:
+ * 1. First tries the access token cookie (short-lived, 15 min)
+ * 2. Falls back to the legacy 'token' cookie (backward compatibility with frontend)
+ *
+ * When the access token expires, the frontend should call POST /auth/refresh
+ * which uses the refresh token cookie to issue a new access token.
  */
 export const authenticate = async (
   req: AuthRequest,
@@ -24,7 +25,10 @@ export const authenticate = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const token = req.cookies.token;
+    // Try new access token cookie first, fall back to legacy cookie name
+    const token =
+      req.cookies[APP_CONSTANTS.ACCESS_COOKIE_NAME] ||
+      req.cookies.token; // Backward compatibility
 
     if (!token) {
       throw new UnauthorizedError('Authentication required. Please log in.');
@@ -35,17 +39,17 @@ export const authenticate = async (
     // Attach user context to request for downstream handlers
     req.user = {
       id: decoded.userId,
-      role: 'employee', // Will be populated by optional user-fetch middleware if needed
+      role: 'employee', // Will be populated by RBAC middleware if needed
     };
 
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
       next(error);
+    } else if (error instanceof jwt.TokenExpiredError) {
+      next(new UnauthorizedError('Token expired. Please refresh your session.'));
     } else if (error instanceof jwt.JsonWebTokenError) {
       next(new UnauthorizedError('Invalid token'));
-    } else if (error instanceof jwt.TokenExpiredError) {
-      next(new UnauthorizedError('Token expired. Please log in again.'));
     } else {
       next(error);
     }

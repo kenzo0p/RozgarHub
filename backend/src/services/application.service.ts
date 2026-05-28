@@ -1,8 +1,9 @@
 import { applicationRepository } from '../repositories/application.repository.js';
 import { jobRepository } from '../repositories/job.repository.js';
-import { ConflictError, NotFoundError, ValidationError } from '../utils/ApiError.js';
-import type { IApplication, ApplicationStatus } from '../types/models.js';
+import { ConflictError, NotFoundError } from '../utils/ApiError.js';
+import type { IApplication, ApplicationStatus, IJob } from '../types/models.js';
 import { Job } from '../models/job.model.js';
+import { eventBus } from '../events/eventBus.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -10,6 +11,10 @@ import logger from '../utils/logger.js';
  *
  * Handles the full application lifecycle:
  * apply → employer reviews → accept/reject
+ *
+ * Event integration:
+ * - Emits 'application.created' when a user applies (triggers employer notification)
+ * - Emits 'application.statusChanged' on accept/reject (triggers applicant notification)
  */
 export class ApplicationService {
   async applyToJob(jobId: string, applicantId: string): Promise<IApplication> {
@@ -38,6 +43,16 @@ export class ApplicationService {
     await jobRepository.addApplication(jobId, application._id.toString());
 
     logger.info(`Application submitted: user ${applicantId} → job ${jobId}`);
+
+    // Emit event — handlers create notification for employer, invalidate caches
+    eventBus.emit('application.created', {
+      applicationId: application._id.toString(),
+      jobId,
+      applicantId,
+      employerId: (job as IJob).created_By.toString(),
+      jobTitle: (job as IJob).title,
+    });
+
     return application;
   }
 
@@ -76,6 +91,20 @@ export class ApplicationService {
     logger.info(
       `Application ${applicationId} status updated to '${status}'`,
     );
+
+    // Emit event — handlers notify the applicant about status change
+    const job = await jobRepository.findByIdLean(
+      (application.job as unknown as { toString(): string }).toString(),
+    );
+
+    eventBus.emit('application.statusChanged', {
+      applicationId,
+      jobId: (application.job as unknown as { toString(): string }).toString(),
+      applicantId: (application.applicant as unknown as { toString(): string }).toString(),
+      newStatus: status,
+      jobTitle: job?.title || 'Unknown Job',
+    });
+
     return application;
   }
 }

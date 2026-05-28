@@ -45,6 +45,23 @@ export class UserRepository {
   async findByIdWithPassword(id: string): Promise<IUser | null> {
     return User.findById(id).select('+password').exec();
   }
+
+  /**
+   * Find user by password reset token (hashed) that hasn't expired.
+   */
+  async findByResetToken(hashedToken: string): Promise<IUser | null> {
+    return User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: new Date() },
+    }).exec();
+  }
+
+  /**
+   * Generic update by ID.
+   */
+  async update(id: string, data: Partial<IUser>): Promise<IUser | null> {
+    return User.findByIdAndUpdate(id, data, { new: true }).exec();
+  }
 }
 
 export const userRepository = new UserRepository();

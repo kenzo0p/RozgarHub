@@ -4,6 +4,8 @@ import { authenticate } from '../../middlewares/auth.middleware.js';
 import { authorize } from '../../middlewares/rbac.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import { updateStatusSchema } from '../../validators/application.validator.js';
+import { auditLog } from '../../middlewares/audit.middleware.js';
+import { idempotent } from '../../middlewares/idempotency.middleware.js';
 
 const router = Router();
 
@@ -21,6 +23,8 @@ router.post(
   '/apply/:id',
   authenticate,
   authorize('employee'),
+  idempotent,
+  auditLog('Application'),
   applicationController.applyJob,
 );
 
@@ -42,6 +46,7 @@ router.patch(
   authenticate,
   authorize('employer'),
   validate(updateStatusSchema),
+  auditLog('Application'),
   applicationController.updateStatus,
 );
 

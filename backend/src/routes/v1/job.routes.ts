@@ -6,6 +6,8 @@ import { validate } from '../../middlewares/validate.middleware.js';
 import { createJobSchema, jobQuerySchema } from '../../validators/job.validator.js';
 import { cacheResponse } from '../../middlewares/cache.middleware.js';
 import { CACHE_TTL } from '../../utils/cache.js';
+import { auditLog } from '../../middlewares/audit.middleware.js';
+import { idempotent } from '../../middlewares/idempotency.middleware.js';
 
 const router = Router();
 
@@ -25,7 +27,9 @@ router.post(
   '/',
   authenticate,
   authorize('employer'),
+  idempotent,
   validate(createJobSchema),
+  auditLog('Job'),
   jobController.postJob,
 );
 

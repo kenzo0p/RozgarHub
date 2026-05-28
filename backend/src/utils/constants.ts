@@ -8,10 +8,14 @@ export const APP_CONSTANTS = {
   DEFAULT_LIMIT: 10,
   MAX_LIMIT: 100,
 
-  // Auth
-  ACCESS_TOKEN_EXPIRY: '1d',
+  // Auth — dual token strategy
+  ACCESS_TOKEN_EXPIRY: '15m',         // Short-lived (was '1d')
+  REFRESH_TOKEN_EXPIRY: '7d',         // Long-lived, stored in DB
+  REFRESH_TOKEN_EXPIRY_MS: 7 * 24 * 60 * 60 * 1000,
+  PASSWORD_RESET_EXPIRY_MS: 60 * 60 * 1000, // 1 hour
   BCRYPT_SALT_ROUNDS: 12,
-  COOKIE_NAME: 'token',
+  ACCESS_COOKIE_NAME: 'accessToken',
+  REFRESH_COOKIE_NAME: 'refreshToken',
 
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
@@ -38,3 +42,14 @@ export const APPLICATION_STATUS = {
   ACCEPTED: 'accepted',
   REJECTED: 'rejected',
 } as const;
+
+export const NOTIFICATION_TYPES = {
+  APPLICATION_RECEIVED: 'application_received',
+  APPLICATION_ACCEPTED: 'application_accepted',
+  APPLICATION_REJECTED: 'application_rejected',
+  NEW_JOB_MATCH: 'new_job_match',
+  SYSTEM: 'system',
+} as const;
+
+export type NotificationType = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];
+

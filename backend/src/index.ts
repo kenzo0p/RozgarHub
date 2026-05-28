@@ -16,6 +16,9 @@ import { globalRateLimiter } from './middlewares/rateLimiter.middleware.js';
 import { requestLogger } from './middlewares/requestLogger.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
+// Events
+import { registerEventHandlers } from './events/handlers.js';
+
 // Routes
 import apiRouter from './routes/index.js';
 
@@ -58,6 +61,9 @@ app.use(errorHandler);
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
+
+    // Register event handlers after DB is connected
+    registerEventHandlers();
 
     const server = app.listen(env.PORT, () => {
       logger.info(`🚀 RozgarHub API running on port ${env.PORT} [${env.NODE_ENV}]`);
