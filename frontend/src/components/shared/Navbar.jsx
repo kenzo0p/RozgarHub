@@ -10,6 +10,8 @@ import { setUser } from "@/redux/authSlice";
 import { AUTH_API_END_POINT } from "../../utils/constant.js";
 import axios from "axios";
 import { Link as LinkScroll } from "react-scroll";
+import ThemeToggle from "./ThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 function Navbar() {
   const { user } = useSelector((store) => store.auth);
@@ -33,43 +35,42 @@ function Navbar() {
   };
 
   return (
-    <div className="bg-white z-50 shadow-md sticky top-0">
+    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 shadow-sm border-b border-border sticky top-0">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16 px-4">
         {/* Logo */}
         <div>
           <Link to="/">
-            <h1 className="text-2xl font-bold text-blue-600">
-              ROZGAR<span className="text-blue-700">HUB</span>
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              ROZGAR<span className="text-blue-700 dark:text-blue-300">HUB</span>
             </h1>
           </Link>
         </div>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-12">
-          <ul className="flex font-medium items-center gap-5">
+        <div className="hidden md:flex items-center gap-6">
+          <ul className="flex font-medium items-center gap-5 text-foreground">
             {user && user.role === "employer" ? (
               <>
-    
                 <Link to="/admin/companies">
-                  <li>Companies</li>
+                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Companies</li>
                 </Link>
                 <Link to="/admin/jobs">
-                  <li>Jobs</li>
+                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Jobs</li>
                 </Link>
               </>
             ) : (
               <>
                 <Link to="/">
-                  <li>Home</li>
+                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</li>
                 </Link>
                 <Link to="/jobs">
-                  <li>Jobs</li>
+                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Jobs</li>
                 </Link>
                 <Link to="/browse">
-                  <li>Browse</li>
+                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Browse</li>
                 </Link>
                 <LinkScroll
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                   to="about"
                   smooth={true}
                   duration={500}
@@ -80,6 +81,13 @@ function Navbar() {
               </>
             )}
           </ul>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            {user && <NotificationBell />}
+          </div>
+
           {/* Authentication Buttons */}
           {!user ? (
             <div className="flex items-center gap-2">
@@ -87,7 +95,7 @@ function Navbar() {
                 <Button variant="outline">Login</Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-[#2A9DF4] hover:bg-[#1989de]">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                   Signup
                 </Button>
               </Link>
@@ -100,6 +108,9 @@ function Navbar() {
                     src={user?.profile?.profilePhoto}
                     alt="User Avatar"
                   />
+                  <AvatarFallback className="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                    {user?.fullname?.charAt(0)?.toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
               <PopoverContent className="w-80">
@@ -109,6 +120,9 @@ function Navbar() {
                       src={user?.profile?.profilePhoto}
                       alt="User Avatar"
                     />
+                    <AvatarFallback className="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                      {user?.fullname?.charAt(0)?.toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <h4 className="font-medium">{user?.fullname}</h4>
@@ -139,14 +153,16 @@ function Navbar() {
         </div>
 
         {/* Dropdown Menu for Mobile */}
-        <div className="flex md:hidden">
+        <div className="flex md:hidden items-center gap-1">
+          <ThemeToggle />
+          {user && <NotificationBell />}
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline">
-                <Menu className="h-6 w-6" />
+              <Button variant="outline" size="icon">
+                <Menu className="h-5 w-5" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-48 bg-white">
+            <PopoverContent className="w-48">
               <ul className="flex flex-col gap-2">
                 {user && user.role === "employer" ? (
                   <>
@@ -188,7 +204,7 @@ function Navbar() {
                     </Button>
                   </Link>
                   <Link to="/signup">
-                    <Button className="bg-[#2A9DF4] hover:bg-[#1989de] w-full">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
                       Signup
                     </Button>
                   </Link>

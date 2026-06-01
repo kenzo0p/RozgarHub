@@ -1,6 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+import { setUser } from "./redux/authSlice";
+import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 // ─── Eagerly loaded (needed immediately on first render) ─────────────────────
 import Home from "./components/Home";
@@ -30,10 +34,10 @@ const Applicants = lazy(() => import("./components/employer/Applicants"));
  */
 function RouteLoadingFallback() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="flex flex-col items-center gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <p className="text-sm text-gray-500">Loading...</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       </div>
     </div>
   );
@@ -163,10 +167,24 @@ const appRouter = createBrowserRouter([
 ]);
 
 function App() {
+  const dispatch = useDispatch();
+
+  // Listen for session expiry events from the Axios interceptor
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      dispatch(setUser(null));
+      toast.error("Session expired. Please log in again.");
+    };
+
+    window.addEventListener("auth:session-expired", handleSessionExpired);
+    return () =>
+      window.removeEventListener("auth:session-expired", handleSessionExpired);
+  }, [dispatch]);
+
   return (
-    <>
+    <ErrorBoundary>
       <RouterProvider router={appRouter} />
-    </>
+    </ErrorBoundary>
   );
 }
 
