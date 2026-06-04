@@ -1,4 +1,5 @@
 import winston from 'winston';
+import { getRequestId } from '../middlewares/requestId.middleware.js';
 
 const { combine, timestamp, printf, colorize, errors } = winston.format;
 
@@ -14,20 +15,34 @@ const { combine, timestamp, printf, colorize, errors } = winston.format;
  * - info:  Key business events (user registered, job posted)
  * - http:  HTTP request/response logs
  * - debug: Development-only verbose output
+ *
+ * Request ID correlation:
+ * Every log entry includes a `requestId` field (from AsyncLocalStorage).
+ * This lets you trace all logs for a single request in production:
+ *   grep "abc-123" /var/log/rozgarhub.json
  */
 
+// Custom format that injects request ID into every log entry
+const addRequestId = winston.format((info) => {
+  info.requestId = getRequestId();
+  return info;
+});
+
 const devFormat = combine(
+  addRequestId(),
   colorize(),
   timestamp({ format: 'HH:mm:ss' }),
   errors({ stack: true }),
-  printf(({ level, message, timestamp, stack, ...meta }) => {
+  printf(({ level, message, timestamp, stack, requestId, ...meta }) => {
+    const rid = requestId !== 'unknown' ? ` [${(requestId as string).substring(0, 8)}]` : '';
     const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-    if (stack) return `${timestamp} ${level}: ${message}\n${stack}`;
-    return `${timestamp} ${level}: ${message}${metaStr}`;
+    if (stack) return `${timestamp} ${level}:${rid} ${message}\n${stack}`;
+    return `${timestamp} ${level}:${rid} ${message}${metaStr}`;
   }),
 );
 
 const prodFormat = combine(
+  addRequestId(),
   timestamp(),
   errors({ stack: true }),
   winston.format.json(),

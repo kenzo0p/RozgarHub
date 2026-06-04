@@ -14,6 +14,7 @@ import logger from './utils/logger.js';
 // Middleware
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware.js';
 import { requestLogger } from './middlewares/requestLogger.middleware.js';
+import { requestIdMiddleware } from './middlewares/requestId.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
 
 // Events
@@ -49,6 +50,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // ─── Observability ─────────────────────────────────────────────────────────────
+app.use(requestIdMiddleware);  // Must be before requestLogger
 app.use(requestLogger);
 
 // ─── API Routes ────────────────────────────────────────────────────────────────
