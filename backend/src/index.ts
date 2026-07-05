@@ -1,70 +1,22 @@
-import express from 'express';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import helmet from 'helmet';
-
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/database.js';
-import { corsOptions } from './config/cors.js';
 import './config/redis.js'; // Initialize Redis client on startup
 import { disconnectRedis } from './config/redis.js';
 import { APP_CONSTANTS } from './utils/constants.js';
 import logger from './utils/logger.js';
 
-// Middleware
-import { globalRateLimiter } from './middlewares/rateLimiter.middleware.js';
-import { requestLogger } from './middlewares/requestLogger.middleware.js';
-import { requestIdMiddleware } from './middlewares/requestId.middleware.js';
-import { errorHandler } from './middlewares/errorHandler.middleware.js';
-
 // Events
 import { registerEventHandlers } from './events/handlers.js';
 
-// Routes
-import apiRouter from './routes/index.js';
+import app from './app.js';
 
 /**
- * RozgarHub API — Application Entry Point
+ * RozgarHub API — Server Bootstrap
  *
- * Middleware execution order matters:
- * 1. Security headers (helmet)
- * 2. CORS
- * 3. Rate limiting
- * 4. Body parsing
- * 5. Cookie parsing
- * 6. Request logging
- * 7. Routes
- * 8. Error handling (MUST be last)
+ * App construction lives in app.ts (imported by tests); this file owns the
+ * runtime concerns: DB connection, event handlers, listening, and shutdown.
  */
 
-const app = express();
-
-// Behind the nginx reverse proxy, req.ip must come from X-Forwarded-For.
-// Without this, rate limiting keys every user by the proxy's IP — one shared
-// bucket for the whole site — and login/session logs record the wrong IP.
-app.set('trust proxy', 1);
-
-// ─── Security ──────────────────────────────────────────────────────────────────
-app.use(helmet());                  // Sets security HTTP headers (X-Content-Type-Options, etc.)
-app.use(cors(corsOptions));         // CORS with env-driven origin whitelist
-app.use(globalRateLimiter);         // Global rate limiting (100 req/15min)
-
-// ─── Body Parsing ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cookieParser());
-
-// ─── Observability ─────────────────────────────────────────────────────────────
-app.use(requestIdMiddleware);  // Must be before requestLogger
-app.use(requestLogger);
-
-// ─── API Routes ────────────────────────────────────────────────────────────────
-app.use(APP_CONSTANTS.API_PREFIX, apiRouter);
-
-// ─── Error Handling (must be registered AFTER all routes) ──────────────────────
-app.use(errorHandler);
-
-// ─── Server Startup ────────────────────────────────────────────────────────────
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
@@ -81,20 +33,21 @@ const startServer = async (): Promise<void> => {
     const shutdown = async (signal: string) => {
       logger.info(`\n${signal} received. Starting graceful shutdown...`);
 
+      // Force shutdown if graceful shutdown hangs; cleared on clean exit path
+      const forceExitTimer = setTimeout(() => {
+        logger.error('Graceful shutdown timed out. Forcing exit.');
+        process.exit(1);
+      }, 10_000);
+
       server.close(async () => {
         logger.info('HTTP server closed');
         await Promise.all([
           disconnectDB(),
           disconnectRedis(),
         ]);
+        clearTimeout(forceExitTimer);
         process.exit(0);
       });
-
-      // Force shutdown after 10 seconds if graceful shutdown hangs
-      setTimeout(() => {
-        logger.error('Graceful shutdown timed out. Forcing exit.');
-        process.exit(1);
-      }, 10_000);
     };
 
     process.on('SIGTERM', () => shutdown('SIGTERM'));

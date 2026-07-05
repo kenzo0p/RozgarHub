@@ -13,8 +13,10 @@ import type { FilterQuery, UpdateQuery } from 'mongoose';
  */
 export class UserRepository {
   async findById(id: string, selectFields?: string): Promise<IUser | null> {
+    // .lean() bypasses the model's toJSON transform, so sensitive fields must
+    // be excluded at the query level. Use findByIdWithPassword for auth flows.
     const query = User.findById(id);
-    if (selectFields) query.select(selectFields);
+    query.select(selectFields || '-password -passwordResetToken -passwordResetExpires');
     return query.lean().exec() as Promise<IUser | null>;
   }
 

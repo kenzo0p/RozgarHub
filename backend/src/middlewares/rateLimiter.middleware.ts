@@ -1,5 +1,10 @@
 import rateLimit from 'express-rate-limit';
 import { APP_CONSTANTS } from '../utils/constants.js';
+import { env } from '../config/env.js';
+
+// Integration tests fire hundreds of requests from one IP; rate limiting
+// there only produces flaky 429s. Never skipped in dev/production.
+const skipInTests = () => env.NODE_ENV === 'test';
 
 /**
  * Rate limiting middleware — prevents abuse and brute-force attacks.
@@ -23,6 +28,7 @@ export const globalRateLimiter = rateLimit({
   },
   standardHeaders: true,    // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,     // Disable `X-RateLimit-*` headers
+  skip: skipInTests,
 });
 
 export const authRateLimiter = rateLimit({
@@ -36,4 +42,5 @@ export const authRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTests,
 });

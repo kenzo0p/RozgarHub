@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node --require ./src/preload.cjs dist/index.js",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed": "tsx --require ./src/preload.cjs scripts/seed.ts",
     "seed:fresh": "tsx --require ./src/preload.cjs scripts/seed.ts --drop"
   },
@@ -40,5 +42,11 @@
     "typescript": "^6.0.3",
     "winston": "^3.19.0",
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/supertest": "^7.2.0",
+    "mongodb-memory-server": "^11.2.0",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.9"
   }
 }

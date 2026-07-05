@@ -1,6 +1,7 @@
 # CI Pipeline — runs on every PR to main/develop
 #
-# Steps: Lint → Type Check → Build (backend + frontend)
+# Backend:  Type Check → Test → Build
+# Frontend: Lint → Build
 #
 # This catches issues before they hit main:
 # - TypeScript errors
@@ -44,6 +45,9 @@ jobs:
 
       - name: TypeScript type check
         run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build

@@ -15,7 +15,9 @@ services:
     container_name: rozgarhub-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      # Loopback-only: reachable from the host for local tooling, but NOT
+      # exposed to the network — the API reaches it via the docker network.
+      - "127.0.0.1:27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
@@ -36,7 +38,8 @@ services:
     container_name: rozgarhub-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      # Loopback-only — Redis runs unauthenticated, never expose it publicly
+      - "127.0.0.1:6379:6379"
     command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
