@@ -14,12 +14,9 @@ import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
-import { useNavigate, useParams } from "react-router-dom";
 const shortListingStatus = ["Accepted", "Rejected"];
 function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application);
-  const navigate = useNavigate();
-  const params = useParams();
 
   const statusHandler = async (status, id) => {
     try {
@@ -31,7 +28,7 @@ function ApplicantsTable() {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
   };
   return (

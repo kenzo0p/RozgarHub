@@ -17,9 +17,11 @@ export const APP_CONSTANTS = {
   ACCESS_COOKIE_NAME: 'accessToken',
   REFRESH_COOKIE_NAME: 'refreshToken',
 
-  // Rate limiting
+  // Rate limiting — per client IP (requires trust proxy, set in index.ts).
+  // A normal browsing session fires several API calls per page, so 100/15min
+  // throttled legitimate users; 500 still comfortably blocks scraping/abuse.
   RATE_LIMIT_WINDOW_MS: 15 * 60 * 1000, // 15 minutes
-  RATE_LIMIT_MAX_REQUESTS: 100,
+  RATE_LIMIT_MAX_REQUESTS: 500,
   AUTH_RATE_LIMIT_MAX: 10,           // Stricter limit for auth endpoints
 
   // File uploads

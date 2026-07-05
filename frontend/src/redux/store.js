@@ -5,7 +5,6 @@ import companySlice from "./companySlice.js";
 import applicationSlice from "./applicationSlice.js";
 
 import {
-  persistStore,
   persistReducer,
   FLUSH,
   REHYDRATE,

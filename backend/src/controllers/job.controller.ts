@@ -52,10 +52,16 @@ export const getJobsCursor = asyncHandler(async (req: AuthRequest, res: Response
 });
 
 export const getJobById = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const job = await jobService.getJobById(req.params.id as string);
+  const { job, totalApplications, isApplied } = await jobService.getJobById(
+    req.params.id as string,
+    req.user?.id,
+  );
 
   res.status(200).json(
-    ApiResponse.success({ job }, 'Job retrieved successfully'),
+    ApiResponse.success(
+      { job, totalApplications, isApplied },
+      'Job retrieved successfully',
+    ),
   );
 });
 

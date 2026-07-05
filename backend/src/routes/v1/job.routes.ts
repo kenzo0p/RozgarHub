@@ -55,10 +55,11 @@ router.get(
   jobController.getAdminJobs,
 );
 
+// No response cache here: the payload includes viewer-specific data
+// (isApplied), so a shared cache would leak one user's state to another.
 router.get(
   '/:id',
   authenticate,
-  cacheResponse('jobs:detail', CACHE_TTL.JOB_DETAIL),
   jobController.getJobById,
 );
 

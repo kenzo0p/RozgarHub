@@ -59,7 +59,7 @@ class ErrorBoundary extends React.Component {
             <p className="text-sm text-muted-foreground">
               An unexpected error occurred. This has been reported to our team.
             </p>
-            {process.env.NODE_ENV === "development" && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="w-full mt-2 text-left">
                 <summary className="text-sm cursor-pointer text-muted-foreground hover:text-foreground">
                   Error details (development only)

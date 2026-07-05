@@ -10,9 +10,11 @@ export class JobRepository {
   }
 
   async findById(id: string): Promise<IJob | null> {
+    // Deliberately does NOT populate applications: a popular job would embed
+    // thousands of docs in one response, and applicant data would be exposed
+    // to every viewer. Callers needing application info query it separately.
     return Job.findById(id)
       .populate({ path: 'company' })
-      .populate({ path: 'applications' })
       .exec();
   }
 

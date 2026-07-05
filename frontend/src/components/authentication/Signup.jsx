@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { AUTH_API_END_POINT } from "@/utils/constant.js";
@@ -57,7 +57,7 @@ function Signup() {
       }
     } catch (error) {
       console.log(error, "ERROR IN SIGNUP PAGE");
-      toast.error(error.response.data.message)
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.")
     }finally{
       dispatch(setLoading(false))
     }

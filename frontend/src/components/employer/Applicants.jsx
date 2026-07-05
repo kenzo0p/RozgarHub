@@ -4,7 +4,6 @@ import ApplicantsTable from './ApplicantsTable'
 import api from "@/lib/api"
 import { APPLICATION_API_END_POINT } from '@/utils/constant'
 import { useParams } from 'react-router-dom'
-import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAllApplicants } from '@/redux/applicationSlice'
 

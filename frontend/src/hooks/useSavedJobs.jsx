@@ -17,7 +17,7 @@ import api from "../lib/api";
 function useSavedJobs() {
   const { user } = useSelector((store) => store.auth);
   const [savedJobIds, setSavedJobIds] = useState(new Set());
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   // Fetch saved job IDs on mount (optimized endpoint — IDs only, no full job data)
   const fetchSavedJobIds = useCallback(async () => {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AUTH_API_END_POINT } from "@/utils/constant";
 import api from "@/lib/api";
 import { toast } from "sonner";
@@ -30,12 +30,7 @@ function Login() {
     e.preventDefault();
     try {
       dispatch(setLoading(true));
-      const res = await api.post(`${AUTH_API_END_POINT}/login`, input, {
-        Headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      const res = await api.post(`${AUTH_API_END_POINT}/login`, input);
       if (res.data.success) {
         dispatch(setUser(res.data.data.user))
         navigate("/");
@@ -43,7 +38,7 @@ function Login() {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       dispatch(setLoading(false));
     }

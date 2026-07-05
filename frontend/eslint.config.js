@@ -29,10 +29,20 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // Plain-JS project — no PropTypes/TypeScript, so this rule only produces noise
+      'react/prop-types': 'off',
+      'react/no-unescaped-entities': 'off',
+      // Legacy `import React` lines are harmless under the automatic JSX runtime
+      'no-unused-vars': ['error', { varsIgnorePattern: '^React$' }],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
     },
+  },
+  {
+    // Node-context config files (use __dirname, process, etc.)
+    files: ['*.config.js'],
+    languageOptions: { globals: globals.node },
   },
 ]

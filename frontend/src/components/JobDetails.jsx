@@ -10,12 +10,8 @@ import { toast } from "sonner";
 
 function JobDetails() {
   const { singleJob } = useSelector((store) => store.job);
-  const { user } = useSelector((store) => store.auth);
-  const isIntiallyApplied =
-    singleJob?.applications?.some(
-      (application) => application.applicant === user?._id
-    ) || false;
-  const [isApplied, setIsApplied] = useState(isIntiallyApplied);
+  const [isApplied, setIsApplied] = useState(false);
+  const [totalApplications, setTotalApplications] = useState(0);
 
   const params = useParams();
   const jobId = params.id;
@@ -23,47 +19,36 @@ function JobDetails() {
 
   const applyJobHandler = async () => {
     try {
-      const res = await api.post(
-        `${APPLICATION_API_END_POINT}/apply/${jobId}`,
-        {},
-        { withCredentials: true }
-      );
+      const res = await api.post(`${APPLICATION_API_END_POINT}/apply/${jobId}`, {});
 
       if (res.data.success) {
-        setIsApplied(true); // Update the local state
-        const updatedSingleJob = {
-          ...singleJob,
-          applications: [...singleJob.applications, { applicant: user?._id }],
-        };
-        dispatch(setSingleJob(updatedSingleJob)); // helps us to real time UI update
+        setIsApplied(true);
+        setTotalApplications((count) => count + 1);
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
   };
 
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
-        const res = await api.get(`${JOB_API_END_POINT}/${jobId}`, {
-          withCredentials: true,
-        });
+        const res = await api.get(`${JOB_API_END_POINT}/${jobId}`);
         if (res.data.success) {
+          // The API computes viewer-specific state server-side — the raw
+          // applications list is no longer exposed to job seekers.
           dispatch(setSingleJob(res.data.data.job));
-          setIsApplied(
-            res.data.data.job.applications.some(
-              (application) => application.applicant === user?._id
-            )
-          ); // Ensure the state is in sync with fetched data
+          setIsApplied(res.data.data.isApplied);
+          setTotalApplications(res.data.data.totalApplications);
         }
       } catch (error) {
         console.log(error);
       }
     };
     fetchSingleJob();
-  }, [jobId, dispatch, user?._id]);
+  }, [jobId, dispatch]);
 
   return (
     <div className="max-w-7xl mx-auto my-10">
@@ -131,7 +116,7 @@ function JobDetails() {
         <h1 className="font-bold my-1">
           Total Applicants:{" "}
           <span className="pl-4 font-normal text-gray-800">
-            {singleJob?.applications?.length}
+            {totalApplications}
           </span>
         </h1>
         <h1 className="font-bold my-1">

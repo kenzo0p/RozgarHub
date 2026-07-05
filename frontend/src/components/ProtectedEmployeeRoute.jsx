@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const ProtectedRoute = ({ children }) => {
+/**
+ * Employee-only route guard.
+ *
+ * Renders <Navigate> INSTEAD of children when unauthorized — the previous
+ * version rendered children while redirecting in an effect, so protected
+ * pages mounted and fired their data fetches before the redirect landed.
+ */
+const ProtectedEmployeeRoute = ({ children }) => {
   const { user } = useSelector((store) => store.auth);
-  const navigate = useNavigate();
-  const [toastDisplayed, setToastDisplayed] = useState(false);
+  const unauthorized = !user || user.role !== "employee";
 
   useEffect(() => {
-    if (user === null || user.role !== "employee") {
-      if (!toastDisplayed) {
-        setToastDisplayed(true);
-        navigate("/");
-        toast.error("You are not authorized to access this page. Please login");
-      }
+    if (unauthorized) {
+      toast.error("You are not authorized to access this page. Please login");
     }
-  }, [user, navigate, toastDisplayed]);
+  }, [unauthorized]);
+
+  if (unauthorized) {
+    return <Navigate to="/" replace />;
+  }
 
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default ProtectedEmployeeRoute;

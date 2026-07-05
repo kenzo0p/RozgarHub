@@ -1,5 +1,6 @@
 import { jobRepository } from '../repositories/job.repository.js';
 import { companyRepository } from '../repositories/company.repository.js';
+import { applicationRepository } from '../repositories/application.repository.js';
 import { NotFoundError, ForbiddenError } from '../utils/ApiError.js';
 import type { CreateJobInput, JobQueryInput } from '../validators/job.validator.js';
 import type { IJob } from '../types/models.js';
@@ -173,12 +174,32 @@ export class JobService {
     return filter;
   }
 
-  async getJobById(id: string): Promise<IJob> {
+  /**
+   * Job detail for a specific viewer.
+   *
+   * Computes `isApplied` server-side instead of shipping the full
+   * applications array to the client (which leaked applicant IDs to
+   * every authenticated user and grew unbounded with popular jobs).
+   */
+  async getJobById(id: string, viewerId?: string): Promise<{
+    job: IJob;
+    totalApplications: number;
+    isApplied: boolean;
+  }> {
     const job = await jobRepository.findById(id);
     if (!job) {
       throw new NotFoundError('Job');
     }
-    return job;
+
+    const totalApplications = job.applications?.length ?? 0;
+
+    let isApplied = false;
+    if (viewerId) {
+      const existing = await applicationRepository.findByJobAndApplicant(id, viewerId);
+      isApplied = !!existing;
+    }
+
+    return { job, totalApplications, isApplied };
   }
 
   async getJobsByCreator(userId: string): Promise<IJob[]> {
