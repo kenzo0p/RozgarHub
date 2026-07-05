@@ -1,6 +1,6 @@
 import { companyRepository } from '../repositories/company.repository.js';
 import { uploadService } from './upload.service.js';
-import { ConflictError, NotFoundError } from '../utils/ApiError.js';
+import { ConflictError, NotFoundError, ForbiddenError } from '../utils/ApiError.js';
 import type { RegisterCompanyInput, UpdateCompanyInput } from '../validators/company.validator.js';
 import type { ICompany } from '../types/models.js';
 import logger from '../utils/logger.js';
@@ -43,8 +43,17 @@ export class CompanyService {
   async updateCompany(
     id: string,
     data: UpdateCompanyInput,
+    userId: string,
     file?: Express.Multer.File,
   ): Promise<ICompany> {
+    const existing = await companyRepository.findById(id);
+    if (!existing) {
+      throw new NotFoundError('Company');
+    }
+    if (existing.userId.toString() !== userId) {
+      throw new ForbiddenError('You can only update your own company');
+    }
+
     const updateData: Record<string, unknown> = { ...data };
 
     if (file) {

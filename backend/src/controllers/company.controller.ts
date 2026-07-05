@@ -32,6 +32,7 @@ export const updateCompany = asyncHandler(async (req: AuthRequest, res: Response
   const company = await companyService.updateCompany(
     req.params.id as string,
     req.body,
+    req.user!.id,
     req.file,
   );
 

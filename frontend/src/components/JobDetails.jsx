@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
 import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +23,7 @@ function JobDetails() {
 
   const applyJobHandler = async () => {
     try {
-      const res = await axios.post(
+      const res = await api.post(
         `${APPLICATION_API_END_POINT}/apply/${jobId}`,
         {},
         { withCredentials: true }
@@ -47,7 +47,7 @@ function JobDetails() {
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
-        const res = await axios.get(`${JOB_API_END_POINT}/${jobId}`, {
+        const res = await api.get(`${JOB_API_END_POINT}/${jobId}`, {
           withCredentials: true,
         });
         if (res.data.success) {

@@ -1,6 +1,6 @@
 import { setAllJobs } from "@/redux/jobSlice";
 import { JOB_API_END_POINT } from "@/utils/constant";
-import axios from "axios";
+import api from "@/lib/api";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useDebounce from "./useDebounce";
@@ -25,7 +25,7 @@ function useGetAllJobs() {
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
-        const res = await axios.get(
+        const res = await api.get(
           `${JOB_API_END_POINT}?keyword=${debouncedQuery}`,
           { withCredentials: true }
         );

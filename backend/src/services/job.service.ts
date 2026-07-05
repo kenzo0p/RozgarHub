@@ -1,5 +1,6 @@
 import { jobRepository } from '../repositories/job.repository.js';
-import { NotFoundError } from '../utils/ApiError.js';
+import { companyRepository } from '../repositories/company.repository.js';
+import { NotFoundError, ForbiddenError } from '../utils/ApiError.js';
 import type { CreateJobInput, JobQueryInput } from '../validators/job.validator.js';
 import type { IJob } from '../types/models.js';
 import { APP_CONSTANTS } from '../utils/constants.js';
@@ -18,8 +19,23 @@ import logger from '../utils/logger.js';
  * - Cursor-based pagination (for infinite scroll)
  * - Sort by salary, date, relevance
  */
+// Escape regex metacharacters in user input before building $regex filters.
+// Prevents ReDoS and broken searches for terms like "C++" or "(remote)".
+function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class JobService {
   async createJob(data: CreateJobInput, userId: string): Promise<IJob> {
+    // The company must exist and belong to the posting employer
+    const company = await companyRepository.findById(data.companyId);
+    if (!company) {
+      throw new NotFoundError('Company');
+    }
+    if (company.userId.toString() !== userId) {
+      throw new ForbiddenError('You can only post jobs for your own company');
+    }
+
     const job = await jobRepository.create({
       title: data.title,
       description: data.description,
@@ -123,20 +139,21 @@ export class JobService {
 
     // Keyword search — matches title or description
     if (query.keyword) {
+      const keyword = escapeRegex(query.keyword);
       filter.$or = [
-        { title: { $regex: query.keyword, $options: 'i' } },
-        { description: { $regex: query.keyword, $options: 'i' } },
+        { title: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
       ];
     }
 
     // Location filter — case-insensitive partial match
     if (query.location) {
-      filter.location = { $regex: query.location, $options: 'i' };
+      filter.location = { $regex: escapeRegex(query.location), $options: 'i' };
     }
 
     // Job type filter
     if (query.jobType) {
-      filter.jobType = { $regex: query.jobType, $options: 'i' };
+      filter.jobType = { $regex: escapeRegex(query.jobType), $options: 'i' };
     }
 
     // Salary range filter

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setUser } from "@/redux/authSlice";
 import { AUTH_API_END_POINT } from "../../utils/constant.js";
-import axios from "axios";
+import api from "@/lib/api";
 import { Link as LinkScroll } from "react-scroll";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
@@ -20,7 +20,7 @@ function Navbar() {
 
   const logoutHandler = async () => {
     try {
-      const response = await axios.post(`${AUTH_API_END_POINT}/logout`, {}, {
+      const response = await api.post(`${AUTH_API_END_POINT}/logout`, {}, {
         withCredentials: true,
       });
       if (response.data.success) {

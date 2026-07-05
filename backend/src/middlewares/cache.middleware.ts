@@ -28,7 +28,12 @@ export const cacheResponse = (prefix: string, ttlSeconds: number) => {
       return;
     }
 
-    const cacheKey = buildCacheKey(prefix, req.query as Record<string, unknown>);
+    // Include path params (e.g. /job/:id) — query alone would collide
+    // every /job/:id onto one key and serve the wrong document.
+    const cacheKey = buildCacheKey(prefix, {
+      ...(req.params as Record<string, unknown>),
+      ...(req.query as Record<string, unknown>),
+    });
 
     // Check cache
     const cached = await cacheGet<{ statusCode: number; body: unknown }>(cacheKey);

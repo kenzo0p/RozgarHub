@@ -11,11 +11,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { MoreHorizontal } from "lucide-react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import {
-  APPLICATION_API_END_POINT,
-  MESSAGE_API_END_POINT,
-} from "@/utils/constant";
+import api from "@/lib/api";
+import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 const shortListingStatus = ["Accepted", "Rejected"];
@@ -26,8 +23,7 @@ function ApplicantsTable() {
 
   const statusHandler = async (status, id) => {
     try {
-      axios.defaults.withCredentials = true;
-      const res = await axios.patch(
+      const res = await api.patch(
         `${APPLICATION_API_END_POINT}/${id}/status`,
         { status }
       );

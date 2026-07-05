@@ -34,6 +34,9 @@ RUN npm ci --omit=dev && npm cache clean --force
 # Copy compiled JavaScript from build stage
 COPY --from=build /app/dist ./dist
 
+# Preload shim (SlowBuffer polyfill for Node 25+) — must load before the app
+COPY src/preload.cjs ./preload.cjs
+
 # Switch to non-root user
 USER appuser
 
@@ -44,5 +47,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8000/api/v1/health || exit 1
 
-# Start the application
-CMD ["node", "dist/index.js"]
+# Start the application (preload shim matches the npm start script)
+CMD ["node", "--require", "./preload.cjs", "dist/index.js"]

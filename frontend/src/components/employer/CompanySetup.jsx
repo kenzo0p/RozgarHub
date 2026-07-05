@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { COMPANY_API_END_POINT } from "@/utils/constant";
-import axios from "axios";
+import api from "@/lib/api";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
@@ -42,7 +42,7 @@ function CompanySetup() {
     }
     try {
       setLoading(true);
-      const res = await axios.put(
+      const res = await api.put(
         `${COMPANY_API_END_POINT}/${params.id}`,
         formData,
         {

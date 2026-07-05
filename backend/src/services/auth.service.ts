@@ -205,15 +205,14 @@ export class AuthService {
    * Forgot password — generate a reset token.
    *
    * In a real app, this would send an email with the reset link.
-   * Here we return the token directly (mock email).
+   * Returns null for unknown emails so the controller can respond identically
+   * either way — a 404 here would let attackers enumerate registered emails.
    */
-  async forgotPassword(email: string): Promise<{ resetToken: string; expiresAt: Date }> {
+  async forgotPassword(email: string): Promise<{ resetToken: string; expiresAt: Date } | null> {
     const user = await userRepository.findByEmail(email);
     if (!user) {
-      // Don't reveal whether the email exists (security best practice)
-      // Return success even if user doesn't exist
       logger.info(`Password reset requested for unknown email: ${email}`);
-      throw new NotFoundError('If an account with this email exists, a reset link will be sent.');
+      return null;
     }
 
     // Generate a cryptographically secure reset token
@@ -229,10 +228,12 @@ export class AuthService {
       passwordResetExpires: new Date(Date.now() + APP_CONSTANTS.PASSWORD_RESET_EXPIRY_MS),
     } as Partial<IUser>);
 
-    logger.info(`Password reset token generated for ${email}`);
+    // Mock email delivery: the token is logged server-side, never returned
+    // to the caller — returning it in the response is account takeover.
+    logger.info(`Password reset token generated for ${email}: ${resetToken}`);
 
     return {
-      resetToken, // In production, this would be emailed, not returned in API response
+      resetToken,
       expiresAt: new Date(Date.now() + APP_CONSTANTS.PASSWORD_RESET_EXPIRY_MS),
     };
   }

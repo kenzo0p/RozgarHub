@@ -1,6 +1,8 @@
-export const AUTH_API_END_POINT="http://localhost:8000/api/v1/auth";
-export const USER_API_END_POINT="http://localhost:8000/api/v1/user";
-export const JOB_API_END_POINT="http://localhost:8000/api/v1/job";
-export const APPLICATION_API_END_POINT="http://localhost:8000/api/v1/application";
-export const COMPANY_API_END_POINT="http://localhost:8000/api/v1/company";
-export const MESSAGE_API_END_POINT="http://localhost:8000/api/v1/messages";
+// Route prefixes relative to the shared api client's baseURL (/api/v1).
+// In production, nginx proxies /api/ to the backend container; in dev,
+// the Vite proxy (see vite.config.js) forwards /api to localhost:8000.
+export const AUTH_API_END_POINT = "/auth";
+export const USER_API_END_POINT = "/user";
+export const JOB_API_END_POINT = "/job";
+export const APPLICATION_API_END_POINT = "/application";
+export const COMPANY_API_END_POINT = "/company";

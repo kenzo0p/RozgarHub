@@ -1,7 +1,7 @@
 import { setSingleCompany } from "@/redux/companySlice";
 import { setAllJobs } from "@/redux/jobSlice";
 import { COMPANY_API_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
-import axios from "axios";
+import api from "@/lib/api";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -10,7 +10,7 @@ function useGetCompanyById(companyId) {
   useEffect(() => {
     const fetchSingleCompany = async () => {
       try {
-        const res = await axios.get(`${COMPANY_API_END_POINT}/${companyId}`, {
+        const res = await api.get(`${COMPANY_API_END_POINT}/${companyId}`, {
           withCredentials: true,
         });
         if (res.data.success) {

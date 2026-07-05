@@ -60,12 +60,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: 8000
-      MONGO_URI: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-password}@mongodb:27017/rozgarhub?authSource=admin
+      MONGODB_URL: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-password}@mongodb:27017/rozgarhub?authSource=admin
       REDIS_URL: redis://redis:6379
-      SECRET_KEY: ${SECRET_KEY:-change-this-in-production}
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be set (min 16 chars)}
+      CLOUD_NAME: ${CLOUD_NAME}
+      CLOUD_API_KEY: ${CLOUD_API_KEY}
+      CLOUD_API_SECRET: ${CLOUD_API_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
     depends_on:
       mongodb:

@@ -1,6 +1,6 @@
 import { applicationRepository } from '../repositories/application.repository.js';
 import { jobRepository } from '../repositories/job.repository.js';
-import { ConflictError, NotFoundError } from '../utils/ApiError.js';
+import { ConflictError, NotFoundError, ForbiddenError } from '../utils/ApiError.js';
 import type { IApplication, ApplicationStatus, IJob } from '../types/models.js';
 import { Job } from '../models/job.model.js';
 import { eventBus } from '../events/eventBus.js';
@@ -60,7 +60,7 @@ export class ApplicationService {
     return applicationRepository.findByApplicant(applicantId);
   }
 
-  async getApplicantsForJob(jobId: string): Promise<unknown> {
+  async getApplicantsForJob(jobId: string, employerId: string): Promise<unknown> {
     const job = await Job.findById(jobId)
       .populate({
         path: 'applications',
@@ -73,16 +73,29 @@ export class ApplicationService {
       throw new NotFoundError('Job');
     }
 
+    if (job.created_By.toString() !== employerId) {
+      throw new ForbiddenError('You can only view applicants for your own jobs');
+    }
+
     return job;
   }
 
   async updateApplicationStatus(
     applicationId: string,
     status: ApplicationStatus,
+    employerId: string,
   ): Promise<IApplication> {
     const application = await applicationRepository.findById(applicationId);
     if (!application) {
       throw new NotFoundError('Application');
+    }
+
+    // Ownership check BEFORE mutating — only the job's poster may change status
+    const job = await jobRepository.findByIdLean(
+      (application.job as unknown as { toString(): string }).toString(),
+    );
+    if (!job || job.created_By.toString() !== employerId) {
+      throw new ForbiddenError('You can only manage applications for your own jobs');
     }
 
     application.status = status;
@@ -90,11 +103,6 @@ export class ApplicationService {
 
     logger.info(
       `Application ${applicationId} status updated to '${status}'`,
-    );
-
-    // Emit event — handlers notify the applicant about status change
-    const job = await jobRepository.findByIdLean(
-      (application.job as unknown as { toString(): string }).toString(),
     );
 
     eventBus.emit('application.statusChanged', {

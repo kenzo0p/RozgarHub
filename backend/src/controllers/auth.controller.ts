@@ -114,13 +114,20 @@ export const logoutAll = asyncHandler(async (req: AuthRequest, res: Response) =>
 });
 
 export const forgotPassword = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { resetToken, expiresAt } = await authService.forgotPassword(req.body.email);
+  const result = await authService.forgotPassword(req.body.email);
 
-  // In production, the token would be emailed. Here it's returned for testing.
+  // Identical response whether or not the email exists (no enumeration).
+  // The token itself is only exposed in development for manual testing —
+  // in production it would be emailed (see auth.service.forgotPassword).
+  const data =
+    env.NODE_ENV === 'development' && result
+      ? { resetToken: result.resetToken, expiresAt: result.expiresAt }
+      : {};
+
   res.status(200).json(
     ApiResponse.success(
-      { resetToken, expiresAt },
-      'Password reset token generated. In production, this would be emailed.',
+      data,
+      'If an account with this email exists, a password reset link has been sent.',
     ),
   );
 });

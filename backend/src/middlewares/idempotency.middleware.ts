@@ -56,8 +56,10 @@ export const idempotent = async (
     return;
   }
 
-  // Build cache key incorporating the route to prevent cross-endpoint collisions
-  const cacheKey = `idempotency:${idempotencyKey}:${req.method}:${req.originalUrl}`;
+  // Scope by user + route: without the user ID, one user's cached response
+  // could be replayed to a different user who sends the same key.
+  const userId = (req as { user?: { id: string } }).user?.id || 'anonymous';
+  const cacheKey = `idempotency:${userId}:${idempotencyKey}:${req.method}:${req.originalUrl}`;
 
   // Check if we've seen this key before
   const cached = await cacheGet<{ statusCode: number; body: unknown }>(cacheKey);

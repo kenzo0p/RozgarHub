@@ -21,15 +21,17 @@ import axios from "axios";
  * ONE refresh — we use a promise queue to handle this.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+// Relative by default: same-origin through the nginx /api/ proxy in production
+// and the Vite dev proxy locally. VITE_API_URL overrides for split deployments.
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // Always send cookies (httpOnly access + refresh tokens)
   timeout: 15000,        // 15s timeout
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // No default Content-Type: axios infers application/json for plain objects
+  // and multipart/form-data for FormData. A hardcoded JSON default would make
+  // axios serialize FormData uploads as JSON.
 });
 
 // ─── Token Refresh Queue ──────────────────────────────────────────────────────

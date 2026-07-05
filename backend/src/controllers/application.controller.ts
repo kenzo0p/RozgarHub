@@ -24,7 +24,10 @@ export const getAppliedJobs = asyncHandler(async (req: AuthRequest, res: Respons
 });
 
 export const getApplicants = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const job = await applicationService.getApplicantsForJob(req.params.id as string);
+  const job = await applicationService.getApplicantsForJob(
+    req.params.id as string,
+    req.user!.id,
+  );
 
   res.status(200).json(
     ApiResponse.success({ job }, 'Applicants retrieved successfully'),
@@ -35,6 +38,7 @@ export const updateStatus = asyncHandler(async (req: AuthRequest, res: Response)
   const application = await applicationService.updateApplicationStatus(
     req.params.id as string,
     req.body.status,
+    req.user!.id,
   );
 
   res.status(200).json(

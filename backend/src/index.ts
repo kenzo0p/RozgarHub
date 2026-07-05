@@ -39,6 +39,11 @@ import apiRouter from './routes/index.js';
 
 const app = express();
 
+// Behind the nginx reverse proxy, req.ip must come from X-Forwarded-For.
+// Without this, rate limiting keys every user by the proxy's IP — one shared
+// bucket for the whole site — and login/session logs record the wrong IP.
+app.set('trust proxy', 1);
+
 // ─── Security ──────────────────────────────────────────────────────────────────
 app.use(helmet());                  // Sets security HTTP headers (X-Content-Type-Options, etc.)
 app.use(cors(corsOptions));         // CORS with env-driven origin whitelist
