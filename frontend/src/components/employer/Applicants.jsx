@@ -21,7 +21,7 @@ function Applicants() {
             }
         }
         fetchAllApplicants()
-    },[])
+    },[dispatch, params.id])
   return (
     <div>
         <Navbar/>

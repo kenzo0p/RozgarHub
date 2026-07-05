@@ -20,7 +20,7 @@ function Home() {
     if (user?.role === "employer") {
       navigate("/admin/companies");
     }
-  }, []);
+  }, [user?.role, navigate]);
   return (
     <div>
       <Navbar />

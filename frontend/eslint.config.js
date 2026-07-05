@@ -45,4 +45,12 @@ export default [
     files: ['*.config.js'],
     languageOptions: { globals: globals.node },
   },
+  {
+    // shadcn/ui components export cva variant objects alongside components
+    // by design — fast-refresh granularity doesn't matter for these files.
+    files: ['src/components/ui/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ]

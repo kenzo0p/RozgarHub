@@ -19,6 +19,10 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
+  // Only the session survives a reload. Persisting the data slices kept
+  // stale jobs/companies/applicants in localStorage (including other users'
+  // data on shared machines) — those are always fetched fresh instead.
+  whitelist: ["auth"],
 };
 
 const rootReducer = combineReducers({

@@ -15,7 +15,7 @@ function EmployerJobs() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setSearchJobByText(input));
-  }, [input]);
+  }, [input, dispatch]);
 
   return (
     <div>

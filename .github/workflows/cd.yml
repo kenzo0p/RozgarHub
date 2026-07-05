@@ -68,21 +68,27 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-frontend:${{ github.sha }}
 
-  # ─── Deploy (placeholder) ─────────────────────────────────────────────────
-  # Uncomment and configure for your deployment target:
+  # ─── Deploy ────────────────────────────────────────────────────────────────
+  # Fires a deploy hook after images are pushed. Works with any platform that
+  # redeploys on an HTTP POST (Render, Railway, Coolify, Portainer, etc.):
   #
-  # deploy:
-  #   name: Deploy to Production
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to Render
-  #       run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+  #   1. Create a deploy hook URL in your platform's dashboard
+  #   2. Add it as a repo secret named DEPLOY_HOOK_URL
+  #      (Settings → Secrets and variables → Actions → New repository secret)
   #
-  #     # OR: Deploy to Railway
-  #     # - name: Deploy to Railway
-  #     #   run: railway up --service api
-  #
-  #     # OR: Deploy to AWS ECS
-  #     # - name: Update ECS service
-  #     #   run: aws ecs update-service --cluster rozgarhub --service api --force-new-deployment
+  # Until the secret is configured, this job runs but skips the trigger step,
+  # so CD stays green without deploying anywhere.
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
+    steps:
+      - name: Trigger deploy hook
+        if: env.DEPLOY_HOOK_URL != ''
+        run: curl -fsS -X POST "$DEPLOY_HOOK_URL"
+
+      - name: No deploy target configured
+        if: env.DEPLOY_HOOK_URL == ''
+        run: echo "DEPLOY_HOOK_URL secret not set — images pushed to ghcr.io but no deploy triggered."

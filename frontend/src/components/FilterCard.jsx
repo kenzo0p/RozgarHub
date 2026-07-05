@@ -45,7 +45,7 @@ function FilterCard() {
   };
   useEffect(() => {
     dispatch(setSearchedQuery(selectedValue));
-  }, [selectedValue]);
+  }, [selectedValue, dispatch]);
   return (
     <div className="hidden sm:block md:w-full bg-white p-3 rounded-md">
       <h1 className="font-bold text-lg">Filter Jobs</h1>

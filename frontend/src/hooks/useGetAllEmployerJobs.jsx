@@ -20,7 +20,7 @@ function useGetAllEmployerJobs() {
       }
     };
     fetchAllEmployerJobs();
-  }, []);
+  }, [dispatch]);
 }
 
 export default useGetAllEmployerJobs;

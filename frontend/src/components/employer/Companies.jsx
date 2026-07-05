@@ -15,7 +15,7 @@ function Companies() {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setSearchCompanyByText(input))
-  } ,[input])
+  } ,[input, dispatch])
  
   return (
     <div>

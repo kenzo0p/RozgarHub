@@ -20,7 +20,7 @@ function useGetAllCompanies() {
       }
     };
     fetchCompanies();
-  }, []);
+  }, [dispatch]);
 }
 
 export default useGetAllCompanies;

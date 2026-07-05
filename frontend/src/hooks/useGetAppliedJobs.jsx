@@ -21,7 +21,7 @@ function useGetAppliedJobs() {
       }
     };
     fetechAppliedJobs();
-  }, []);
+  }, [dispatch]);
 }
 
 export default useGetAppliedJobs;

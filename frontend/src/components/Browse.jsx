@@ -17,7 +17,7 @@ function Browse() {
     return () => {
       dispatch(setSearchedQuery(""));
     };
-  }, []);
+  }, [dispatch]);
 
   const hasJobs = allJobs && allJobs.length > 0;
 
