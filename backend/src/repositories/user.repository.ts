@@ -17,7 +17,7 @@ export class UserRepository {
     // be excluded at the query level. Use findByIdWithPassword for auth flows.
     const query = User.findById(id);
     query.select(selectFields || '-password -passwordResetToken -passwordResetExpires');
-    return query.lean().exec() as Promise<IUser | null>;
+    return query.lean().exec() as unknown as Promise<IUser | null>;
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
@@ -37,7 +37,7 @@ export class UserRepository {
   }
 
   async findByFilter(filter: FilterQuery<IUser>): Promise<IUser[]> {
-    return User.find(filter).lean().exec() as Promise<IUser[]>;
+    return User.find(filter).lean().exec() as unknown as Promise<IUser[]>;
   }
 
   /**

@@ -60,7 +60,7 @@ export class RecommendationService {
       .sort({ createdAt: -1 })
       .limit(200) // Cap candidates to keep computation fast
       .lean()
-      .exec() as IJob[];
+      .exec() as unknown as IJob[];
 
     // Score each job
     const scoredJobs = candidateJobs.map((job) => {
@@ -182,7 +182,7 @@ export class RecommendationService {
       .sort({ createdAt: -1 })
       .limit(50)
       .lean()
-      .exec() as IJob[];
+      .exec() as unknown as IJob[];
 
     // Score similarity
     const targetTerms = this.extractTerms(targetJob);

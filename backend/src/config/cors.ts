@@ -21,5 +21,7 @@ export const corsOptions: CorsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // Idempotency-Key must be allowed or browsers strip it in cross-origin
+  // preflight, silently disabling the idempotency middleware.
+  allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
 };

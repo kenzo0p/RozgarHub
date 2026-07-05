@@ -8,15 +8,15 @@ export class CompanyRepository {
   }
 
   async findById(id: string): Promise<ICompany | null> {
-    return Company.findById(id).lean().exec() as Promise<ICompany | null>;
+    return Company.findById(id).lean().exec() as unknown as Promise<ICompany | null>;
   }
 
   async findByName(name: string): Promise<ICompany | null> {
-    return Company.findOne({ name }).lean().exec() as Promise<ICompany | null>;
+    return Company.findOne({ name }).lean().exec() as unknown as Promise<ICompany | null>;
   }
 
   async findByUserId(userId: string): Promise<ICompany[]> {
-    return Company.find({ userId }).lean().exec() as Promise<ICompany[]>;
+    return Company.find({ userId }).lean().exec() as unknown as Promise<ICompany[]>;
   }
 
   async findByIdAndUpdate(
@@ -28,7 +28,7 @@ export class CompanyRepository {
       runValidators: true,
     })
       .lean()
-      .exec() as Promise<ICompany | null>;
+      .exec() as unknown as Promise<ICompany | null>;
   }
 }
 

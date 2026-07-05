@@ -19,7 +19,7 @@ export class JobRepository {
   }
 
   async findByIdLean(id: string): Promise<IJob | null> {
-    return Job.findById(id).lean().exec() as Promise<IJob | null>;
+    return Job.findById(id).lean().exec() as unknown as Promise<IJob | null>;
   }
 
   /**
@@ -47,7 +47,7 @@ export class JobRepository {
       Job.countDocuments(filter).exec(),
     ]);
 
-    return { jobs: jobs as IJob[], total };
+    return { jobs: jobs as unknown as IJob[], total };
   }
 
   /**
@@ -78,7 +78,7 @@ export class JobRepository {
       .sort(sort)
       .limit(limit + 1)
       .lean()
-      .exec() as IJob[];
+      .exec() as unknown as IJob[];
 
     const hasMore = jobs.length > limit;
     if (hasMore) jobs.pop(); // Remove the extra item
@@ -95,7 +95,7 @@ export class JobRepository {
       .populate({ path: 'company' })
       .sort({ createdAt: -1 })
       .lean()
-      .exec() as Promise<IJob[]>;
+      .exec() as unknown as Promise<IJob[]>;
   }
 
   async addApplication(jobId: string, applicationId: string): Promise<void> {

@@ -56,7 +56,7 @@ export class NotificationService {
       Notification.countDocuments({ recipient: userId, isRead: false }).exec(),
     ]);
 
-    return { notifications: notifications as INotification[], total, unreadCount };
+    return { notifications: notifications as unknown as INotification[], total, unreadCount };
   }
 
   /**

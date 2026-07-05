@@ -57,7 +57,7 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
     toJSON: {
       // Strip sensitive fields when converting to JSON for API responses
-      transform(_doc, ret) {
+      transform(_doc, ret: Record<string, unknown>) {
         delete ret.password;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;

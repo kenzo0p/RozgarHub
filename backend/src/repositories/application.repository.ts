@@ -12,7 +12,7 @@ export class ApplicationRepository {
   ): Promise<IApplication | null> {
     return Application.findOne({ job: jobId, applicant: applicantId })
       .lean()
-      .exec() as Promise<IApplication | null>;
+      .exec() as unknown as Promise<IApplication | null>;
   }
 
   async findByApplicant(applicantId: string): Promise<IApplication[]> {
@@ -23,7 +23,7 @@ export class ApplicationRepository {
         populate: { path: 'company' },
       })
       .lean()
-      .exec() as Promise<IApplication[]>;
+      .exec() as unknown as Promise<IApplication[]>;
   }
 
   async findById(id: string): Promise<IApplication | null> {

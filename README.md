@@ -237,6 +237,25 @@ npm run dev             # Starts on http://localhost:5173
 
 See [`backend/.env.example`](backend/.env.example) for all required and optional variables, including feature flag overrides.
 
+### Running Tests
+
+```bash
+cd backend
+npm test                # Integration tests (vitest + supertest + in-memory MongoDB)
+npm run test:watch      # Watch mode
+
+cd frontend
+npm run lint            # ESLint (zero-warning baseline)
+```
+
+The backend suite covers auth (registration, login, refresh-token rotation
+and theft detection, password-reset enumeration resistance), job posting with
+company-ownership checks, search input escaping, and application flows
+including the IDOR protections. Tests run against an in-memory MongoDB —
+no local database needed. The first run downloads a `mongod` binary, so it
+takes a minute; subsequent runs are fast. CI runs type check → tests → build
+on every push and PR.
+
 ---
 
 ## API Reference

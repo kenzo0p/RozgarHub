@@ -63,7 +63,7 @@ export class SavedJobService {
       SavedJob.countDocuments({ userId }).exec(),
     ]);
 
-    return { savedJobs: savedJobs as ISavedJob[], total };
+    return { savedJobs: savedJobs as unknown as ISavedJob[], total };
   }
 
   /**

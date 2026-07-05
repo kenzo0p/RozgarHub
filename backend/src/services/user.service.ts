@@ -61,7 +61,7 @@ export class UserService {
 
     await userDoc.save();
 
-    return userDoc.toJSON() as SafeUser;
+    return userDoc.toJSON() as unknown as SafeUser;
   }
 }
 

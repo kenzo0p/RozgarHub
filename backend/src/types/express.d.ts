@@ -8,7 +8,8 @@ import { IUser } from './models.js';
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    role: IUser['role'];
+    /** Populated by the authorize() RBAC middleware from the DB — undefined before that. */
+    role?: IUser['role'];
   };
 }
 

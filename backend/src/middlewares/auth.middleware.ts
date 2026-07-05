@@ -36,10 +36,11 @@ export const authenticate = async (
 
     const decoded = jwt.verify(token, env.SECRET_KEY) as JWTPayload;
 
-    // Attach user context to request for downstream handlers
+    // Attach user context to request for downstream handlers.
+    // Role is intentionally NOT set here — the JWT doesn't carry it, and a
+    // fake default invites bugs. authorize() populates it from the DB.
     req.user = {
       id: decoded.userId,
-      role: 'employee', // Will be populated by RBAC middleware if needed
     };
 
     next();

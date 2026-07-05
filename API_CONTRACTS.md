@@ -228,14 +228,15 @@ Generate a password reset token (sent via email in production).
 ```json
 {
   "success": true,
-  "message": "Reset token generated",
-  "data": {
-    "resetToken": "a1b2c3d4..."
-  }
+  "message": "If an account with this email exists, a password reset link has been sent.",
+  "data": {}
 }
 ```
 
-> **Note:** In production, the token would be sent via email, not in the response.
+> **Note:** The response is identical whether or not the email exists (prevents
+> account enumeration). The token is logged server-side (emailed in a real
+> deployment) and is only included in the response body when
+> `NODE_ENV=development`, for manual testing.
 
 ---
 
@@ -247,7 +248,7 @@ Reset password using the token from forgot-password.
 ```json
 {
   "token": "a1b2c3d4...",
-  "newPassword": "NewSecurePass456"
+  "password": "NewSecurePass456"
 }
 ```
 
@@ -410,19 +411,36 @@ Get jobs created by the authenticated employer.
 
 ### GET `/job/:id`
 
-Get full job details (cached 300s).
+Get job details plus viewer-specific state. Not cached — the response
+depends on who is asking.
 
 **Auth:** Required
+
+**Success (200):**
+```json
+{
+  "success": true,
+  "message": "Job retrieved successfully",
+  "data": {
+    "job": { "_id": "...", "title": "...", "company": { "...": "..." } },
+    "totalApplications": 12,
+    "isApplied": false
+  }
+}
+```
+
+> **Note:** The raw applications list is never returned here — applicant data
+> is only visible to the job owner via `GET /application/:id/applicants`.
 
 ---
 
 ## Companies
 
-### POST `/company/register`
+### POST `/company`
 
 **Auth:** Employer only
 
-**Request Body:** `{ "name": "BuildCo" }`
+**Request Body:** `{ "companyName": "BuildCo" }`
 
 ### GET `/company`
 

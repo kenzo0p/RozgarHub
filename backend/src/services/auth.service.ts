@@ -74,7 +74,7 @@ export class AuthService {
       role: newUser.role,
     });
 
-    return { user: newUser.toJSON() as SafeUser };
+    return { user: newUser.toJSON() as unknown as SafeUser };
   }
 
   /**
@@ -122,7 +122,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: user.toJSON() as SafeUser,
+      user: user.toJSON() as unknown as SafeUser,
     };
   }
 
