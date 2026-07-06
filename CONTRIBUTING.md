@@ -21,10 +21,15 @@ Thank you for your interest in contributing to RozgarHub! This guide will help y
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 20 (see `.nvmrc` — run `nvm use` in the repo root)
 - MongoDB 7+ (local or Atlas)
 - Redis 7+ (optional)
 - Git
+
+> **Why Node 20 specifically?** CI and the production Docker images run
+> Node 20 / npm 10. Lockfiles written by newer npm versions can fail
+> `npm ci` on npm 10. If you must use a newer Node locally, validate any
+> lockfile change with `npx -y npm@10 ci --dry-run` before committing.
 
 ### Setup
 
