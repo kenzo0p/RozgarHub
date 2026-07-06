@@ -1,158 +1,132 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Link as LinkScroll } from "react-scroll";
+import { Linkedin, Twitter, Facebook, Mail } from "lucide-react";
+
+/* Only destinations that actually exist in the app — a footer full of
+   dead links erodes trust faster than a short one. */
+const LINK_GROUPS = [
+  {
+    heading: "For workers",
+    links: [
+      { label: "Find jobs", to: "/jobs" },
+      { label: "Browse by trade", to: "/browse" },
+      { label: "My profile", to: "/profile" },
+    ],
+  },
+  {
+    heading: "For employers",
+    links: [
+      { label: "Post a job", to: "/signup" },
+      { label: "Manage companies", to: "/admin/companies" },
+      { label: "View applicants", to: "/admin/jobs" },
+    ],
+  },
+];
+
+const SOCIALS = [
+  { label: "LinkedIn", href: "https://www.linkedin.com", icon: Linkedin },
+  { label: "Twitter", href: "https://www.twitter.com", icon: Twitter },
+  { label: "Facebook", href: "https://www.facebook.com", icon: Facebook },
+];
 
 function Footer() {
   return (
-    <footer className="bg-gray-100 text-gray-600 border border-t">
-      <div className=" text-center sm:text-left max-w-7xl mx-auto p-4 pt-10">
-        <Link to="/">
-          <h1 className="text-2xl font-bold text-blue-600">
-            ROZGAR<span className="text-blue-700">HUB</span>
-          </h1>
-        </Link>
-      </div>
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Footer Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-          {/* Column 1 */}
+    <footer className="border-t border-border bg-muted/40">
+      <div className="mx-auto max-w-7xl px-4 py-14">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
+          {/* Brand */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-800">Company</h3>
-            <ul className="mt-4 space-y-2">
+            <Link to="/">
+              <span className="text-2xl font-extrabold tracking-tight text-foreground">
+                Rozgar<span className="text-primary">Hub</span>
+              </span>
+            </Link>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              Connecting India&apos;s skilled workers with verified employers —
+              no middlemen, no fees.
+            </p>
+            <div className="mt-5 flex items-center gap-2">
+              {SOCIALS.map(({ label, href, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </a>
+              ))}
+              <a
+                href="mailto:support@rozgarhub.com"
+                aria-label="Email support"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                <Mail className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+
+          {/* Link columns */}
+          {LINK_GROUPS.map(({ heading, links }) => (
+            <div key={heading}>
+              <h3 className="text-sm font-semibold text-foreground">{heading}</h3>
+              <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+                {links.map(({ label, to }) => (
+                  <li key={label}>
+                    <Link to={to} className="transition-colors hover:text-primary">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          {/* Platform column (scroll anchors on the landing page) */}
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Platform</h3>
+            <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               <li>
                 <LinkScroll
                   to="about"
-                  className="hover:text-gray-900 cursor-pointer"
+                  smooth={true}
+                  duration={500}
+                  offset={-64}
+                  className="cursor-pointer transition-colors hover:text-primary"
                 >
-                  About Us
+                  Why RozgarHub
                 </LinkScroll>
               </li>
               <li>
-                <Link to="/careers" className="hover:text-gray-900">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" className="hover:text-gray-900">
-                  Blog
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 2 */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Support</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link to="/help-center" className="hover:text-gray-900">
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="hover:text-gray-900">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="hover:text-gray-900">
-                  FAQs
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3 */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Discover</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link to="/jobs" className="hover:text-gray-900">
-                  Jobs
-                </Link>
-              </li>
-              <li>
-                <Link to="/workers" className="hover:text-gray-900">
-                  Skilled Workers
-                </Link>
-              </li>
-              <li>
-                <Link to="/employers" className="hover:text-gray-900">
-                  Employers
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4 */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Legal</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link to="/privacy-policy" className="hover:text-gray-900">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms-of-service" className="hover:text-gray-900">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 5 */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Follow Us</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <a
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gray-900"
+                <LinkScroll
+                  to="faq"
+                  smooth={true}
+                  duration={500}
+                  offset={-64}
+                  className="cursor-pointer transition-colors hover:text-primary"
                 >
-                  LinkedIn
-                </a>
+                  FAQ
+                </LinkScroll>
               </li>
               <li>
                 <a
-                  href="https://www.twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gray-900"
+                  href="mailto:support@rozgarhub.com"
+                  className="transition-colors hover:text-primary"
                 >
-                  Twitter
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gray-900"
-                >
-                  Facebook
+                  Support
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-300 my-8"></div>
-
-        {/* Footer Bottom */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-sm">
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} RozgarHub. All rights reserved.</p>
-          <div className="mt-4 md:mt-0">
-            <Link to="/privacy-policy" className="mr-4 hover:text-gray-900">
-              Privacy Policy
-            </Link>
-            <Link to="/terms-of-service" className="hover:text-gray-900">
-              Terms of Service
-            </Link>
-          </div>
+          <p>Made in India, for India&apos;s workforce 🇮🇳</p>
         </div>
       </div>
     </footer>

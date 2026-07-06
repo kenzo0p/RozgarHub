@@ -9,6 +9,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AboutUs from "./AboutUs";
 import FAQAccordion from "./FAQAccordian";
+import HowItWorks from "./HowItWorks";
+import EmployerCTA from "./EmployerCTA";
 
 
 
@@ -27,8 +29,10 @@ function Home() {
       <HeroSection />
       <CategoryCaraousal />
       <LatestJobs />
-      <AboutUs/>
-      <FAQAccordion/>
+      <HowItWorks />
+      <AboutUs />
+      <EmployerCTA />
+      <FAQAccordion />
       <Footer />
     </div>
   );

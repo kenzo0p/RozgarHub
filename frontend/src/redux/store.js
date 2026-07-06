@@ -13,7 +13,9 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+// ESM build — the CJS path (redux-persist/lib/storage) resolves to a module
+// namespace under Vite 8's stricter interop, breaking storage.getItem/setItem
+import storage from "redux-persist/es/storage";
 
 const persistConfig = {
   key: "root",

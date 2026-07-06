@@ -40,8 +40,8 @@ function Navbar() {
         {/* Logo */}
         <div>
           <Link to="/">
-            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              ROZGAR<span className="text-blue-700 dark:text-blue-300">HUB</span>
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
+              Rozgar<span className="text-primary">Hub</span>
             </h1>
           </Link>
         </div>
@@ -52,25 +52,25 @@ function Navbar() {
             {user && user.role === "employer" ? (
               <>
                 <Link to="/admin/companies">
-                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Companies</li>
+                  <li className="hover:text-primary transition-colors">Companies</li>
                 </Link>
                 <Link to="/admin/jobs">
-                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Jobs</li>
+                  <li className="hover:text-primary transition-colors">Jobs</li>
                 </Link>
               </>
             ) : (
               <>
                 <Link to="/">
-                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</li>
+                  <li className="hover:text-primary transition-colors">Home</li>
                 </Link>
                 <Link to="/jobs">
-                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Jobs</li>
+                  <li className="hover:text-primary transition-colors">Jobs</li>
                 </Link>
                 <Link to="/browse">
-                  <li className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Browse</li>
+                  <li className="hover:text-primary transition-colors">Browse</li>
                 </Link>
                 <LinkScroll
-                  className="cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="cursor-pointer hover:text-primary transition-colors"
                   to="about"
                   smooth={true}
                   duration={500}
@@ -95,9 +95,7 @@ function Navbar() {
                 <Button variant="outline">Login</Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Signup
-                </Button>
+                <Button>Signup</Button>
               </Link>
             </div>
           ) : (
@@ -108,7 +106,7 @@ function Navbar() {
                     src={user?.profile?.profilePhoto}
                     alt="User Avatar"
                   />
-                  <AvatarFallback className="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                  <AvatarFallback className="bg-primary/10 text-primary">
                     {user?.fullname?.charAt(0)?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -120,7 +118,7 @@ function Navbar() {
                       src={user?.profile?.profilePhoto}
                       alt="User Avatar"
                     />
-                    <AvatarFallback className="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                    <AvatarFallback className="bg-primary/10 text-primary">
                       {user?.fullname?.charAt(0)?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -204,7 +202,7 @@ function Navbar() {
                     </Button>
                   </Link>
                   <Link to="/signup">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
+                    <Button className="w-full">
                       Signup
                     </Button>
                   </Link>

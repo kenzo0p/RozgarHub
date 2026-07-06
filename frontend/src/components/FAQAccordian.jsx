@@ -1,51 +1,79 @@
 import React from "react";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
+const FAQS = [
+  {
+    question: "How do I register on RozgarHub?",
+    answer:
+      "Click the \"Signup\" button at the top right, choose whether you're a worker or an employer, and fill in your details. It takes less than two minutes.",
+  },
+  {
+    question: "How can I find jobs that suit me?",
+    answer:
+      "Use the search bar to look up jobs by title, trade, or city — or browse by trade from the homepage. Add your skills to your profile and we'll recommend jobs that match them.",
+  },
+  {
+    question: "How do I know if an employer responded?",
+    answer:
+      "You'll get an in-app notification the moment your application is accepted or reviewed. Everything is tracked on your profile under applied jobs.",
+  },
+  {
+    question: "Is RozgarHub free to use?",
+    answer:
+      "Yes — completely free for job seekers, with no commissions or hidden charges. Posting jobs is currently free for employers too.",
+  },
+  {
+    question: "What should I do if I face technical issues?",
+    answer:
+      "Email us at support@rozgarhub.com and we'll get back to you as quickly as we can.",
+  },
+];
 
 const FAQAccordion = () => {
   return (
-    <section className="p-6 bg-slate-50 rounded-lg">
-      <h2 className="text-2xl font-bold text-center text-[#526a6e] mb-6">Frequently Asked Questions</h2>
-      <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-        {/* Question 1 */}
-        <AccordionItem value="faq-1">
-          <AccordionTrigger>How do I register on RozgarHub?</AccordionTrigger>
-          <AccordionContent>
-            To register, click the "Sign Up" button on the top right of the homepage. Fill in your details and follow the instructions to create an account.
-          </AccordionContent>
-        </AccordionItem>
+    <section id="faq" aria-labelledby="faq-heading" className="mx-auto max-w-6xl px-4 py-20">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_2fr]">
+        {/* Left intro */}
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-primary">FAQ</p>
+          <h2
+            id="faq-heading"
+            className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
+          >
+            Questions? Answers.
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Everything you need to know about finding work on RozgarHub. Still
+            stuck? Write to{" "}
+            <a
+              href="mailto:support@rozgarhub.com"
+              className="font-medium text-primary hover:underline"
+            >
+              support@rozgarhub.com
+            </a>
+            .
+          </p>
+        </div>
 
-        {/* Question 2 */}
-        <AccordionItem value="faq-2">
-          <AccordionTrigger>How can I find jobs that suit me?</AccordionTrigger>
-          <AccordionContent>
-            Use the job search bar to filter jobs by title, location, or skills. You can also browse categories for blue-collar jobs that match your expertise.
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Question 3 */}
-        <AccordionItem value="faq-3">
-          <AccordionTrigger>How do I contact an employer?</AccordionTrigger>
-          <AccordionContent>
-            After applying to a job, you can use the contact information provided by the employer or communicate through RozgarHub’s messaging feature.
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Question 4 */}
-        <AccordionItem value="faq-4">
-          <AccordionTrigger>Is RozgarHub free to use?</AccordionTrigger>
-          <AccordionContent>
-            Yes, RozgarHub is free for job seekers. Employers may have premium plans for enhanced visibility of their job postings.But for now it's free to all 
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Question 5 */}
-        <AccordionItem value="faq-5">
-          <AccordionTrigger>What should I do if I face technical issues?</AccordionTrigger>
-          <AccordionContent>
-            Please contact our support team via the "Help" section in your dashboard or email us at support@rozgarhub.com.
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+        {/* Accordion */}
+        <Accordion type="single" collapsible className="w-full">
+          {FAQS.map(({ question, answer }, index) => (
+            <AccordionItem key={question} value={`faq-${index}`}>
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:text-primary hover:no-underline">
+                {question}
+              </AccordionTrigger>
+              <AccordionContent className="leading-relaxed text-muted-foreground">
+                {answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </section>
   );
 };
