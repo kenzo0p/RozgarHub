@@ -10,7 +10,7 @@ const LINK_GROUPS = [
     heading: "For workers",
     links: [
       { label: "Find jobs", to: "/jobs" },
-      { label: "Browse by trade", to: "/browse" },
+      { label: "Browse by trade", to: "/jobs" },
       { label: "My profile", to: "/profile" },
     ],
   },

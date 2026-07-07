@@ -55,7 +55,7 @@ function HeroSection() {
 
   const searchJobHandler = (searchQuery) => {
     dispatch(setSearchedQuery(searchQuery));
-    navigate("/browse");
+    navigate("/jobs");
   };
 
   const formatCount = (n) =>

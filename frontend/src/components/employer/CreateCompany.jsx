@@ -3,6 +3,7 @@ import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { ArrowLeft, Building2, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { COMPANY_API_END_POINT } from "@/utils/constant";
@@ -12,56 +13,89 @@ import { setSingleCompany } from "@/redux/companySlice";
 
 function CreateCompany() {
   const navigate = useNavigate();
-  const [companyName, setCompanyName] = useState();
+  const [companyName, setCompanyName] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const registerNewCompany = async () => {
+
+  const registerNewCompany = async (e) => {
+    e.preventDefault();
+    if (!companyName.trim()) {
+      toast.error("Please enter a company name.");
+      return;
+    }
     try {
-      const res = await api.post(
-        `${COMPANY_API_END_POINT}`,
-        { companyName },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
+      setLoading(true);
+      const res = await api.post(`${COMPANY_API_END_POINT}`, { companyName });
       if (res?.data?.success) {
         dispatch(setSingleCompany(res.data.data.company));
         toast.success(res.data.message);
-        const companyId = res?.data?.data?.company?._id
-        navigate(`/admin/companies/${companyId}`);
+        navigate(`/admin/companies/${res.data.data.company._id}`);
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || "Couldn't create company. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
-    <div>
+    <div className="min-h-screen bg-muted/30">
       <Navbar />
-      <div className="max-w-4xl mx-auto ">
-        <div className="my-10">
-          <h1 className="font-bold text-2xl">Your Comapany Name</h1>
-          <p className="text-sm text-gray-500">
-            What would you like to call your company? you can always change this
-            later
+      <div className="mx-auto max-w-lg px-4 py-10">
+        <button
+          type="button"
+          onClick={() => navigate("/admin/companies")}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to companies
+        </button>
+
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Building2 className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+            Name your company
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            What would you like to call it? You can add more details and a logo
+            in the next step — and change everything later.
           </p>
-        </div>
-        <Label>Company Name</Label>
-        <Input
-          onChange={(e) => setCompanyName(e.target.value)}
-          type="text"
-          className="my-2"
-          plcaeholder="Company Name"
-        />
-        <div className="flex items-center gap-2 my-10 ">
-          <Button
-            onClick={() => navigate("/admin/companies")}
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button onClick={registerNewCompany} className="bg-blue-500">
-            Continue
-          </Button>
+
+          <form onSubmit={registerNewCompany} className="mt-6 space-y-1.5">
+            <Label htmlFor="company-name">Company name</Label>
+            <Input
+              id="company-name"
+              type="text"
+              autoFocus
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="e.g. Om Builders"
+            />
+
+            <div className="flex items-center justify-end gap-2 pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/admin/companies")}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    Creating…
+                  </>
+                ) : (
+                  "Continue"
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

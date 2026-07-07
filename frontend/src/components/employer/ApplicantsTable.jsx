@@ -1,102 +1,163 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { MoreHorizontal } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Button } from "../ui/button";
+import { FileText, Check, X, Inbox } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
-const shortListingStatus = ["Accepted", "Rejected"];
+
+const STATUS_STYLES = {
+  pending:
+    "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+  accepted:
+    "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+  rejected:
+    "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
+};
+
 function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application);
+  // Local status overrides so the UI reflects an accept/reject immediately
+  const [statusOverrides, setStatusOverrides] = useState({});
+  const [pendingId, setPendingId] = useState(null);
 
   const statusHandler = async (status, id) => {
     try {
-      const res = await api.patch(
-        `${APPLICATION_API_END_POINT}/${id}/status`,
-        { status }
-      );
+      setPendingId(id);
+      // Backend validator expects lowercase: 'accepted' | 'rejected'
+      const res = await api.patch(`${APPLICATION_API_END_POINT}/${id}/status`, { status });
       if (res.data.success) {
+        setStatusOverrides((prev) => ({ ...prev, [id]: status }));
         toast.success(res.data.message);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setPendingId(null);
     }
   };
+
+  const applications = applicants?.applications || [];
+
+  if (applications.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
+        <Inbox className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
+        <p className="font-medium text-foreground">No applicants yet</p>
+        <p className="text-sm text-muted-foreground">
+          When someone applies to this job, they&apos;ll appear here.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
       <Table>
-        <TableCaption>A list of your recent applied user</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>FullName</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Contact No.</TableHead>
+            <TableHead>Applicant</TableHead>
+            <TableHead>Contact</TableHead>
             <TableHead>Resume</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead>Applied</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {applicants &&
-            applicants?.applications?.map((item) => (
-              <tr key={item._id}>
-                <TableCell>{item?.applicant?.fullname}</TableCell>
-                <TableCell>{item?.applicant?.email}</TableCell>
-                <TableCell>{item?.applicant?.phoneNumber}</TableCell>
+          {applications.map((item) => {
+            const status = statusOverrides[item._id] || item.status || "pending";
+            const applicant = item?.applicant;
+            const appliedOn = item?.createdAt
+              ? new Date(item.createdAt).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—";
+
+            return (
+              <TableRow key={item._id}>
                 <TableCell>
-                  {item.applicant?.profile?.resume ? (
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={applicant?.profile?.profilePhoto} alt="" />
+                      <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                        {applicant?.fullname?.charAt(0)?.toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium text-foreground">
+                      {applicant?.fullname}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="text-sm text-foreground">{applicant?.email}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {applicant?.phoneNumber}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {applicant?.profile?.resume ? (
                     <a
-                      className="text-blue-600 cursor-pointer"
-                      rel="noopener noreferrer"
-                      href={item?.applicant?.profile?.resume}
+                      href={applicant.profile.resume}
                       target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
                     >
-                      {item?.applicant?.profile?.resumeOriginalName}
+                      <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+                      Resume
                     </a>
                   ) : (
-                    <span>NA</span>
+                    <span className="text-sm text-muted-foreground">—</span>
                   )}
                 </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{appliedOn}</TableCell>
                 <TableCell>
-                  {item?.applicant?.createdAt.split("T")[0]}
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                      STATUS_STYLES[status] || STATUS_STYLES.pending
+                    }`}
+                  >
+                    {status}
+                  </span>
                 </TableCell>
-                <TableCell className="float-right cursor-pointer">
-                  <Popover>
-                    <PopoverTrigger>
-                      <MoreHorizontal />
-                    </PopoverTrigger>
-                    <PopoverContent className="w-32">
-                      {shortListingStatus.map((status, index) => {
-                        return (
-                          <div
-                            onClick={() => statusHandler(status, item._id)}
-                            key={index}
-                            className="flex w-fit items-center my-2 cursor-pointer"
-                          >
-                            <span>{status}</span>
-                          </div>
-                        );
-                      })}
-                      {/* <p
-                        onClick={sendMessageHandler}
-                        className="cursor-pointer"
-                      >
-                        Message
-                      </p> */}
-                    </PopoverContent>
-                  </Popover>
+                <TableCell className="text-right">
+                  <div className="inline-flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pendingId === item._id || status === "accepted"}
+                      onClick={() => statusHandler("accepted", item._id)}
+                      className="gap-1 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
+                    >
+                      <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pendingId === item._id || status === "rejected"}
+                      onClick={() => statusHandler("rejected", item._id)}
+                      className="gap-1 border-red-500/30 text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                    >
+                      <X className="h-3.5 w-3.5" aria-hidden="true" />
+                      Reject
+                    </Button>
+                  </div>
                 </TableCell>
-              </tr>
-            ))}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

@@ -58,6 +58,17 @@ function Navbar() {
                   <li className="hover:text-primary transition-colors">Jobs</li>
                 </Link>
               </>
+            ) : user ? (
+              /* Logged-in employee — the landing page redirects away, so no
+                 Home/About links here */
+              <>
+                <Link to="/jobs">
+                  <li className="hover:text-primary transition-colors">Jobs</li>
+                </Link>
+                <Link to="/profile">
+                  <li className="hover:text-primary transition-colors">My applications</li>
+                </Link>
+              </>
             ) : (
               <>
                 <Link to="/">
@@ -65,9 +76,6 @@ function Navbar() {
                 </Link>
                 <Link to="/jobs">
                   <li className="hover:text-primary transition-colors">Jobs</li>
-                </Link>
-                <Link to="/browse">
-                  <li className="hover:text-primary transition-colors">Browse</li>
                 </Link>
                 <LinkScroll
                   className="cursor-pointer hover:text-primary transition-colors"
@@ -111,39 +119,55 @@ function Navbar() {
                   </AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="flex items-center gap-3">
-                  <Avatar className="cursor-pointer">
+              <PopoverContent align="end" className="w-64 p-0">
+                {/* Identity header */}
+                <div className="flex items-center gap-3 border-b border-border px-4 py-3">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={user?.profile?.profilePhoto}
-                      alt="User Avatar"
+                      alt=""
                     />
-                    <AvatarFallback className="bg-primary/10 text-primary">
+                    <AvatarFallback className="bg-primary/10 font-semibold text-primary">
                       {user?.fullname?.charAt(0)?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <h4 className="font-medium">{user?.fullname}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {user?.profile?.bio}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {user?.fullname}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {user?.email}
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col my-4 gap-4 ">
-                  {user && user.role === "employee" && (
-                    <div className="flex items-center gap-2">
-                      <User2 />
-                      <Button variant="link">
-                        <Link to="/profile">View Profile</Link>
-                      </Button>
-                    </div>
+
+                {/* Menu */}
+                <div className="p-1.5">
+                  {user?.role === "employee" ? (
+                    <Link
+                      to="/profile"
+                      className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      View profile
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/admin/companies"
+                      className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      My companies
+                    </Link>
                   )}
-                  <div className="flex items-center gap-2">
-                    <LogOut />
-                    <Button onClick={logoutHandler} variant="link">
-                      Logout
-                    </Button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={logoutHandler}
+                    className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                    Logout
+                  </button>
                 </div>
               </PopoverContent>
             </Popover>
@@ -171,6 +195,15 @@ function Navbar() {
                       <li>Jobs</li>
                     </Link>
                   </>
+                ) : user ? (
+                  <>
+                    <Link to="/jobs">
+                      <li>Jobs</li>
+                    </Link>
+                    <Link to="/profile">
+                      <li>My applications</li>
+                    </Link>
+                  </>
                 ) : (
                   <>
                     <Link to="/">
@@ -178,9 +211,6 @@ function Navbar() {
                     </Link>
                     <Link to="/jobs">
                       <li>Jobs</li>
-                    </Link>
-                    <Link to="/browse">
-                      <li>Browse</li>
                     </Link>
                     <LinkScroll
                       className="cursor-pointer"
@@ -208,15 +238,24 @@ function Navbar() {
                   </Link>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2 mt-4">
+                <div className="mt-4 flex flex-col gap-1 border-t border-border pt-3">
                   {user.role === "employee" && (
-                    <Button variant="link">
-                      <Link to="/profile">View Profile</Link>
-                    </Button>
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                      View profile
+                    </Link>
                   )}
-                  <Button onClick={logoutHandler} variant="link">
+                  <button
+                    type="button"
+                    onClick={logoutHandler}
+                    className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
                     Logout
-                  </Button>
+                  </button>
                 </div>
               )}
             </PopoverContent>

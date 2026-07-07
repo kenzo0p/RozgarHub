@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { AUTH_API_END_POINT } from "@/utils/constant.js";
@@ -9,8 +8,8 @@ import { toast } from "sonner";
 import api from "@/lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
-import Navbar from "../shared/Navbar";
-import { Loader2 } from "lucide-react";
+import { Loader2, ImagePlus } from "lucide-react";
+import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
 
 function Signup() {
   const [input, setInput] = useState({
@@ -23,8 +22,9 @@ function Signup() {
     file: "",
   });
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const {loading ,user} = useSelector(store=>store.auth)
+  const dispatch = useDispatch();
+  const { loading, user } = useSelector((store) => store.auth);
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -35,6 +35,10 @@ function Signup() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!input.role) {
+      toast.error("Please select how you'll use RozgarHub.");
+      return;
+    }
     const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("username", input.username);
@@ -46,7 +50,7 @@ function Signup() {
       formData.append("file", input.file);
     }
     try {
-      dispatch(setLoading(true))
+      dispatch(setLoading(true));
       const res = await api.post(`${AUTH_API_END_POINT}/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
@@ -57,133 +61,130 @@ function Signup() {
       }
     } catch (error) {
       console.log(error, "ERROR IN SIGNUP PAGE");
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.")
-    }finally{
-      dispatch(setLoading(false))
+      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
-  useEffect(()=>{
-    if(user){
-      navigate('/');
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === "employer" ? "/admin/companies" : "/jobs");
     }
-  },[user, navigate])
+  }, [user, navigate]);
 
   return (
-    <div>
-      <div>
-        <Navbar/>
-      </div>
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
-        <form
-          onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
-        >
-          <h1 className="font-bold text-xl mb-5">Sign Up</h1>
-          <div className="my-2">
-            <Label>Full Name</Label>
+    <AuthLayout
+      title="Create your account"
+      subtitle="Free forever for job seekers — start in under two minutes."
+    >
+      <form onSubmit={submitHandler} className="space-y-5">
+        <RoleSelector
+          value={input.role}
+          onChange={(role) => setInput({ ...input, role })}
+        />
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="signup-fullname">Full name</Label>
             <Input
+              id="signup-fullname"
               value={input.fullname}
               name="fullname"
               onChange={changeEventHandler}
               type="text"
-              placeholder="Enter your full name"
+              autoComplete="name"
+              placeholder="Ramesh Kumar"
             />
           </div>
-          <div className="my-2">
-            <Label>Enter your username</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="signup-username">Username</Label>
             <Input
-              type="text"
+              id="signup-username"
               value={input.username}
               name="username"
               onChange={changeEventHandler}
-              placeholder="Enter your username"
+              type="text"
+              autoComplete="username"
+              placeholder="rameshk"
             />
           </div>
-          <div className="my-2">
-            <Label>Enter your email</Label>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="signup-email">Email</Label>
             <Input
+              id="signup-email"
               value={input.email}
               name="email"
               onChange={changeEventHandler}
               type="email"
-              placeholder="xyz@gmail.com"
+              autoComplete="email"
+              placeholder="you@example.com"
             />
           </div>
-          <div className="my-2">
-            <Label>Phone number</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="signup-phone">Phone number</Label>
             <Input
+              id="signup-phone"
               value={input.phoneNumber}
               name="phoneNumber"
               onChange={changeEventHandler}
-              type="number"
-              placeholder="+91 XXXXX-XXXXX"
+              type="tel"
+              autoComplete="tel"
+              placeholder="98765 43210"
             />
           </div>
-          <div className="my-2">
-            <Label>Enter your password</Label>
-            <Input
-              value={input.password}
-              name="password"
-              onChange={changeEventHandler}
-              type="password"
-              placeholder="password"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <RadioGroup className="flex  my-5 items-center gap-4">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  checked={input.role === "employee"}
-                  onChange={changeEventHandler}
-                  value="employee"
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r1">Employee</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  value="employer"
-                  checked={input.role === "employer"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r2">Employer</Label>
-              </div>
-            </RadioGroup>
-            <div className="flex items-center gap-2">
-              <Label>Profile</Label>
-              <Input
-                onChange={changeFileHandler}
-                accept="image/*"
-                type="file"
-                className="cursor-pointer"
-              />
-            </div>
-          </div>
-          {loading ?
-            <Button className="w-full my-4">
-              <Loader2 className="mr-2  h-4 w-4 animate-spin" />
-              Please wait
-            </Button>
-           : 
-            <Button type="submit" className="w-full my-4 bg-blue-500">
-              Signup
-            </Button>
-        }
-          <span className="text-sm">
-            Already have an account{" "}
-            <Link to="/login" className="text-blue-600">
-              Login
-            </Link>
-          </span>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="signup-password">Password</Label>
+          <PasswordInput
+            id="signup-password"
+            name="password"
+            value={input.password}
+            onChange={changeEventHandler}
+            placeholder="At least 6 characters"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="signup-photo" className="flex items-center gap-1.5">
+            <ImagePlus className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+            Profile photo <span className="font-normal text-muted-foreground">(optional)</span>
+          </Label>
+          <Input
+            id="signup-photo"
+            onChange={changeFileHandler}
+            accept="image/*"
+            type="file"
+            className="cursor-pointer file:mr-3 file:font-medium file:text-foreground"
+          />
+          {input.file && (
+            <p className="text-xs text-muted-foreground">Selected: {input.file.name}</p>
+          )}
+        </div>
+
+        <Button type="submit" disabled={loading} className="w-full" size="lg">
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              Creating account…
+            </>
+          ) : (
+            "Create account"
+          )}
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link to="/login" className="font-semibold text-primary hover:underline">
+            Log in
+          </Link>
+        </p>
+      </form>
+    </AuthLayout>
   );
 }
 

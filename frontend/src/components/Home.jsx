@@ -18,11 +18,16 @@ function Home() {
   useGetAllJobs();
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  // The landing page is for visitors. Logged-in users go straight to
+  // where their work is — employees to the job feed, employers to their
+  // dashboard.
   useEffect(() => {
-    if (user?.role === "employer") {
-      navigate("/admin/companies");
+    if (user) {
+      navigate(user.role === "employer" ? "/admin/companies" : "/jobs", {
+        replace: true,
+      });
     }
-  }, [user?.role, navigate]);
+  }, [user, navigate]);
   return (
     <div>
       <Navbar />

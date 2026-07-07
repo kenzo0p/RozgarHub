@@ -1,31 +1,62 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CompaniesTable from "./CompaniesTable";
 import { useNavigate } from "react-router-dom";
 import useGetAllCompanies from "@/hooks/useGetAllCompanies";
 import { useDispatch } from "react-redux";
 import { setSearchCompanyByText } from "@/redux/companySlice";
+import { Search, Plus } from "lucide-react";
 
 function Companies() {
-  useGetAllCompanies();
-  const [input ,setInput] = useState(''); 
+  const { loading } = useGetAllCompanies();
+  const [input, setInput] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(setSearchCompanyByText(input))
-  } ,[input, dispatch])
- 
+    dispatch(setSearchCompanyByText(input));
+  }, [input, dispatch]);
+
   return (
-    <div>
+    <div className="min-h-screen bg-muted/30">
       <Navbar />
-      <div className="max-w-6xl mx-auto my-10">
-        <div className=" flex items-center justify-between my-5">
-          <Input className="w-fit" placeholder="Filter by name" onChange={(e)=>setInput(e.target.value)} />
-          <Button className="bg-blue-500" onClick={()=> navigate('/admin/companies/create')}>New Company</Button>
+      <div className="mx-auto max-w-6xl px-4 pb-16">
+        {/* Header */}
+        <div className="flex flex-wrap items-end justify-between gap-4 pt-8">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Your companies
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage the companies you post jobs under.
+            </p>
+          </div>
+          <Button onClick={() => navigate("/admin/companies/create")} className="gap-2">
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            New company
+          </Button>
         </div>
-        <CompaniesTable/>
+
+        {/* Search */}
+        <div className="mt-6 flex items-center gap-2 rounded-lg border border-border bg-card px-3 focus-within:border-primary/50 sm:max-w-xs">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <label htmlFor="company-search" className="sr-only">
+            Filter companies by name
+          </label>
+          <input
+            id="company-search"
+            type="text"
+            value={input}
+            placeholder="Filter by name…"
+            onChange={(e) => setInput(e.target.value)}
+            className="h-10 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          />
+        </div>
+
+        <div className="mt-6">
+          <CompaniesTable loading={loading} />
+        </div>
       </div>
     </div>
   );

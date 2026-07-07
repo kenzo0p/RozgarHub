@@ -12,7 +12,7 @@ function LatestJobs() {
 
   const viewAllHandler = () => {
     dispatch(setSearchedQuery(""));
-    navigate("/browse");
+    navigate("/jobs");
   };
 
   return (

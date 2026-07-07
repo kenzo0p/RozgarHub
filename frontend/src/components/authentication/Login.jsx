@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { AUTH_API_END_POINT } from "@/utils/constant";
@@ -10,7 +9,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUser } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
-import Navbar from "../shared/Navbar";
+import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
 
 function Login() {
   const [input, setInput] = useState({
@@ -21,19 +20,26 @@ function Login() {
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading ,user} = useSelector((store) => store.auth);
+  const { loading, user } = useSelector((store) => store.auth);
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!input.role) {
+      toast.error("Please select how you use RozgarHub.");
+      return;
+    }
     try {
       dispatch(setLoading(true));
       const res = await api.post(`${AUTH_API_END_POINT}/login`, input);
       if (res.data.success) {
-        dispatch(setUser(res.data.data.user))
-        navigate("/");
+        const loggedInUser = res.data.data.user;
+        dispatch(setUser(loggedInUser));
+        // Land users where their work is, not on the marketing page
+        navigate(loggedInUser.role === "employer" ? "/admin/companies" : "/jobs");
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -44,99 +50,79 @@ function Login() {
     }
   };
 
-  useEffect(()=>{
-    if(user){
-      navigate('/');
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === "employer" ? "/admin/companies" : "/jobs");
     }
-  },[user, navigate])
+  }, [user, navigate]);
+
   return (
-    <div>
-      <div>
-        <Navbar/>
-      </div>
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
-        <form
-          onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
-        >
-          <h1 className="font-bold text-xl mb-5">Log In</h1>
-          <div className="my-2">
-            <Label>Enter your username</Label>
-            <Input
-              value={input.username}
-              name="username"
-              onChange={changeEventHandler}
-              type="text"
-              placeholder="Enter your username"
-            />
-          </div>
-          <div className="my-2">
-            <Label>Enter your email</Label>
-            <Input
-              value={input.email}
-              name="email"
-              onChange={changeEventHandler}
-              type="email"
-              placeholder="xyz@gmail.com"
-            />
-          </div>
-          <div className="my-2">
-            <Label>Enter your password</Label>
-            <Input
-              value={input.password}
-              name="password"
-              onChange={changeEventHandler}
-              type="password"
-              placeholder="password"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <RadioGroup className="flex  my-5 items-center gap-4">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  checked={input.role === "employee"}
-                  onChange={changeEventHandler}
-                  value="employee"
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r1">Employee</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  name="role"
-                  value="employer"
-                  checked={input.role === "employer"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="r2">Employer</Label>
-              </div>
-            </RadioGroup>
-          </div>
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Log in to continue your job search or manage your postings."
+    >
+      <form onSubmit={submitHandler} className="space-y-5">
+        <RoleSelector
+          value={input.role}
+          onChange={(role) => setInput({ ...input, role })}
+        />
 
-          {loading ?
-            <Button className="w-full my-4">
-              <Loader2 className="mr-2  h-4 w-4 animate-spin" />
-              Please wait
-            </Button>
-           : 
-            <Button type="submit" className="w-full my-4 bg-blue-500">
-              Login
-            </Button>
-        }
+        <div className="space-y-1.5">
+          <Label htmlFor="login-username">Username</Label>
+          <Input
+            id="login-username"
+            value={input.username}
+            name="username"
+            onChange={changeEventHandler}
+            type="text"
+            autoComplete="username"
+            placeholder="yourusername"
+          />
+        </div>
 
-          <span className="text-sm">
-            Don't have an account &nbsp;
-            <Link to="/signup" className="text-blue-600">
-              Signup
-            </Link>
-          </span>
-        </form>
-      </div>
-    </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="login-email">Email</Label>
+          <Input
+            id="login-email"
+            value={input.email}
+            name="email"
+            onChange={changeEventHandler}
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="login-password">Password</Label>
+          <PasswordInput
+            id="login-password"
+            name="password"
+            value={input.password}
+            onChange={changeEventHandler}
+            placeholder="Your password"
+          />
+        </div>
+
+        <Button type="submit" disabled={loading} className="w-full" size="lg">
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              Logging in…
+            </>
+          ) : (
+            "Log in"
+          )}
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link to="/signup" className="font-semibold text-primary hover:underline">
+            Sign up free
+          </Link>
+        </p>
+      </form>
+    </AuthLayout>
   );
 }
 

@@ -1,8 +1,14 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import {
+  Bookmark,
+  BookmarkCheck,
+  MapPin,
+  Briefcase,
+  Users,
+  IndianRupee,
+} from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { Badge } from "./ui/badge";
 import { useNavigate } from "react-router-dom";
 import useSavedJobs from "../hooks/useSavedJobs";
 
@@ -21,90 +27,84 @@ function Job({ job }) {
   const daysAgo = daysAgoFunction(job?.createdAt);
 
   return (
-    <div className="p-5 rounded-lg shadow-md bg-card border border-border hover:shadow-lg transition-shadow duration-200 group">
-      {/* Header: Date + Bookmark */}
+    <div className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+      {/* Header: date + bookmark */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {daysAgo === 0 ? "Today" : `${daysAgo} days ago`}
+        <p className="text-xs text-muted-foreground">
+          {daysAgo === 0 ? "Posted today" : `${daysAgo} days ago`}
         </p>
         <Button
           variant="ghost"
           size="icon"
-          className={`rounded-full h-8 w-8 transition-colors ${
-            saved
-              ? "text-blue-600 dark:text-blue-400"
-              : "text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
+          className={`h-8 w-8 rounded-full transition-colors ${
+            saved ? "text-primary" : "text-muted-foreground hover:text-primary"
           }`}
           onClick={() => toggleSave(job?._id)}
           aria-label={saved ? "Remove from saved" : "Save for later"}
         >
           {saved ? (
-            <BookmarkCheck className="h-4 w-4 fill-current" />
+            <BookmarkCheck className="h-4 w-4 fill-current" aria-hidden="true" />
           ) : (
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" aria-hidden="true" />
           )}
         </Button>
       </div>
 
-      {/* Company Info */}
-      <div className="flex items-center gap-2 my-2">
-        <Button className="p-6" variant="outline" size="icon">
-          <Avatar>
-            <AvatarImage src={job?.company?.logo} />
-            <AvatarFallback className="text-xs bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-              {job?.company?.name?.charAt(0) || "C"}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-        <div>
-          <h2 className="font-medium text-lg text-foreground">
+      {/* Company */}
+      <div className="mt-2 flex items-center gap-3">
+        <Avatar className="h-11 w-11 rounded-lg border border-border">
+          <AvatarImage src={job?.company?.logo} alt="" />
+          <AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
+            {job?.company?.name?.charAt(0)?.toUpperCase() || "C"}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <h2 className="truncate font-semibold text-foreground">
             {job?.company?.name || job?.name}
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" aria-hidden="true" />
             {job?.location || "India"}
           </p>
         </div>
       </div>
 
-      {/* Job Title + Description */}
-      <div>
-        <h1 className="font-bold text-lg my-2 text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-          {job?.title}
-        </h1>
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {job?.description}
-        </p>
-      </div>
+      {/* Title + description */}
+      <h1 className="mt-3 line-clamp-1 text-lg font-bold text-foreground transition-colors group-hover:text-primary">
+        {job?.title}
+      </h1>
+      <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+        {job?.description}
+      </p>
 
-      {/* Badges */}
-      <div className="flex items-center gap-2 mt-4 flex-wrap">
-        <Badge variant="secondary" className="text-blue-600 dark:text-blue-400 font-semibold">
-          {job?.position} Positions
-        </Badge>
-        <Badge variant="secondary" className="text-orange-600 dark:text-orange-400 font-semibold">
-          {job?.jobType}
-        </Badge>
-        <Badge variant="secondary" className="text-emerald-600 dark:text-emerald-400 font-semibold">
+      {/* Meta chips */}
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-medium">
+        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-primary">
+          <IndianRupee className="h-3 w-3" aria-hidden="true" />
           {job?.salary} LPA
-        </Badge>
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
+          <Briefcase className="h-3 w-3" aria-hidden="true" />
+          {job?.jobType}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
+          <Users className="h-3 w-3" aria-hidden="true" />
+          {job?.position} {job?.position === 1 ? "opening" : "openings"}
+        </span>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 mt-4">
-        <Button
-          onClick={() => navigate(`/details/${job?._id}`)}
-          variant="outline"
-          size="sm"
-        >
-          Details
+      <div className="mt-auto flex items-center gap-2 pt-4">
+        <Button onClick={() => navigate(`/details/${job?._id}`)} className="flex-1" size="sm">
+          View details
         </Button>
         <Button
           onClick={() => toggleSave(job?._id)}
-          variant={saved ? "secondary" : "default"}
+          variant="outline"
           size="sm"
-          className={!saved ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+          className={saved ? "border-primary/40 text-primary" : ""}
         >
-          {saved ? "Saved ✓" : "Save for later"}
+          {saved ? "Saved" : "Save"}
         </Button>
       </div>
     </div>

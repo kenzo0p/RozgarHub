@@ -2,9 +2,10 @@ import rateLimit from 'express-rate-limit';
 import { APP_CONSTANTS } from '../utils/constants.js';
 import { env } from '../config/env.js';
 
-// Integration tests fire hundreds of requests from one IP; rate limiting
-// there only produces flaky 429s. Never skipped in dev/production.
-const skipInTests = () => env.NODE_ENV === 'test';
+// Tests fire hundreds of requests from one IP, and local development
+// (HMR reloads, notification polling, manual testing) does the same —
+// rate limiting there only produces confusing 429s. Production always limits.
+const skipInTests = () => env.NODE_ENV !== 'production';
 
 /**
  * Rate limiting middleware — prevents abuse and brute-force attacks.
