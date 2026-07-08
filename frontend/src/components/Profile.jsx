@@ -17,6 +17,7 @@ import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfile from "./UpdateProfile";
 import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function StatCard({ icon: Icon, value, label, tone }) {
   return (
@@ -35,6 +36,7 @@ function StatCard({ icon: Icon, value, label, tone }) {
 function Profile() {
   useGetAppliedJobs();
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
   const { user } = useSelector((store) => store.auth);
   const { allAppliedJobs } = useSelector((store) => store.job);
 
@@ -67,7 +69,7 @@ function Profile() {
               </div>
               <Button onClick={() => setOpen(true)} variant="outline" className="gap-2 sm:mb-1">
                 <Pen className="h-4 w-4" aria-hidden="true" />
-                Edit profile
+                {t("profile.edit")}
               </Button>
             </div>
 
@@ -82,7 +84,7 @@ function Profile() {
                 </p>
               ) : (
                 <p className="mt-2 text-sm italic text-muted-foreground">
-                  No bio yet — add one so employers know who you are.
+                  {t("profile.noBio")}
                 </p>
               )}
             </div>
@@ -101,7 +103,7 @@ function Profile() {
 
             {/* Skills */}
             <div className="mt-5">
-              <h2 className="text-sm font-semibold text-foreground">Skills</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t("profile.skills")}</h2>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {skills.length > 0 ? (
                   skills.map((item) => (
@@ -111,7 +113,7 @@ function Profile() {
                   ))
                 ) : (
                   <p className="text-sm italic text-muted-foreground">
-                    No skills added — employers search by skills, so this matters.
+                    {t("profile.noSkills")}
                   </p>
                 )}
               </div>
@@ -119,7 +121,7 @@ function Profile() {
 
             {/* Resume */}
             <div className="mt-5">
-              <h2 className="text-sm font-semibold text-foreground">Resume</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t("profile.resume")}</h2>
               {resume ? (
                 <a
                   href={resume}
@@ -128,12 +130,12 @@ function Profile() {
                   className="mt-2 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/40"
                 >
                   <FileText className="h-4 w-4" aria-hidden="true" />
-                  {user?.profile?.resumeOriginalName || "View resume"}
+                  {user?.profile?.resumeOriginalName || t("profile.viewResume")}
                 </a>
               ) : (
                 <p className="mt-2 inline-flex items-center gap-2 text-sm italic text-muted-foreground">
                   <FileX2 className="h-4 w-4" aria-hidden="true" />
-                  No resume uploaded yet
+                  {t("profile.noResume")}
                 </p>
               )}
             </div>
@@ -145,19 +147,19 @@ function Profile() {
           <StatCard
             icon={Briefcase}
             value={applied}
-            label="Jobs applied"
+            label={t("profile.jobsApplied")}
             tone="bg-primary/10 text-primary"
           />
           <StatCard
             icon={Clock}
             value={pending}
-            label="Awaiting response"
+            label={t("profile.awaiting")}
             tone="bg-amber-500/10 text-amber-600 dark:text-amber-400"
           />
           <StatCard
             icon={CheckCircle2}
             value={accepted}
-            label="Accepted"
+            label={t("profile.accepted")}
             tone="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
           />
         </div>
@@ -165,7 +167,7 @@ function Profile() {
         {/* ─── Applied jobs ────────────────────────────────────────────── */}
         <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-bold tracking-tight text-foreground">
-            Applied jobs
+            {t("profile.appliedJobs")}
           </h2>
           <div className="mt-4">
             <AppliedJobTable />

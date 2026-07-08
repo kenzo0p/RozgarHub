@@ -13,16 +13,17 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { JOB_API_END_POINT } from "@/utils/constant";
-
-const REASONS = [
-  { value: "fake", label: "Fake or scam job" },
-  { value: "asks_for_money", label: "Asks for money / a fee" },
-  { value: "misleading_pay", label: "Misleading pay or details" },
-  { value: "offensive", label: "Offensive or inappropriate" },
-  { value: "other", label: "Something else" },
-];
+import { useI18n } from "@/i18n/I18nProvider";
 
 function ReportJobDialog({ open, setOpen, jobId }) {
+  const { t } = useI18n();
+  const REASONS = [
+    { value: "fake", label: t("report.fake") },
+    { value: "asks_for_money", label: t("report.asksForMoney") },
+    { value: "misleading_pay", label: t("report.misleadingPay") },
+    { value: "offensive", label: t("report.offensive") },
+    { value: "other", label: t("report.other") },
+  ];
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,16 +54,13 @@ function ReportJobDialog({ open, setOpen, jobId }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Report this job</DialogTitle>
-          <DialogDescription>
-            Help keep RozgarHub safe. Reports are reviewed and repeatedly
-            reported jobs are removed.
-          </DialogDescription>
+          <DialogTitle>{t("report.title")}</DialogTitle>
+          <DialogDescription>{t("report.subtitle")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Why are you reporting it?</Label>
+            <Label>{t("report.why")}</Label>
             <div className="space-y-1.5">
               {REASONS.map((r) => (
                 <label
@@ -88,7 +86,7 @@ function ReportJobDialog({ open, setOpen, jobId }) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="report-note">Anything to add? (optional)</Label>
+            <Label htmlFor="report-note">{t("report.note")}</Label>
             <textarea
               id="report-note"
               value={note}
@@ -102,16 +100,16 @@ function ReportJobDialog({ open, setOpen, jobId }) {
 
           <DialogFooter className="gap-2 sm:gap-0">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-              Cancel
+              {t("report.cancel")}
             </Button>
             <Button type="submit" variant="destructive" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  Reporting…
+                  {t("report.submitting")}
                 </>
               ) : (
-                "Submit report"
+                t("report.submit")
               )}
             </Button>
           </DialogFooter>

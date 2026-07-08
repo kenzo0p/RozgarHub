@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { Inbox } from "lucide-react";
 import { Button } from "./ui/button";
 import ContactButtons from "./shared/ContactButtons";
+import { useI18n } from "@/i18n/I18nProvider";
+
+const STATUS_KEY = { pending: "profile.statusPending", accepted: "profile.statusAccepted", rejected: "profile.statusRejected" };
 
 const STATUS_STYLES = {
   pending:
@@ -25,17 +28,18 @@ const STATUS_STYLES = {
 function AppliedJobTable() {
   const { allAppliedJobs } = useSelector((store) => store.job);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   if (!allAppliedJobs || allAppliedJobs.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center">
         <Inbox className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-        <p className="font-medium text-foreground">No applications yet</p>
+        <p className="font-medium text-foreground">{t("profile.noApplications")}</p>
         <p className="text-sm text-muted-foreground">
-          Jobs you apply to will show up here with their status.
+          {t("profile.noApplicationsSub")}
         </p>
         <Button onClick={() => navigate("/jobs")} size="sm" className="mt-1">
-          Browse jobs
+          {t("profile.browseJobs")}
         </Button>
       </div>
     );
@@ -45,11 +49,11 @@ function AppliedJobTable() {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Applied on</TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>Company</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Contact</TableHead>
+          <TableHead>{t("profile.appliedOn")}</TableHead>
+          <TableHead>{t("profile.role")}</TableHead>
+          <TableHead>{t("profile.company")}</TableHead>
+          <TableHead>{t("profile.status")}</TableHead>
+          <TableHead className="text-right">{t("profile.contact")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -70,11 +74,11 @@ function AppliedJobTable() {
             </TableCell>
             <TableCell>
               <span
-                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   STATUS_STYLES[appliedJob?.status] || STATUS_STYLES.pending
                 }`}
               >
-                {appliedJob.status}
+                {t(STATUS_KEY[appliedJob?.status] || STATUS_KEY.pending)}
               </span>
             </TableCell>
             <TableCell

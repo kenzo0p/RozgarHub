@@ -1,5 +1,6 @@
 import React from "react";
 import { Phone, MessageCircle } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Tap-to-call + WhatsApp buttons for a phone number.
@@ -13,6 +14,7 @@ import { Phone, MessageCircle } from "lucide-react";
  * @param {"sm"|"xs"} [size]
  */
 function ContactButtons({ phone, message = "", size = "sm" }) {
+  const { t } = useI18n();
   if (!phone) return null;
   const digits = String(phone).replace(/\D/g, "");
   const waNumber = digits.length === 10 ? `91${digits}` : digits;
@@ -26,7 +28,7 @@ function ContactButtons({ phone, message = "", size = "sm" }) {
         className={`inline-flex items-center gap-1.5 rounded-md border border-border bg-background font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary ${pad}`}
       >
         <Phone className={icon} aria-hidden="true" />
-        Call
+        {t("contact.call")}
       </a>
       <a
         href={`https://wa.me/${waNumber}${message ? `?text=${encodeURIComponent(message)}` : ""}`}
@@ -35,7 +37,7 @@ function ContactButtons({ phone, message = "", size = "sm" }) {
         className={`inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 font-medium text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400 ${pad}`}
       >
         <MessageCircle className={icon} aria-hidden="true" />
-        WhatsApp
+        {t("contact.whatsapp")}
       </a>
     </div>
   );

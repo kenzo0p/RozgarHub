@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import ReportJobDialog from "./ReportJobDialog";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function MetaChip({ icon: Icon, children, highlight = false }) {
   return (
@@ -66,6 +67,7 @@ function JobDetails() {
   const params = useParams();
   const jobId = params.id;
   const dispatch = useDispatch();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { isJobSaved, toggleSave } = useSavedJobs();
   const saved = isJobSaved(jobId);
@@ -131,7 +133,7 @@ function JobDetails() {
         <Navbar />
         <div className="flex items-center justify-center gap-2 py-32 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-          Loading job…
+          {t("details.loading")}
         </div>
       </div>
     );
@@ -143,12 +145,12 @@ function JobDetails() {
         <Navbar />
         <div className="mx-auto flex max-w-md flex-col items-center gap-3 py-32 text-center">
           <SearchX className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-          <p className="font-semibold text-foreground">This job is no longer available</p>
+          <p className="font-semibold text-foreground">{t("details.notAvailable")}</p>
           <p className="text-sm text-muted-foreground">
-            It may have been filled or removed by the employer.
+            {t("details.notAvailableSub")}
           </p>
           <Button onClick={() => navigate("/jobs")} className="mt-2">
-            Browse other jobs
+            {t("details.browseOther")}
           </Button>
         </div>
       </div>
@@ -167,7 +169,7 @@ function JobDetails() {
           className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back to jobs
+          {t("details.back")}
         </button>
 
         <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
@@ -210,10 +212,10 @@ function JobDetails() {
                 <MetaChip icon={Briefcase}>{singleJob?.jobType}</MetaChip>
                 <MetaChip icon={Users}>
                   {singleJob?.position}{" "}
-                  {singleJob?.position === 1 ? "opening" : "openings"}
+                  {singleJob?.position === 1 ? t("details.opening") : t("details.openings")}
                 </MetaChip>
                 <MetaChip icon={GraduationCap}>
-                  {singleJob?.experienceLevel}+ yrs experience
+                  {singleJob?.experienceLevel}+ {t("details.years")} {t("details.experience")}
                 </MetaChip>
               </div>
             </div>
@@ -221,7 +223,7 @@ function JobDetails() {
             {/* Description card */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <h2 className="text-lg font-bold tracking-tight text-foreground">
-                Job description
+                {t("details.description")}
               </h2>
               <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                 {singleJob?.description}
@@ -230,7 +232,7 @@ function JobDetails() {
               {singleJob?.requirements && (
                 <>
                   <h2 className="mt-6 text-lg font-bold tracking-tight text-foreground">
-                    Requirements
+                    {t("details.requirements")}
                   </h2>
                   <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                     {singleJob.requirements}
@@ -244,7 +246,7 @@ function JobDetails() {
               <div className="flex items-center justify-between p-6 pb-4">
                 <div>
                   <h2 className="text-lg font-bold tracking-tight text-foreground">
-                    Job location
+                    {t("details.location")}
                   </h2>
                   <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" aria-hidden="true" />
@@ -257,7 +259,7 @@ function JobDetails() {
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-primary hover:underline"
                 >
-                  Open in Maps
+                  {t("details.openInMaps")}
                 </a>
               </div>
               {coords ? (
@@ -283,20 +285,20 @@ function JobDetails() {
           <div className="space-y-6 lg:sticky lg:top-20 lg:self-start">
             {/* Apply card */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <p className="text-sm text-muted-foreground">Pay</p>
+              <p className="text-sm text-muted-foreground">{t("details.salary")}</p>
               <p className="mt-1 text-3xl font-bold text-foreground">
                 {formatWage(singleJob?.salary, singleJob?.wageType)}
               </p>
 
               <div className="mt-4 divide-y divide-border border-y border-border">
-                <FactRow icon={Users} label="Applicants" value={totalApplications} />
-                <FactRow icon={Briefcase} label="Job type" value={singleJob?.jobType} />
+                <FactRow icon={Users} label={t("details.applicants")} value={totalApplications} />
+                <FactRow icon={Briefcase} label={t("details.jobType")} value={singleJob?.jobType} />
                 <FactRow
                   icon={GraduationCap}
-                  label="Experience"
-                  value={`${singleJob?.experienceLevel}+ yrs`}
+                  label={t("details.experience")}
+                  value={`${singleJob?.experienceLevel}+ ${t("details.years")}`}
                 />
-                <FactRow icon={CalendarDays} label="Posted" value={postedDate} />
+                <FactRow icon={CalendarDays} label={t("details.posted")} value={postedDate} />
               </div>
 
               <Button
@@ -308,15 +310,15 @@ function JobDetails() {
                 {applying ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                    Applying…
+                    {t("details.applying")}
                   </>
                 ) : isApplied ? (
                   <>
                     <CheckCircle2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                    Applied
+                    {t("details.applied")}
                   </>
                 ) : (
-                  "Apply now"
+                  t("details.applyNow")
                 )}
               </Button>
 
@@ -329,25 +331,25 @@ function JobDetails() {
                 {saved ? (
                   <>
                     <BookmarkCheck className="h-4 w-4 fill-current" aria-hidden="true" />
-                    Saved
+                    {t("details.saved")}
                   </>
                 ) : (
                   <>
                     <Bookmark className="h-4 w-4" aria-hidden="true" />
-                    Save for later
+                    {t("details.saveForLater")}
                   </>
                 )}
               </Button>
 
               {isApplied && (
                 <p className="mt-3 text-center text-xs text-muted-foreground">
-                  Track this application on your{" "}
+                  {t("details.trackOn")}{" "}
                   <button
                     type="button"
                     onClick={() => navigate("/profile")}
                     className="font-medium text-primary hover:underline"
                   >
-                    profile
+                    {t("details.profile")}
                   </button>
                   .
                 </p>
@@ -357,7 +359,7 @@ function JobDetails() {
             {/* Company card */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <h2 className="text-sm font-semibold text-foreground">
-                About the company
+                {t("details.aboutCompany")}
               </h2>
               <div className="mt-3 flex items-center gap-3">
                 <Avatar className="h-11 w-11 rounded-lg border border-border">
@@ -387,7 +389,7 @@ function JobDetails() {
               className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
             >
               <Flag className="h-4 w-4" aria-hidden="true" />
-              Report this job
+              {t("details.report")}
             </button>
           </div>
         </div>
