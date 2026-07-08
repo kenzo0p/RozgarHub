@@ -8,10 +8,13 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUser } from "@/redux/authSlice";
-import { Loader2 } from "lucide-react";
+import { Loader2, Phone, Mail } from "lucide-react";
 import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
+import PhoneOtpForm from "./PhoneOtpForm";
 
 function Login() {
+  // Phone is the default path — it's the primary way this audience signs in.
+  const [method, setMethod] = useState("phone"); // 'phone' | 'email'
   const [input, setInput] = useState({
     username: "",
     email: "",
@@ -61,6 +64,37 @@ function Login() {
       title="Welcome back"
       subtitle="Log in to continue your job search or manage your postings."
     >
+      {/* Method toggle */}
+      <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-border bg-muted/50 p-1">
+        <button
+          type="button"
+          onClick={() => setMethod("phone")}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            method === "phone"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Phone className="h-4 w-4" aria-hidden="true" />
+          Phone / OTP
+        </button>
+        <button
+          type="button"
+          onClick={() => setMethod("email")}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            method === "email"
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Mail className="h-4 w-4" aria-hidden="true" />
+          Email
+        </button>
+      </div>
+
+      {method === "phone" ? (
+        <PhoneOtpForm />
+      ) : (
       <form onSubmit={submitHandler} className="space-y-5">
         <RoleSelector
           value={input.role}
@@ -122,6 +156,7 @@ function Login() {
           </Link>
         </p>
       </form>
+      )}
     </AuthLayout>
   );
 }

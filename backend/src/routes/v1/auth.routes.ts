@@ -10,6 +10,8 @@ import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  otpRequestSchema,
+  otpVerifySchema,
 } from '../../validators/auth.validator.js';
 
 const router = Router();
@@ -39,6 +41,21 @@ router.post(
   authRateLimiter,
   validate(loginSchema),
   authController.login,
+);
+
+// ─── Phone OTP login ─────────────────────────────────────────────────────
+router.post(
+  '/otp/request',
+  authRateLimiter,
+  validate(otpRequestSchema),
+  authController.requestOtp,
+);
+
+router.post(
+  '/otp/verify',
+  authRateLimiter,
+  validate(otpVerifySchema),
+  authController.verifyOtp,
 );
 
 router.post('/logout', authController.logout);

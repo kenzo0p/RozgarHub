@@ -17,9 +17,9 @@ export interface IUser extends Document {
   _id: Types.ObjectId;
   fullname: string;
   username: string;
-  email: string;
+  email?: string;
   phoneNumber: number;
-  password: string;
+  password?: string;
   role: UserRole;
   profile: IUserProfile;
   passwordResetToken?: string;

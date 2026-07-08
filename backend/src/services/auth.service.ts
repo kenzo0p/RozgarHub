@@ -4,12 +4,19 @@ import crypto from 'crypto';
 import { userRepository } from '../repositories/user.repository.js';
 import { uploadService } from './upload.service.js';
 import { RefreshToken } from '../models/refreshToken.model.js';
-import { ConflictError, UnauthorizedError, NotFoundError } from '../utils/ApiError.js';
+import { Otp } from '../models/otp.model.js';
+import {
+  ConflictError,
+  UnauthorizedError,
+  NotFoundError,
+  ValidationError,
+} from '../utils/ApiError.js';
 import { env } from '../config/env.js';
 import { APP_CONSTANTS } from '../utils/constants.js';
 import { eventBus } from '../events/eventBus.js';
-import type { RegisterInput, LoginInput } from '../validators/auth.validator.js';
-import type { IUser, SafeUser } from '../types/models.js';
+import { sendSms } from '../utils/sms.js';
+import type { RegisterInput, LoginInput, OtpVerifyInput } from '../validators/auth.validator.js';
+import type { IUser, SafeUser, UserRole } from '../types/models.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -70,7 +77,7 @@ export class AuthService {
     // Emit domain event (handlers create welcome notification, etc.)
     eventBus.emit('user.registered', {
       userId: newUser._id.toString(),
-      email: newUser.email,
+      email: newUser.email!, // email is required on this (email/password) path
       role: newUser.role,
     });
 
@@ -90,6 +97,11 @@ export class AuthService {
     const user = await userRepository.findByEmailOrUsername(data.email, data.username);
     if (!user) {
       throw new UnauthorizedError('Invalid credentials');
+    }
+
+    // Phone-only accounts have no password — they must log in via OTP.
+    if (!user.password) {
+      throw new UnauthorizedError('This account uses phone login. Please log in with an OTP.');
     }
 
     const isPasswordValid = await bcrypt.compare(data.password, user.password);
@@ -270,7 +282,7 @@ export class AuthService {
 
     eventBus.emit('user.passwordReset', {
       userId: user._id.toString(),
-      email: user.email,
+      email: user.email!, // found by email, so always present here
     });
 
     logger.info(`Password reset completed for ${user.email}`);
@@ -296,6 +308,119 @@ export class AuthService {
       .exec();
 
     return sessions;
+  }
+
+  // ─── Phone OTP login ─────────────────────────────────────────────────────
+
+  /**
+   * Request an OTP for a phone number.
+   *
+   * Generates a 6-digit code, stores only its hash (with a short expiry),
+   * and "sends" it via SMS. Returns whether the number belongs to an
+   * existing user so the client knows whether to collect name + role on
+   * verification. In development the code is returned for manual testing.
+   */
+  async requestOtp(phoneNumber: number): Promise<{ isNewUser: boolean; devOtp?: string }> {
+    const otp = String(crypto.randomInt(100000, 1000000)); // 6 digits
+    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
+
+    // One active OTP per phone — upsert replaces any previous code.
+    await Otp.findOneAndUpdate(
+      { phoneNumber },
+      {
+        otpHash,
+        attempts: 0,
+        expiresAt: new Date(Date.now() + APP_CONSTANTS.OTP_EXPIRY_MS),
+      },
+      { upsert: true, new: true },
+    );
+
+    await sendSms(phoneNumber, `Your RozgarHub verification code is ${otp}. Valid for 10 minutes.`);
+
+    const existing = await userRepository.findByPhone(phoneNumber);
+    logger.info(`OTP requested for ${phoneNumber} (newUser=${!existing})`);
+
+    return {
+      isNewUser: !existing,
+      // Surface the code outside production (dev + test) for manual/automated
+      // testing. Never leaked in production.
+      ...(env.NODE_ENV !== 'production' && { devOtp: otp }),
+    };
+  }
+
+  /**
+   * Verify an OTP and log the user in — creating a phone-only account first
+   * if the number is new (name + role required in that case).
+   */
+  async verifyOtp(
+    data: OtpVerifyInput,
+    meta: { ip: string; userAgent: string },
+  ): Promise<{ accessToken: string; refreshToken: string; user: SafeUser; isNewUser: boolean }> {
+    const record = await Otp.findOne({ phoneNumber: data.phoneNumber });
+    if (!record || record.expiresAt < new Date()) {
+      throw new UnauthorizedError('OTP expired or not found. Please request a new code.');
+    }
+
+    if (record.attempts >= APP_CONSTANTS.OTP_MAX_ATTEMPTS) {
+      await Otp.deleteOne({ _id: record._id });
+      throw new UnauthorizedError('Too many attempts. Please request a new code.');
+    }
+
+    const submittedHash = crypto.createHash('sha256').update(data.otp).digest('hex');
+    if (submittedHash !== record.otpHash) {
+      record.attempts += 1;
+      await record.save();
+      throw new UnauthorizedError('Incorrect OTP. Please try again.');
+    }
+
+    let user = await userRepository.findByPhone(data.phoneNumber);
+    let isNewUser = false;
+
+    // Check the new-account requirements BEFORE consuming the OTP, so a caller
+    // that verified the code but hasn't supplied name/role yet can retry.
+    if (!user && (!data.fullname || !data.role)) {
+      throw new ValidationError('Name and role are required to create your account', [
+        { field: 'fullname', message: 'Required for new accounts' },
+        { field: 'role', message: 'Required for new accounts' },
+      ]);
+    }
+
+    // Correct code and all requirements met — consume it so it can't be reused.
+    await Otp.deleteOne({ _id: record._id });
+
+    if (!user) {
+      isNewUser = true;
+      user = await userRepository.create({
+        fullname: data.fullname,
+        username: `user_${data.phoneNumber}`,
+        phoneNumber: data.phoneNumber,
+        role: data.role as UserRole,
+        profile: { skills: [], profilePhoto: '' },
+      } as Partial<IUser>);
+
+      eventBus.emit('user.registered', {
+        userId: user._id.toString(),
+        email: user.email || `phone:${user.phoneNumber}`,
+        role: user.role,
+      });
+      logger.info(`New phone user registered: ${data.phoneNumber} (${data.role})`);
+    }
+
+    const accessToken = this.generateAccessToken(user._id.toString());
+    const refreshToken = await this.createRefreshToken(
+      user._id.toString(),
+      meta.ip,
+      meta.userAgent,
+    );
+
+    logger.info(`Phone login: ${data.phoneNumber}`);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: user.toJSON() as unknown as SafeUser,
+      isNewUser,
+    };
   }
 
   // ─── Private Helpers ────────────────────────────────────────────────────────

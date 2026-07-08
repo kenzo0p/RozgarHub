@@ -28,6 +28,10 @@ export class UserRepository {
     return User.findOne({ $or: [{ email }, { username }] }).exec();
   }
 
+  async findByPhone(phoneNumber: number): Promise<IUser | null> {
+    return User.findOne({ phoneNumber }).exec();
+  }
+
   async create(userData: Partial<IUser>): Promise<IUser> {
     return User.create(userData);
   }

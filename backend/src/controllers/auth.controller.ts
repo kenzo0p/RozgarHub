@@ -52,6 +52,45 @@ export const login = asyncHandler(async (req: AuthRequest, res: Response) => {
 });
 
 /**
+ * Request a phone-login OTP.
+ */
+export const requestOtp = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const result = await authService.requestOtp(req.body.phoneNumber);
+
+  res.status(200).json(
+    ApiResponse.success(result, 'If the number is valid, a verification code has been sent.'),
+  );
+});
+
+/**
+ * Verify a phone-login OTP — logs in an existing user or creates a
+ * phone-only account, then sets the dual-token cookies.
+ */
+export const verifyOtp = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const meta = {
+    ip: req.ip || req.socket.remoteAddress || 'unknown',
+    userAgent: req.get('User-Agent') || 'unknown',
+  };
+
+  const { accessToken, refreshToken, user, isNewUser } = await authService.verifyOtp(
+    req.body,
+    meta,
+  );
+
+  res
+    .status(isNewUser ? 201 : 200)
+    .cookie(APP_CONSTANTS.ACCESS_COOKIE_NAME, accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 15 * 60 * 1000,
+    })
+    .cookie(APP_CONSTANTS.REFRESH_COOKIE_NAME, refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: APP_CONSTANTS.REFRESH_TOKEN_EXPIRY_MS,
+    })
+    .json(ApiResponse.success({ user, isNewUser }, `Welcome, ${user.fullname}`));
+});
+
+/**
  * Refresh endpoint — exchange refresh token for new token pair.
  *
  * Flow:

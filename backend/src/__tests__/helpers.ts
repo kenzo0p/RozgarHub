@@ -16,7 +16,8 @@ export async function createAuthedUser(role: 'employee' | 'employer') {
     username: `testuser${userCounter}`,
     email: `testuser${userCounter}@example.com`,
     password: 'password123',
-    phoneNumber: '9876543210',
+    // Unique 10-digit phone per user (phoneNumber is now unique in the DB)
+    phoneNumber: String(9800000000 + userCounter),
     role,
   };
 

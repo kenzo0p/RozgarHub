@@ -14,6 +14,10 @@ export const APP_CONSTANTS = {
   REFRESH_TOKEN_EXPIRY_MS: 7 * 24 * 60 * 60 * 1000,
   PASSWORD_RESET_EXPIRY_MS: 60 * 60 * 1000, // 1 hour
   BCRYPT_SALT_ROUNDS: 12,
+
+  // Phone OTP login
+  OTP_EXPIRY_MS: 10 * 60 * 1000, // 10 minutes
+  OTP_MAX_ATTEMPTS: 5,
   ACCESS_COOKIE_NAME: 'accessToken',
   REFRESH_COOKIE_NAME: 'refreshToken',
 

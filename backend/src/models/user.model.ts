@@ -9,10 +9,12 @@ const userSchema = new Schema<IUser>(
       trim: true,
       maxlength: [100, 'Name cannot exceed 100 characters'],
     },
+    // Optional: phone-only accounts (OTP signup) have no email. Sparse-unique
+    // so multiple phone-only users without an email don't collide.
     email: {
       type: String,
-      required: [true, 'Email is required'],
       unique: true,
+      sparse: true,
       lowercase: true,
       trim: true,
     },
@@ -24,13 +26,15 @@ const userSchema = new Schema<IUser>(
       minlength: [3, 'Username must be at least 3 characters'],
       maxlength: [30, 'Username cannot exceed 30 characters'],
     },
+    // Primary identifier for OTP login — unique across accounts.
     phoneNumber: {
       type: Number,
       required: [true, 'Phone number is required'],
+      unique: true,
     },
+    // Optional: phone-only accounts have no password (they log in by OTP).
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
     },
     role: {
