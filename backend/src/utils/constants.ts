@@ -18,6 +18,9 @@ export const APP_CONSTANTS = {
   // Phone OTP login
   OTP_EXPIRY_MS: 10 * 60 * 1000, // 10 minutes
   OTP_MAX_ATTEMPTS: 5,
+
+  // Trust: a job hidden from listings once this many distinct workers report it
+  REPORT_FLAG_THRESHOLD: 3,
   ACCESS_COOKIE_NAME: 'accessToken',
   REFRESH_COOKIE_NAME: 'refreshToken',
 

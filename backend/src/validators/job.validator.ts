@@ -59,5 +59,11 @@ export const jobQuerySchema = z.object({
   cursor: z.string().optional(), // For cursor-based pagination
 });
 
+export const reportJobSchema = z.object({
+  reason: z.enum(['fake', 'asks_for_money', 'misleading_pay', 'offensive', 'other']),
+  note: z.string().max(500).optional(),
+});
+
 export type CreateJobInput = z.infer<typeof createJobSchema>;
 export type JobQueryInput = z.infer<typeof jobQuerySchema>;
+export type ReportJobInput = z.infer<typeof reportJobSchema>;

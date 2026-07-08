@@ -7,6 +7,7 @@ import { singleUpload } from '../../middlewares/upload.middleware.js';
 import {
   registerCompanySchema,
   updateCompanySchema,
+  verifyCompanySchema,
 } from '../../validators/company.validator.js';
 
 const router = Router();
@@ -47,6 +48,14 @@ router.put(
   singleUpload,
   validate(updateCompanySchema),
   companyController.updateCompany,
+);
+
+router.post(
+  '/:id/verify',
+  authenticate,
+  authorize('employer'),
+  validate(verifyCompanySchema),
+  companyController.verifyCompany,
 );
 
 export default router;

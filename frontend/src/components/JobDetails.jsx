@@ -24,7 +24,10 @@ import {
   BookmarkCheck,
   Loader2,
   SearchX,
+  Flag,
 } from "lucide-react";
+import VerifiedBadge from "./shared/VerifiedBadge";
+import ReportJobDialog from "./ReportJobDialog";
 
 function MetaChip({ icon: Icon, children, highlight = false }) {
   return (
@@ -58,6 +61,7 @@ function JobDetails() {
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const params = useParams();
   const jobId = params.id;
@@ -179,9 +183,15 @@ function JobDetails() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="font-semibold text-foreground">
-                    {singleJob?.company?.name}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-foreground">
+                      {singleJob?.company?.name}
+                    </p>
+                    <VerifiedBadge
+                      status={singleJob?.company?.verificationStatus}
+                      showUnverified
+                    />
+                  </div>
                   <p className="flex items-center gap-1 text-sm text-muted-foreground">
                     <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                     {location}
@@ -369,9 +379,21 @@ function JobDetails() {
                 </p>
               )}
             </div>
+
+            {/* Report */}
+            <button
+              type="button"
+              onClick={() => setReportOpen(true)}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
+            >
+              <Flag className="h-4 w-4" aria-hidden="true" />
+              Report this job
+            </button>
           </div>
         </div>
       </div>
+
+      <ReportJobDialog open={reportOpen} setOpen={setReportOpen} jobId={jobId} />
     </div>
   );
 }

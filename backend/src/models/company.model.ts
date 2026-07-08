@@ -32,6 +32,18 @@ const companySchema = new Schema<ICompany>(
     logo: {
       type: String,
     },
+    // Trust: employers submit a GST number to get a "Verified" badge that
+    // workers can see, so a scammer can't pose as a legitimate business.
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected'],
+      default: 'unverified',
+    },
+    gstNumber: {
+      type: String,
+      trim: true,
+      uppercase: true,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

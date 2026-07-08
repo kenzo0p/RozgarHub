@@ -20,5 +20,18 @@ export const updateCompanySchema = z.object({
     .or(z.literal('')),
 });
 
+// GSTIN: 15 chars — 2-digit state, 10-char PAN, entity digit, 'Z', checksum.
+export const verifyCompanySchema = z.object({
+  gstNumber: z
+    .string({ error: 'GST number is required' })
+    .trim()
+    .toUpperCase()
+    .regex(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      'Enter a valid 15-character GSTIN',
+    ),
+});
+
 export type RegisterCompanyInput = z.infer<typeof registerCompanySchema>;
 export type UpdateCompanyInput = z.infer<typeof updateCompanySchema>;
+export type VerifyCompanyInput = z.infer<typeof verifyCompanySchema>;

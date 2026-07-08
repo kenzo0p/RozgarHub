@@ -40,3 +40,15 @@ export const updateCompany = asyncHandler(async (req: AuthRequest, res: Response
     ApiResponse.success({ company }, 'Company updated successfully'),
   );
 });
+
+export const verifyCompany = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const company = await companyService.verifyCompany(
+    req.params.id as string,
+    req.body,
+    req.user!.id,
+  );
+
+  res.status(200).json(
+    ApiResponse.success({ company }, 'Company verified successfully'),
+  );
+});

@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin, Briefcase, Users, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
+import VerifiedBadge from "./shared/VerifiedBadge";
 
 function LatestJobCard({ job }) {
   const navigate = useNavigate();
@@ -19,7 +20,12 @@ function LatestJobCard({ job }) {
           {companyInitial}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-semibold text-foreground">{job?.company?.name}</p>
+          <div className="flex items-center gap-1.5">
+            <p className="truncate font-semibold text-foreground">{job?.company?.name}</p>
+            {job?.company?.verificationStatus === "verified" && (
+              <VerifiedBadge status="verified" />
+            )}
+          </div>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" aria-hidden="true" />
             {job?.location || "India"}

@@ -1,7 +1,11 @@
 import { companyRepository } from '../repositories/company.repository.js';
 import { uploadService } from './upload.service.js';
 import { ConflictError, NotFoundError, ForbiddenError } from '../utils/ApiError.js';
-import type { RegisterCompanyInput, UpdateCompanyInput } from '../validators/company.validator.js';
+import type {
+  RegisterCompanyInput,
+  UpdateCompanyInput,
+  VerifyCompanyInput,
+} from '../validators/company.validator.js';
 import type { ICompany } from '../types/models.js';
 import logger from '../utils/logger.js';
 
@@ -67,6 +71,38 @@ export class CompanyService {
     }
 
     logger.info(`Company updated: "${company.name}"`);
+    return company;
+  }
+
+  /**
+   * Submit a GST number to verify a company.
+   *
+   * DEMO: this trusts a valid GSTIN *format* and marks the company verified.
+   * Production must call the GSTN verification API to confirm the business is
+   * real and active — that's an admin/KYC step, so the seam is here.
+   */
+  async verifyCompany(
+    id: string,
+    data: VerifyCompanyInput,
+    userId: string,
+  ): Promise<ICompany> {
+    const existing = await companyRepository.findById(id);
+    if (!existing) {
+      throw new NotFoundError('Company');
+    }
+    if (existing.userId.toString() !== userId) {
+      throw new ForbiddenError('You can only verify your own company');
+    }
+
+    const company = await companyRepository.findByIdAndUpdate(id, {
+      gstNumber: data.gstNumber,
+      verificationStatus: 'verified',
+    });
+    if (!company) {
+      throw new NotFoundError('Company');
+    }
+
+    logger.info(`Company verified: "${company.name}" (GST ${data.gstNumber})`);
     return company;
   }
 }

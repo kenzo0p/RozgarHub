@@ -72,3 +72,15 @@ export const getAdminJobs = asyncHandler(async (req: AuthRequest, res: Response)
     ApiResponse.success({ jobs }, 'Jobs retrieved successfully'),
   );
 });
+
+export const reportJob = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const result = await jobService.reportJob(
+    req.params.id as string,
+    req.user!.id,
+    req.body,
+  );
+
+  res.status(201).json(
+    ApiResponse.success(result, 'Thanks — this job has been reported for review.'),
+  );
+});

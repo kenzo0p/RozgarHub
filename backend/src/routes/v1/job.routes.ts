@@ -3,7 +3,7 @@ import * as jobController from '../../controllers/job.controller.js';
 import { authenticate } from '../../middlewares/auth.middleware.js';
 import { authorize } from '../../middlewares/rbac.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
-import { createJobSchema, jobQuerySchema } from '../../validators/job.validator.js';
+import { createJobSchema, jobQuerySchema, reportJobSchema } from '../../validators/job.validator.js';
 import { cacheResponse } from '../../middlewares/cache.middleware.js';
 import { CACHE_TTL } from '../../utils/cache.js';
 import { auditLog } from '../../middlewares/audit.middleware.js';
@@ -53,6 +53,15 @@ router.get(
   authenticate,
   authorize('employer'),
   jobController.getAdminJobs,
+);
+
+// Workers report a suspicious job
+router.post(
+  '/:id/report',
+  authenticate,
+  authorize('employee'),
+  validate(reportJobSchema),
+  jobController.reportJob,
 );
 
 // No response cache here: the payload includes viewer-specific data

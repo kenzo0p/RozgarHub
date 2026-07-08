@@ -243,11 +243,17 @@ function generateWorker(index: number, hashedPassword: string) {
 
 function generateCompany(index: number, employerId: mongoose.Types.ObjectId) {
   const city = pick(CITIES);
+  // ~60% of seeded companies are verified so the "Verified" badge shows a
+  // realistic mix across listings.
+  const verified = Math.random() < 0.6;
   return {
     name: `${pick(COMPANY_PREFIXES)} ${pick(COMPANY_SUFFIXES)} ${index}`,
     description: pick(COMPANY_DESCRIPTIONS),
     website: `https://company${index}.example.com`,
     location: city,
+    contactPhone: String(9000000000 + index),
+    verificationStatus: verified ? 'verified' : 'unverified',
+    gstNumber: verified ? `27AABCU${String(9000 + (index % 1000)).padStart(4, '0')}A1Z5` : undefined,
     logo: '',
     userId: employerId,
     createdAt: randomDate(300),

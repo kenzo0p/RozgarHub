@@ -72,6 +72,16 @@ const jobSchema = new Schema<IJob>(
         ref: 'Application',
       },
     ],
+    // Trust: set true once a job accrues enough worker reports. Flagged jobs
+    // are hidden from public listings pending review.
+    flagged: {
+      type: Boolean,
+      default: false,
+    },
+    reportCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

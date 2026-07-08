@@ -1,8 +1,10 @@
 import { jobRepository } from '../repositories/job.repository.js';
 import { companyRepository } from '../repositories/company.repository.js';
 import { applicationRepository } from '../repositories/application.repository.js';
-import { NotFoundError, ForbiddenError } from '../utils/ApiError.js';
-import type { CreateJobInput, JobQueryInput } from '../validators/job.validator.js';
+import { Job } from '../models/job.model.js';
+import { Report } from '../models/report.model.js';
+import { NotFoundError, ForbiddenError, ConflictError } from '../utils/ApiError.js';
+import type { CreateJobInput, JobQueryInput, ReportJobInput } from '../validators/job.validator.js';
 import type { IJob } from '../types/models.js';
 import { APP_CONSTANTS } from '../utils/constants.js';
 import { cacheInvalidatePattern } from '../utils/cache.js';
@@ -144,7 +146,8 @@ export class JobService {
    * Extracted for reuse between offset and cursor pagination.
    */
   private buildJobFilter(query: JobQueryInput): Record<string, unknown> {
-    const filter: Record<string, unknown> = {};
+    // Never surface flagged (repeatedly reported) jobs in public listings.
+    const filter: Record<string, unknown> = { flagged: { $ne: true } };
 
     // Keyword search — matches title or description
     if (query.keyword) {
@@ -236,6 +239,48 @@ export class JobService {
 
   async getJobsByCreator(userId: string): Promise<IJob[]> {
     return jobRepository.findByCreator(userId);
+  }
+
+  /**
+   * Report a job as suspicious. One report per user per job; once the report
+   * count crosses the threshold the job is flagged and hidden from listings.
+   */
+  async reportJob(
+    jobId: string,
+    reporterId: string,
+    data: ReportJobInput,
+  ): Promise<{ reported: true; flagged: boolean }> {
+    const job = await jobRepository.findByIdLean(jobId);
+    if (!job) {
+      throw new NotFoundError('Job');
+    }
+
+    try {
+      await Report.create({
+        job: jobId,
+        reporter: reporterId,
+        reason: data.reason,
+        note: data.note,
+      });
+    } catch (error) {
+      // Duplicate key = this user already reported this job
+      if ((error as { code?: number }).code === 11000) {
+        throw new ConflictError('You have already reported this job');
+      }
+      throw error;
+    }
+
+    const reportCount = await Report.countDocuments({ job: jobId });
+    const flagged = reportCount >= APP_CONSTANTS.REPORT_FLAG_THRESHOLD;
+
+    await Job.findByIdAndUpdate(jobId, { reportCount, flagged });
+
+    if (flagged) {
+      logger.warn(`🚩 Job ${jobId} flagged after ${reportCount} reports`);
+      await cacheInvalidatePattern('jobs:*');
+    }
+
+    return { reported: true, flagged };
   }
 }
 

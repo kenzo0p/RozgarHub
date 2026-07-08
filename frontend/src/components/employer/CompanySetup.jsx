@@ -4,12 +4,14 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { ArrowLeft, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, BadgeCheck, ShieldAlert } from "lucide-react";
 import { COMPANY_API_END_POINT } from "@/utils/constant";
 import api from "@/lib/api";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setSingleCompany } from "@/redux/companySlice";
 import useGetCompanyById from "@/hooks/useGetCompanyById";
 
 function CompanySetup() {
@@ -26,7 +28,31 @@ function CompanySetup() {
     file: null,
   });
   const [loading, setLoading] = useState(false);
+  const [gst, setGst] = useState("");
+  const [verifying, setVerifying] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const verifyHandler = async () => {
+    if (!gst.trim()) {
+      toast.error("Enter your GST number.");
+      return;
+    }
+    try {
+      setVerifying(true);
+      const res = await api.post(`${COMPANY_API_END_POINT}/${params.id}/verify`, {
+        gstNumber: gst,
+      });
+      if (res.data.success) {
+        dispatch(setSingleCompany(res.data.data.company));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Verification failed. Please try again.");
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -105,6 +131,47 @@ function CompanySetup() {
               </p>
             </div>
           </div>
+
+          {/* Verification */}
+          {singleCompany?.verificationStatus === "verified" ? (
+            <div className="mt-6 flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-400">
+              <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>
+                <span className="font-semibold">Verified business.</span> Workers
+                see a verified badge on your jobs.
+              </span>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-400">
+                <ShieldAlert className="h-5 w-5 shrink-0" aria-hidden="true" />
+                Get verified to build trust
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Enter your GST number to earn a &ldquo;Verified&rdquo; badge —
+                verified employers get more applications.
+              </p>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <Input
+                  value={gst}
+                  onChange={(e) => setGst(e.target.value.toUpperCase())}
+                  placeholder="27AABCU9603R1ZM"
+                  maxLength={15}
+                  className="uppercase"
+                />
+                <Button type="button" onClick={verifyHandler} disabled={verifying}>
+                  {verifying ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                      Verifying…
+                    </>
+                  ) : (
+                    "Verify"
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={submitHandler} className="mt-6 space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

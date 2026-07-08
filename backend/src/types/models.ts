@@ -43,6 +43,8 @@ export interface ICompany extends Document {
   location?: string;
   contactPhone?: string;
   logo?: string;
+  verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
+  gstNumber?: string;
   userId: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -65,6 +67,8 @@ export interface IJob extends Document {
   company: Types.ObjectId | ICompany;
   created_By: Types.ObjectId;
   applications: Types.ObjectId[];
+  flagged: boolean;
+  reportCount: number;
   createdAt: Date;
   updatedAt: Date;
 }

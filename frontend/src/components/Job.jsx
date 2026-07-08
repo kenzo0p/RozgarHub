@@ -11,6 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
 import useSavedJobs from "../hooks/useSavedJobs";
+import VerifiedBadge from "./shared/VerifiedBadge";
 
 function Job({ job }) {
   const navigate = useNavigate();
@@ -59,9 +60,14 @@ function Job({ job }) {
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <h2 className="truncate font-semibold text-foreground">
-            {job?.company?.name || job?.name}
-          </h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="truncate font-semibold text-foreground">
+              {job?.company?.name || job?.name}
+            </h2>
+            {job?.company?.verificationStatus === "verified" && (
+              <VerifiedBadge status="verified" />
+            )}
+          </div>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" aria-hidden="true" />
             {job?.location || "India"}
