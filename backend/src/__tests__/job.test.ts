@@ -34,6 +34,55 @@ describe('Jobs', () => {
     });
   });
 
+  describe('Wage type', () => {
+    it('stores the wage type and defaults to monthly', async () => {
+      const { cookies } = await createAuthedUser('employer');
+      const company = await createCompany(cookies, 'Wage Corp');
+
+      const daily = await createJob(cookies, company._id, 'Daily Laborer', {
+        salary: 600,
+        wageType: 'daily',
+      });
+      expect(daily.status).toBe(201);
+      expect(daily.body.data.job.wageType).toBe('daily');
+
+      const def = await createJob(cookies, company._id, 'Default Wage Job');
+      expect(def.body.data.job.wageType).toBe('monthly');
+    });
+
+    it('filters jobs by wage type', async () => {
+      const { cookies } = await createAuthedUser('employer');
+      const company = await createCompany(cookies, 'Filter Wage Corp');
+      await createJob(cookies, company._id, 'Daily Job', { wageType: 'daily', salary: 700 });
+      await createJob(cookies, company._id, 'Monthly Job', { wageType: 'monthly', salary: 20000 });
+
+      const res = await api().get('/api/v1/job').query({ wageType: 'daily' });
+      expect(res.status).toBe(200);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].title).toBe('Daily Job');
+    });
+  });
+
+  describe('Geo (near me)', () => {
+    it('returns jobs within the radius and excludes far ones', async () => {
+      const { cookies } = await createAuthedUser('employer');
+      const company = await createCompany(cookies, 'Geo Corp');
+      // Pune job (geocoded from location string) and a Chennai job
+      await createJob(cookies, company._id, 'Pune Welder', { location: 'Pune' });
+      await createJob(cookies, company._id, 'Chennai Welder', { location: 'Chennai' });
+
+      // Search near Pune (18.52, 73.85) within 50km — should find only the Pune job
+      const res = await api()
+        .get('/api/v1/job')
+        .query({ lat: '18.5204', lng: '73.8567', radius: '50' });
+
+      expect(res.status).toBe(200);
+      const titles = res.body.data.map((j: { title: string }) => j.title);
+      expect(titles).toContain('Pune Welder');
+      expect(titles).not.toContain('Chennai Welder');
+    });
+  });
+
   describe('GET /job (search)', () => {
     it('handles regex metacharacters in keyword search without erroring', async () => {
       const { cookies } = await createAuthedUser('employer');

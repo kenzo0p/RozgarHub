@@ -19,6 +19,13 @@ import { ArrowLeft, Loader2, Building2 } from "lucide-react";
 import useGetAllCompanies from "@/hooks/useGetAllCompanies";
 
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
+const WAGE_TYPES = [
+  { value: "monthly", label: "Per month" },
+  { value: "daily", label: "Per day" },
+  { value: "hourly", label: "Per hour" },
+  { value: "weekly", label: "Per week" },
+  { value: "fixed", label: "Fixed / per job" },
+];
 
 function PostJob() {
   // Load the employer's companies so the company dropdown is populated even
@@ -31,6 +38,7 @@ function PostJob() {
     salary: "",
     location: "",
     jobType: "",
+    wageType: "monthly",
     experience: "",
     position: 1,
     companyId: "",
@@ -154,16 +162,34 @@ function PostJob() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="job-salary">Salary (LPA)</Label>
+                  <Label htmlFor="job-salary">Pay amount (₹)</Label>
                   <Input
                     id="job-salary"
                     name="salary"
                     type="number"
                     value={input.salary}
                     onChange={changeEventHandler}
-                    placeholder="3.5"
+                    placeholder="18000"
                     required
                   />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Pay period</Label>
+                  <Select
+                    value={input.wageType}
+                    onValueChange={(v) => setInput({ ...input, wageType: v })}
+                  >
+                    <SelectTrigger aria-label="Pay period">
+                      <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {WAGE_TYPES.map(({ value, label }) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="job-experience">Experience (years)</Label>

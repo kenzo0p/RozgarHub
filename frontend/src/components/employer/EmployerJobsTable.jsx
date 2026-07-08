@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
 import { Button } from "../ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { Briefcase, Users, MapPin, IndianRupee, Plus } from "lucide-react";
+import { Briefcase, Users, MapPin, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { formatWage } from "@/utils/wage";
 
 function JobRow({ job }) {
   const navigate = useNavigate();
@@ -35,9 +36,8 @@ function JobRow({ job }) {
               <MapPin className="h-3 w-3" aria-hidden="true" />
               {job?.location}
             </span>
-            <span className="inline-flex items-center gap-1">
-              <IndianRupee className="h-3 w-3" aria-hidden="true" />
-              {job?.salary} LPA
+            <span className="inline-flex items-center gap-1 font-medium text-foreground">
+              {formatWage(job?.salary, job?.wageType)}
             </span>
             <span className="inline-flex items-center gap-1">
               <Briefcase className="h-3 w-3" aria-hidden="true" />

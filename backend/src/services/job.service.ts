@@ -7,6 +7,7 @@ import type { IJob } from '../types/models.js';
 import { APP_CONSTANTS } from '../utils/constants.js';
 import { cacheInvalidatePattern } from '../utils/cache.js';
 import { buildPaginationMeta } from '../utils/pagination.js';
+import { geocodeLocation } from '../utils/geocode.js';
 import type { PaginationMeta } from '../types/api.js';
 import logger from '../utils/logger.js';
 
@@ -37,12 +38,19 @@ export class JobService {
       throw new ForbiddenError('You can only post jobs for your own company');
     }
 
+    // Resolve the location string to coordinates for "near me" search.
+    // Unknown cities save without geo — still text-searchable, just not
+    // in radius results.
+    const coords = geocodeLocation(data.location);
+
     const job = await jobRepository.create({
       title: data.title,
       description: data.description,
       requirements: data.requirements,
       salary: Number(data.salary),
+      wageType: data.wageType,
       location: data.location,
+      geo: coords ? { type: 'Point', coordinates: coords } : undefined,
       jobType: data.jobType,
       position: Number(data.position),
       experienceLevel: Number(data.experience),
@@ -155,6 +163,30 @@ export class JobService {
     // Job type filter
     if (query.jobType) {
       filter.jobType = { $regex: escapeRegex(query.jobType), $options: 'i' };
+    }
+
+    // Wage type filter (daily / monthly / etc.)
+    if (query.wageType) {
+      filter.wageType = query.wageType;
+    }
+
+    // Proximity filter — jobs within `radius` km of the searcher. Uses the
+    // 2dsphere index via $geoWithin/$centerSphere (which, unlike $near, can
+    // be combined with an explicit sort). Earth radius ≈ 6378 km.
+    if (
+      query.lat !== undefined &&
+      query.lng !== undefined &&
+      !isNaN(Number(query.lat)) &&
+      !isNaN(Number(query.lng))
+    ) {
+      const radiusKm = !isNaN(Number(query.radius)) && Number(query.radius) > 0
+        ? Number(query.radius)
+        : 25; // sensible default for local blue-collar work
+      filter.geo = {
+        $geoWithin: {
+          $centerSphere: [[Number(query.lng), Number(query.lat)], radiusKm / 6378],
+        },
+      };
     }
 
     // Salary range filter

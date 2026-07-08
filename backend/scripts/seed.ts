@@ -54,6 +54,16 @@ const DROP_EXISTING = process.argv.includes('--drop');
 
 const CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Hyderabad'];
 
+// [longitude, latitude] for the seed cities, so seeded jobs have real
+// coordinates and "jobs near me" search works out of the box.
+const CITY_COORDS: Record<string, [number, number]> = {
+  Mumbai: [72.8777, 19.076],
+  Delhi: [77.209, 28.6139],
+  Bangalore: [77.5946, 12.9716],
+  Pune: [73.8567, 18.5204],
+  Hyderabad: [78.4867, 17.385],
+};
+
 const FIRST_NAMES = [
   'Rahul', 'Amit', 'Vikram', 'Suresh', 'Rajesh', 'Manoj', 'Deepak', 'Sanjay',
   'Arun', 'Vijay', 'Prakash', 'Ramesh', 'Ganesh', 'Ashok', 'Mukesh',
@@ -253,7 +263,14 @@ function generateJob(
   const template = pick(JOB_TEMPLATES);
   const city = Math.random() > 0.3 ? companyCity : pick(CITIES);
   const exp = randomInt(0, 5);
-  const salary = randomFloat(template.salaryRange[0], template.salaryRange[1]);
+
+  // Convert the template's LPA range into a realistic blue-collar wage.
+  // Part-Time roles are daily-wage; everything else is monthly.
+  const lpa = randomFloat(template.salaryRange[0], template.salaryRange[1]);
+  const monthly = Math.round((lpa * 100000) / 12 / 500) * 500;
+  const isDaily = template.type === 'Part-Time';
+  const wageType = isDaily ? 'daily' : 'monthly';
+  const salary = isDaily ? Math.round(monthly / 26 / 50) * 50 : monthly;
 
   const descTemplate = pick(JOB_DESCRIPTIONS_TEMPLATES);
   const description = descTemplate
@@ -267,8 +284,10 @@ function generateJob(
     description,
     requirements: template.skills.join(', '),
     salary,
+    wageType,
     experienceLevel: exp,
     location: city,
+    geo: CITY_COORDS[city] ? { type: 'Point', coordinates: CITY_COORDS[city] } : undefined,
     jobType: template.type,
     position: randomInt(1, 10),
     company: companyId,

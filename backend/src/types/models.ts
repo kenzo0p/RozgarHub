@@ -55,8 +55,10 @@ export interface IJob extends Document {
   description: string;
   requirements: string;
   salary: number;
+  wageType: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'fixed';
   experienceLevel: number;
   location: string;
+  geo?: { type: 'Point'; coordinates: [number, number] };
   jobType: string;
   position: number;
   company: Types.ObjectId | ICompany;

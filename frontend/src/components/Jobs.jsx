@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSearchedQuery } from "@/redux/jobSlice";
 import useGetAllJobs from "@/hooks/useGetAllJobs";
 import { motion } from "framer-motion";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, RotateCcw, MapPin, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -20,16 +21,17 @@ import ErrorBoundary from "./shared/ErrorBoundary";
 
 const LOCATIONS = ["Pune", "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"];
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
-const SALARY_RANGES = [
-  { value: "0-3", label: "Up to 3 LPA" },
-  { value: "3-6", label: "3 – 6 LPA" },
-  { value: "6-10", label: "6 – 10 LPA" },
-  { value: "10-", label: "10+ LPA" },
+const WAGE_TYPES = [
+  { value: "daily", label: "Daily wage" },
+  { value: "monthly", label: "Monthly" },
+  { value: "hourly", label: "Hourly" },
+  { value: "weekly", label: "Weekly" },
+  { value: "fixed", label: "Fixed / per job" },
 ];
 const SORT_OPTIONS = [
   { value: "createdAt-desc", label: "Newest first" },
-  { value: "salary-desc", label: "Salary: high to low" },
-  { value: "salary-asc", label: "Salary: low to high" },
+  { value: "salary-desc", label: "Pay: high to low" },
+  { value: "salary-asc", label: "Pay: low to high" },
 ];
 
 const ALL = "all";
@@ -40,32 +42,60 @@ function Jobs() {
 
   const [location, setLocation] = useState(ALL);
   const [jobType, setJobType] = useState(ALL);
-  const [salaryRange, setSalaryRange] = useState(ALL);
+  const [wageType, setWageType] = useState(ALL);
   const [sort, setSort] = useState("createdAt-desc");
+  const [coords, setCoords] = useState(null); // { lat, lng } when "near me" is on
+  const [locating, setLocating] = useState(false);
 
-  const [salaryMin, salaryMax] =
-    salaryRange === ALL ? ["", ""] : salaryRange.split("-");
   const [sortBy, sortOrder] = sort.split("-");
 
   // Server-side filtering — every change refetches from the API
   const { loading, error, total } = useGetAllJobs({
     location: location === ALL ? "" : location,
     jobType: jobType === ALL ? "" : jobType,
-    salaryMin,
-    salaryMax,
+    wageType: wageType === ALL ? "" : wageType,
+    lat: coords?.lat,
+    lng: coords?.lng,
+    radius: coords ? 25 : undefined,
     sortBy,
     sortOrder,
   });
 
   const hasActiveFilters =
-    searchedQuery || location !== ALL || jobType !== ALL || salaryRange !== ALL;
+    searchedQuery || location !== ALL || jobType !== ALL || wageType !== ALL || coords;
 
   const resetFilters = () => {
     dispatch(setSearchedQuery(""));
     setLocation(ALL);
     setJobType(ALL);
-    setSalaryRange(ALL);
+    setWageType(ALL);
     setSort("createdAt-desc");
+    setCoords(null);
+  };
+
+  const toggleNearMe = () => {
+    if (coords) {
+      setCoords(null);
+      return;
+    }
+    if (!navigator.geolocation) {
+      toast.error("Location isn't available on this device.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        // A specific city filter would contradict "near me"
+        setLocation(ALL);
+        setLocating(false);
+      },
+      () => {
+        toast.error("Couldn't get your location. Please allow location access.");
+        setLocating(false);
+      },
+      { timeout: 10000 }
+    );
   };
 
   return (
@@ -92,8 +122,24 @@ function Jobs() {
               />
             </div>
 
+            {/* Near me */}
+            <Button
+              type="button"
+              variant={coords ? "default" : "outline"}
+              onClick={toggleNearMe}
+              disabled={locating}
+              className="gap-1.5"
+            >
+              {locating ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <MapPin className="h-4 w-4" aria-hidden="true" />
+              )}
+              {coords ? "Near me: on" : "Near me"}
+            </Button>
+
             {/* Location */}
-            <Select value={location} onValueChange={setLocation}>
+            <Select value={location} onValueChange={setLocation} disabled={!!coords}>
               <SelectTrigger className="w-[150px]" aria-label="Filter by location">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
@@ -122,14 +168,14 @@ function Jobs() {
               </SelectContent>
             </Select>
 
-            {/* Salary */}
-            <Select value={salaryRange} onValueChange={setSalaryRange}>
-              <SelectTrigger className="w-[140px]" aria-label="Filter by salary">
-                <SelectValue placeholder="Salary" />
+            {/* Wage type */}
+            <Select value={wageType} onValueChange={setWageType}>
+              <SelectTrigger className="w-[150px]" aria-label="Filter by pay period">
+                <SelectValue placeholder="Pay period" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>Any salary</SelectItem>
-                {SALARY_RANGES.map(({ value, label }) => (
+                <SelectItem value={ALL}>Any pay period</SelectItem>
+                {WAGE_TYPES.map(({ value, label }) => (
                   <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>

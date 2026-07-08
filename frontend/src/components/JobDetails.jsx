@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import useSavedJobs from "../hooks/useSavedJobs";
 import { getCityCoords } from "@/utils/cityCoords";
+import { formatWage } from "@/utils/wage";
 import {
   ArrowLeft,
   MapPin,
@@ -194,7 +195,7 @@ function JobDetails() {
 
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <MetaChip icon={IndianRupee} highlight>
-                  {singleJob?.salary} LPA
+                  {formatWage(singleJob?.salary, singleJob?.wageType)}
                 </MetaChip>
                 <MetaChip icon={Briefcase}>{singleJob?.jobType}</MetaChip>
                 <MetaChip icon={Users}>
@@ -272,10 +273,9 @@ function JobDetails() {
           <div className="space-y-6 lg:sticky lg:top-20 lg:self-start">
             {/* Apply card */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <p className="text-sm text-muted-foreground">Salary</p>
+              <p className="text-sm text-muted-foreground">Pay</p>
               <p className="mt-1 text-3xl font-bold text-foreground">
-                ₹{singleJob?.salary}{" "}
-                <span className="text-base font-medium text-muted-foreground">LPA</span>
+                {formatWage(singleJob?.salary, singleJob?.wageType)}
               </p>
 
               <div className="mt-4 divide-y divide-border border-y border-border">

@@ -13,11 +13,13 @@ import useDebounce from "./useDebounce";
  * @param {object} filters
  * @param {string} [filters.location]
  * @param {string} [filters.jobType]
- * @param {string} [filters.salaryMin]
- * @param {string} [filters.salaryMax]
+ * @param {string} [filters.wageType]  - hourly | daily | monthly | ...
+ * @param {number} [filters.lat]       - searcher latitude (near-me)
+ * @param {number} [filters.lng]       - searcher longitude (near-me)
+ * @param {number} [filters.radius]    - radius in km (near-me)
  * @param {string} [filters.sortBy]    - 'createdAt' | 'salary'
  * @param {string} [filters.sortOrder] - 'asc' | 'desc'
- * @returns {{ loading: boolean }}
+ * @returns {{ loading: boolean, error: string|null, total: number }}
  */
 function useGetAllJobs(filters = {}) {
   const dispatch = useDispatch();
@@ -29,7 +31,7 @@ function useGetAllJobs(filters = {}) {
   // Debounce the search query — wait 300ms after user stops typing
   const debouncedQuery = useDebounce(searchedQuery, 300);
 
-  const { location, jobType, salaryMin, salaryMax, sortBy, sortOrder } = filters;
+  const { location, jobType, wageType, lat, lng, radius, sortBy, sortOrder } = filters;
 
   useEffect(() => {
     let cancelled = false;
@@ -41,8 +43,12 @@ function useGetAllJobs(filters = {}) {
         if (debouncedQuery) params.set("keyword", debouncedQuery);
         if (location) params.set("location", location);
         if (jobType) params.set("jobType", jobType);
-        if (salaryMin) params.set("salaryMin", salaryMin);
-        if (salaryMax) params.set("salaryMax", salaryMax);
+        if (wageType) params.set("wageType", wageType);
+        if (lat != null && lng != null) {
+          params.set("lat", String(lat));
+          params.set("lng", String(lng));
+          if (radius) params.set("radius", String(radius));
+        }
         if (sortBy) params.set("sortBy", sortBy);
         if (sortOrder) params.set("sortOrder", sortOrder);
         params.set("limit", "24");
@@ -65,7 +71,7 @@ function useGetAllJobs(filters = {}) {
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, location, jobType, salaryMin, salaryMax, sortBy, sortOrder, dispatch]);
+  }, [debouncedQuery, location, jobType, wageType, lat, lng, radius, sortBy, sortOrder, dispatch]);
 
   return { loading, error, total };
 }

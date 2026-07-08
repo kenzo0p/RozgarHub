@@ -15,6 +15,9 @@ export const createJobSchema = z.object({
     .number({ error: 'Salary is required' })
     .or(z.string().transform(Number))
     .pipe(z.number().min(0, 'Salary cannot be negative')),
+  wageType: z
+    .enum(['hourly', 'daily', 'weekly', 'monthly', 'yearly', 'fixed'])
+    .default('monthly'),
   location: z
     .string({ error: 'Location is required' })
     .min(2, 'Location is required')
@@ -42,6 +45,13 @@ export const jobQuerySchema = z.object({
   jobType: z.string().optional(),
   salaryMin: z.string().transform(Number).optional(),
   salaryMax: z.string().transform(Number).optional(),
+  wageType: z
+    .enum(['hourly', 'daily', 'weekly', 'monthly', 'yearly', 'fixed'])
+    .optional(),
+  // Proximity ("jobs near me"): searcher's lat/lng + radius in km
+  lat: z.string().transform(Number).optional(),
+  lng: z.string().transform(Number).optional(),
+  radius: z.string().transform(Number).optional(),
   page: z.string().transform(Number).optional(),
   limit: z.string().transform(Number).optional(),
   sortBy: z.enum(['createdAt', 'salary', 'position']).optional(),

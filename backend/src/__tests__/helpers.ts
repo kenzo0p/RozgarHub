@@ -56,7 +56,12 @@ export async function createCompany(cookies: string[], name: string) {
 /**
  * Post a job for the given company (cookie-authenticated employer).
  */
-export async function createJob(cookies: string[], companyId: string, title = 'Backend Engineer') {
+export async function createJob(
+  cookies: string[],
+  companyId: string,
+  title = 'Backend Engineer',
+  overrides: Record<string, unknown> = {},
+) {
   const res = await api()
     .post('/api/v1/job')
     .set('Cookie', cookies)
@@ -70,6 +75,7 @@ export async function createJob(cookies: string[], companyId: string, title = 'B
       position: 2,
       experience: 1,
       companyId,
+      ...overrides,
     });
   return res;
 }

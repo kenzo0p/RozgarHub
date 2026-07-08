@@ -6,10 +6,10 @@ import {
   MapPin,
   Briefcase,
   Users,
-  IndianRupee,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { formatWage } from "@/utils/wage";
 import useSavedJobs from "../hooks/useSavedJobs";
 
 function Job({ job }) {
@@ -79,9 +79,8 @@ function Job({ job }) {
 
       {/* Meta chips */}
       <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-medium">
-        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-primary">
-          <IndianRupee className="h-3 w-3" aria-hidden="true" />
-          {job?.salary} LPA
+        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 font-semibold text-primary">
+          {formatWage(job?.salary, job?.wageType)}
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Briefcase className="h-3 w-3" aria-hidden="true" />

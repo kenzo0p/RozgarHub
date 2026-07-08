@@ -1,6 +1,7 @@
 import React from "react";
-import { MapPin, Briefcase, Users, IndianRupee, ArrowUpRight } from "lucide-react";
+import { MapPin, Briefcase, Users, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatWage } from "@/utils/wage";
 
 function LatestJobCard({ job }) {
   const navigate = useNavigate();
@@ -40,9 +41,8 @@ function LatestJobCard({ job }) {
 
       {/* Meta chips */}
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-4 text-xs font-medium">
-        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-primary">
-          <IndianRupee className="h-3 w-3" aria-hidden="true" />
-          {job?.salary} LPA
+        <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 font-semibold text-primary">
+          {formatWage(job?.salary, job?.wageType)}
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Briefcase className="h-3 w-3" aria-hidden="true" />

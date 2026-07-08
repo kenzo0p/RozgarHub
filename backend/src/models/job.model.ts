@@ -22,6 +22,20 @@ const jobSchema = new Schema<IJob>(
       required: [true, 'Salary is required'],
       min: [0, 'Salary cannot be negative'],
     },
+    // Wage period for the salary amount. Blue-collar work is paid daily,
+    // hourly, or per-job far more often than annually — 'yearly' is kept
+    // only for backward compatibility with legacy LPA data.
+    wageType: {
+      type: String,
+      enum: ['hourly', 'daily', 'weekly', 'monthly', 'yearly', 'fixed'],
+      default: 'monthly',
+    },
+    // GeoJSON point [longitude, latitude] for proximity ("jobs near me")
+    // search. Derived from the location string when the job is created.
+    geo: {
+      type: { type: String, enum: ['Point'], default: 'Point' },
+      coordinates: { type: [Number], default: undefined }, // [lng, lat]
+    },
     experienceLevel: {
       type: Number,
       required: [true, 'Experience level is required'],
@@ -78,5 +92,6 @@ jobSchema.index({ location: 1, jobType: 1 });
 jobSchema.index({ created_By: 1, createdAt: -1 });
 jobSchema.index({ salary: 1 });
 jobSchema.index({ createdAt: -1 }); // Default sort order
+jobSchema.index({ geo: '2dsphere' }); // Proximity search
 
 export const Job: Model<IJob> = mongoose.model<IJob>('Job', jobSchema);
