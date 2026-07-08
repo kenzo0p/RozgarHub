@@ -56,8 +56,39 @@ export class ApplicationService {
     return application;
   }
 
-  async getAppliedJobs(applicantId: string): Promise<IApplication[]> {
-    return applicationRepository.findByApplicant(applicantId);
+  async getAppliedJobs(applicantId: string): Promise<unknown[]> {
+    const applications = await applicationRepository.findByApplicant(applicantId);
+
+    // Reveal the employer's contact only once the worker is accepted — before
+    // that it stays private. The raw created_By (which carries the employer's
+    // phone) is stripped from every row so it never leaks on non-accepted ones.
+    return applications.map((app) => {
+      const application = app as unknown as {
+        status: string;
+        job?: {
+          company?: { name?: string; contactPhone?: string };
+          created_By?: { fullname?: string; phoneNumber?: number };
+        };
+      };
+      const job = application.job;
+      const employer = job?.created_By;
+
+      let employerContact = null;
+      if (application.status === 'accepted' && job) {
+        const phone = job.company?.contactPhone || employer?.phoneNumber;
+        if (phone) {
+          employerContact = {
+            phone: String(phone),
+            name: job.company?.name || employer?.fullname || 'Employer',
+          };
+        }
+      }
+
+      // Drop the populated employer object so its phone never ships raw.
+      if (job) delete job.created_By;
+
+      return { ...application, employerContact };
+    });
   }
 
   async getApplicantsForJob(jobId: string, employerId: string): Promise<unknown> {

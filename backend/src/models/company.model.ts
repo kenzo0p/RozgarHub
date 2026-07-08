@@ -22,6 +22,13 @@ const companySchema = new Schema<ICompany>(
       type: String,
       trim: true,
     },
+    // Business contact number shown to accepted applicants so they can
+    // call/WhatsApp the employer. Kept separate from the owner's personal
+    // login phone.
+    contactPhone: {
+      type: String,
+      trim: true,
+    },
     logo: {
       type: String,
     },

@@ -20,7 +20,12 @@ export class ApplicationRepository {
       .sort({ createdAt: -1 })
       .populate({
         path: 'job',
-        populate: { path: 'company' },
+        populate: [
+          { path: 'company' },
+          // Employer's name/phone — used to build the contact shown to
+          // accepted applicants (stripped for non-accepted in the service).
+          { path: 'created_By', select: 'fullname phoneNumber' },
+        ],
       })
       .lean()
       .exec() as unknown as Promise<IApplication[]>;

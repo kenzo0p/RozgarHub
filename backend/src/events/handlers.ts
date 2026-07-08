@@ -2,7 +2,25 @@ import { eventBus } from './eventBus.js';
 import { notificationService } from '../services/notification.service.js';
 import { NOTIFICATION_TYPES } from '../utils/constants.js';
 import { cacheInvalidatePattern } from '../utils/cache.js';
+import { sendSms } from '../utils/sms.js';
+import { userRepository } from '../repositories/user.repository.js';
 import logger from '../utils/logger.js';
+
+/**
+ * Send an SMS to a user by id — fire-and-forget. In-app notifications reach
+ * users who open the app; blue-collar workers largely won't, so the important
+ * moments (new application, accept/reject) also go out over SMS.
+ */
+async function notifyBySms(userId: string, message: string): Promise<void> {
+  try {
+    const user = await userRepository.findById(userId, 'phoneNumber');
+    if (user?.phoneNumber) {
+      await sendSms(user.phoneNumber, message);
+    }
+  } catch (error) {
+    logger.warn(`SMS notification failed for user ${userId}: ${(error as Error).message}`);
+  }
+}
 
 /**
  * Event Handlers — react to domain events.
@@ -31,6 +49,12 @@ export function registerEventHandlers(): void {
       relatedEntity: { kind: 'Application', id: payload.applicationId },
     });
 
+    // Also reach the employer over SMS
+    await notifyBySms(
+      payload.employerId,
+      `RozgarHub: New application for "${payload.jobTitle}". Open the app to review.`,
+    );
+
     // Invalidate analytics caches (trending jobs, employer dashboard)
     await cacheInvalidatePattern('analytics:*');
 
@@ -52,6 +76,13 @@ export function registerEventHandlers(): void {
       message: `Your application for "${payload.jobTitle}" has been ${statusText}`,
       relatedEntity: { kind: 'Application', id: payload.applicationId },
     });
+
+    // SMS the worker — accepted workers are told to open the app for the
+    // employer's contact details.
+    const smsBody = payload.newStatus === 'accepted'
+      ? `RozgarHub: Good news! You've been accepted for "${payload.jobTitle}". Open the app to contact the employer.`
+      : `RozgarHub: Update on your application for "${payload.jobTitle}": ${statusText}.`;
+    await notifyBySms(payload.applicantId, smsBody);
 
     logger.info(`[Event] application.statusChanged → notification sent to applicant ${payload.applicantId}`);
   });

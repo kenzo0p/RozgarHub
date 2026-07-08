@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Inbox } from "lucide-react";
 import { Button } from "./ui/button";
+import ContactButtons from "./shared/ContactButtons";
 
 const STATUS_STYLES = {
   pending:
@@ -47,7 +48,8 @@ function AppliedJobTable() {
           <TableHead>Applied on</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Company</TableHead>
-          <TableHead className="text-right">Status</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Contact</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -66,7 +68,7 @@ function AppliedJobTable() {
             <TableCell className="text-muted-foreground">
               {appliedJob.job?.company?.name}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell>
               <span
                 className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
                   STATUS_STYLES[appliedJob?.status] || STATUS_STYLES.pending
@@ -74,6 +76,20 @@ function AppliedJobTable() {
               >
                 {appliedJob.status}
               </span>
+            </TableCell>
+            <TableCell
+              className="text-right"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {appliedJob.status === "accepted" && appliedJob.employerContact ? (
+                <ContactButtons
+                  phone={appliedJob.employerContact.phone}
+                  size="xs"
+                  message={`Hi, I was accepted for "${appliedJob.job?.title}" on RozgarHub.`}
+                />
+              ) : (
+                <span className="text-xs text-muted-foreground">—</span>
+              )}
             </TableCell>
           </TableRow>
         ))}

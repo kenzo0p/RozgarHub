@@ -22,6 +22,7 @@ function CompanySetup() {
     description: "",
     website: "",
     location: "",
+    contactPhone: "",
     file: null,
   });
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ function CompanySetup() {
     formData.append("description", input.description);
     formData.append("website", input.website);
     formData.append("location", input.location);
+    formData.append("contactPhone", input.contactPhone);
     if (input.file) {
       formData.append("file", input.file);
     }
@@ -68,6 +70,7 @@ function CompanySetup() {
       description: singleCompany.description || "",
       website: singleCompany.website || "",
       location: singleCompany.location || "",
+      contactPhone: singleCompany.contactPhone || "",
       file: null,
     });
   }, [singleCompany]);
@@ -129,16 +132,32 @@ function CompanySetup() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="company-website">Website</Label>
-              <Input
-                id="company-website"
-                type="text"
-                name="website"
-                value={input.website}
-                onChange={changeEventHandler}
-                placeholder="https://example.com"
-              />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="company-website">Website</Label>
+                <Input
+                  id="company-website"
+                  type="text"
+                  name="website"
+                  value={input.website}
+                  onChange={changeEventHandler}
+                  placeholder="https://example.com"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="company-contact">Contact number</Label>
+                <Input
+                  id="company-contact"
+                  type="tel"
+                  name="contactPhone"
+                  value={input.contactPhone}
+                  onChange={changeEventHandler}
+                  placeholder="98765 43210"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Shown to workers you accept so they can call or WhatsApp you.
+                </p>
+              </div>
             </div>
 
             <div className="space-y-1.5">

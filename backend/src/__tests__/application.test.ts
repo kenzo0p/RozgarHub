@@ -11,6 +11,34 @@ async function setupJob() {
   return { employer, company, jobId: jobRes.body.data.job._id as string };
 }
 
+describe('Employer contact reveal', () => {
+  it('hides the employer contact until accepted, then reveals it', async () => {
+    const { jobId, employer } = await setupJob();
+    const employee = await createAuthedUser('employee');
+
+    const applyRes = await api()
+      .post(`/api/v1/application/apply/${jobId}`)
+      .set('Cookie', employee.cookies);
+    const applicationId = applyRes.body.data.application._id;
+
+    // Pending → no contact
+    const before = await api().get('/api/v1/application').set('Cookie', employee.cookies);
+    expect(before.status).toBe(200);
+    expect(before.body.data.applications[0].employerContact).toBeNull();
+
+    // Accept
+    await api()
+      .patch(`/api/v1/application/${applicationId}/status`)
+      .set('Cookie', employer.cookies)
+      .send({ status: 'accepted' });
+
+    // Accepted → contact present (falls back to employer's phone)
+    const after = await api().get('/api/v1/application').set('Cookie', employee.cookies);
+    expect(after.body.data.applications[0].employerContact).not.toBeNull();
+    expect(after.body.data.applications[0].employerContact.phone).toMatch(/^\d{10}$/);
+  });
+});
+
 describe('Applications', () => {
   describe('POST /application/apply/:id', () => {
     it('lets an employee apply to a job', async () => {

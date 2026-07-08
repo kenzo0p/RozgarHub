@@ -41,6 +41,7 @@ export interface ICompany extends Document {
   description?: string;
   website?: string;
   location?: string;
+  contactPhone?: string;
   logo?: string;
   userId: Types.ObjectId;
   createdAt: Date;

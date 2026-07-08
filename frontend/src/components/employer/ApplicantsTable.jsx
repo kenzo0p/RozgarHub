@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
+import ContactButtons from "../shared/ContactButtons";
 
 const STATUS_STYLES = {
   pending:
@@ -101,10 +102,18 @@ function ApplicantsTable() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm text-foreground">{applicant?.email}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {applicant?.phoneNumber}
-                  </div>
+                  {applicant?.email && (
+                    <div className="text-sm text-foreground">{applicant.email}</div>
+                  )}
+                  {applicant?.phoneNumber && (
+                    <div className="mt-1">
+                      <ContactButtons
+                        phone={applicant.phoneNumber}
+                        size="xs"
+                        message={`Hi ${applicant?.fullname || ""}, regarding your application on RozgarHub.`}
+                      />
+                    </div>
+                  )}
                 </TableCell>
                 <TableCell>
                   {applicant?.profile?.resume ? (

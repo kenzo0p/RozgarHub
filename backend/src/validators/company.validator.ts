@@ -13,6 +13,11 @@ export const updateCompanySchema = z.object({
   description: z.string().max(2000).optional(),
   website: z.string().url('Invalid website URL').optional().or(z.literal('')),
   location: z.string().max(200).trim().optional(),
+  contactPhone: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit mobile number')
+    .optional()
+    .or(z.literal('')),
 });
 
 export type RegisterCompanyInput = z.infer<typeof registerCompanySchema>;
