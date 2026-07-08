@@ -4,11 +4,13 @@ import LatestJobCard from "./LatestJobCard";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSearchedQuery } from "@/redux/jobSlice";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function LatestJobs() {
   const { allJobs } = useSelector((store) => store.job);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const viewAllHandler = () => {
     dispatch(setSearchedQuery(""));
@@ -21,10 +23,10 @@ function LatestJobs() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 id="latest-jobs-heading" className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Latest openings
+              {t("latest.heading")}
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Fresh opportunities, posted by verified employers
+              {t("latest.subtitle")}
             </p>
           </div>
           <button
@@ -32,7 +34,7 @@ function LatestJobs() {
             onClick={viewAllHandler}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
           >
-            View all jobs
+            {t("latest.viewAll")}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
@@ -40,9 +42,9 @@ function LatestJobs() {
         {allJobs.length <= 0 ? (
           <div className="mt-10 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
             <SearchX className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-            <p className="font-medium text-foreground">No jobs available right now</p>
+            <p className="font-medium text-foreground">{t("latest.none")}</p>
             <p className="text-sm text-muted-foreground">
-              Check back soon — new openings are posted every day.
+              {t("latest.noneSub")}
             </p>
           </div>
         ) : (

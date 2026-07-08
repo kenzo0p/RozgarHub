@@ -10,6 +10,7 @@ import api from "@/lib/api";
 import { AUTH_API_END_POINT } from "@/utils/constant";
 import { setUser } from "@/redux/authSlice";
 import { RoleSelector } from "./AuthLayout";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Phone + OTP login/signup.
@@ -28,6 +29,7 @@ function PhoneOtpForm() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const requestOtp = async (e) => {
     e.preventDefault();
@@ -92,7 +94,7 @@ function PhoneOtpForm() {
     return (
       <form onSubmit={requestOtp} className="space-y-5">
         <div className="space-y-1.5">
-          <Label htmlFor="phone">Mobile number</Label>
+          <Label htmlFor="phone">{t("auth.mobileNumber")}</Label>
           <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <span className="text-sm text-muted-foreground">+91</span>
             <input
@@ -112,10 +114,10 @@ function PhoneOtpForm() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              Sending code…
+              {t("auth.sendingCode")}
             </>
           ) : (
-            "Send code"
+            t("auth.sendCode")
           )}
         </Button>
       </form>
@@ -130,11 +132,11 @@ function PhoneOtpForm() {
         className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        Change number
+        {t("auth.changeNumber")}
       </button>
 
       <div className="space-y-1.5">
-        <Label htmlFor="otp">Enter the 6-digit code sent to +91 {phone}</Label>
+        <Label htmlFor="otp">{t("auth.enterCode", { phone })}</Label>
         <Input
           id="otp"
           type="text"
@@ -150,7 +152,7 @@ function PhoneOtpForm() {
       {isNewUser && (
         <>
           <div className="space-y-1.5">
-            <Label htmlFor="otp-fullname">Your name</Label>
+            <Label htmlFor="otp-fullname">{t("auth.yourName")}</Label>
             <Input
               id="otp-fullname"
               type="text"
@@ -160,7 +162,7 @@ function PhoneOtpForm() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label>How will you use RozgarHub?</Label>
+            <Label>{t("auth.howUse")}</Label>
             <RoleSelector value={role} onChange={setRole} />
           </div>
         </>
@@ -170,12 +172,12 @@ function PhoneOtpForm() {
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-            Verifying…
+            {t("auth.verifying")}
           </>
         ) : isNewUser ? (
-          "Create account"
+          t("auth.createAccount")
         ) : (
-          "Log in"
+          t("auth.login")
         )}
       </Button>
     </form>

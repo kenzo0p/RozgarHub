@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2, User, Briefcase, Eye, EyeOff } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const SELLING_POINTS = [
   "Thousands of verified job openings",
@@ -66,27 +67,18 @@ export function AuthLayout({ title, subtitle, children }) {
 }
 
 const ROLES = [
-  {
-    value: "employee",
-    icon: User,
-    label: "I'm looking for work",
-    hint: "Find and apply to jobs",
-  },
-  {
-    value: "employer",
-    icon: Briefcase,
-    label: "I'm hiring",
-    hint: "Post jobs, review applicants",
-  },
+  { value: "employee", icon: User, labelKey: "auth.lookingForWork", hintKey: "auth.lookingForWorkSub" },
+  { value: "employer", icon: Briefcase, labelKey: "auth.hiring", hintKey: "auth.hiringSub" },
 ];
 
 /**
  * Segmented role picker — replaces the old unlabeled radio inputs.
  */
 export function RoleSelector({ value, onChange }) {
+  const { t } = useI18n();
   return (
     <div role="radiogroup" aria-label="Account type" className="grid grid-cols-2 gap-3">
-      {ROLES.map(({ value: role, icon: Icon, label, hint }) => {
+      {ROLES.map(({ value: role, icon: Icon, labelKey, hintKey }) => {
         const selected = value === role;
         return (
           <button
@@ -105,8 +97,8 @@ export function RoleSelector({ value, onChange }) {
               className={`h-5 w-5 ${selected ? "text-primary" : "text-muted-foreground"}`}
               aria-hidden="true"
             />
-            <p className="mt-2 text-sm font-semibold text-foreground">{label}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
+            <p className="mt-2 text-sm font-semibold text-foreground">{t(labelKey)}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t(hintKey)}</p>
           </button>
         );
       })}

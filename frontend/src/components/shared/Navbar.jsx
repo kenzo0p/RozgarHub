@@ -12,11 +12,14 @@ import api from "@/lib/api";
 import { Link as LinkScroll } from "react-scroll";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
+import LanguageToggle from "./LanguageToggle";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function Navbar() {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const logoutHandler = async () => {
     try {
@@ -52,10 +55,10 @@ function Navbar() {
             {user && user.role === "employer" ? (
               <>
                 <Link to="/admin/companies">
-                  <li className="hover:text-primary transition-colors">Companies</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.companies")}</li>
                 </Link>
                 <Link to="/admin/jobs">
-                  <li className="hover:text-primary transition-colors">Jobs</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.jobs")}</li>
                 </Link>
               </>
             ) : user ? (
@@ -63,19 +66,19 @@ function Navbar() {
                  Home/About links here */
               <>
                 <Link to="/jobs">
-                  <li className="hover:text-primary transition-colors">Jobs</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.jobs")}</li>
                 </Link>
                 <Link to="/profile">
-                  <li className="hover:text-primary transition-colors">My applications</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.myApplications")}</li>
                 </Link>
               </>
             ) : (
               <>
                 <Link to="/">
-                  <li className="hover:text-primary transition-colors">Home</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.home")}</li>
                 </Link>
                 <Link to="/jobs">
-                  <li className="hover:text-primary transition-colors">Jobs</li>
+                  <li className="hover:text-primary transition-colors">{t("nav.jobs")}</li>
                 </Link>
                 <LinkScroll
                   className="cursor-pointer hover:text-primary transition-colors"
@@ -84,7 +87,7 @@ function Navbar() {
                   duration={500}
                   offset={-50}
                 >
-                  About us
+                  {t("nav.about")}
                 </LinkScroll>
               </>
             )}
@@ -92,6 +95,7 @@ function Navbar() {
 
           {/* Action buttons */}
           <div className="flex items-center gap-1">
+            <LanguageToggle />
             <ThemeToggle />
             {user && <NotificationBell />}
           </div>
@@ -100,10 +104,10 @@ function Navbar() {
           {!user ? (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="outline">Login</Button>
+                <Button variant="outline">{t("nav.login")}</Button>
               </Link>
               <Link to="/signup">
-                <Button>Signup</Button>
+                <Button>{t("nav.signup")}</Button>
               </Link>
             </div>
           ) : (
@@ -149,7 +153,7 @@ function Navbar() {
                       className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      View profile
+                      {t("nav.viewProfile")}
                     </Link>
                   ) : (
                     <Link
@@ -157,7 +161,7 @@ function Navbar() {
                       className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      My companies
+                      {t("nav.myCompanies")}
                     </Link>
                   )}
                   <button
@@ -166,7 +170,7 @@ function Navbar() {
                     className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
                   >
                     <LogOut className="h-4 w-4" aria-hidden="true" />
-                    Logout
+                    {t("nav.logout")}
                   </button>
                 </div>
               </PopoverContent>
@@ -176,6 +180,7 @@ function Navbar() {
 
         {/* Dropdown Menu for Mobile */}
         <div className="flex md:hidden items-center gap-1">
+          <LanguageToggle />
           <ThemeToggle />
           {user && <NotificationBell />}
           <Popover>

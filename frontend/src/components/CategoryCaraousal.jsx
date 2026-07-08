@@ -21,6 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setSearchedQuery } from "@/redux/jobSlice";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const CATEGORIES = [
   { label: "Carpenter", icon: Hammer },
@@ -49,6 +50,7 @@ const CATEGORIES = [
 function CategoryCaraousal() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useI18n();
 
   const searchJobHandler = (query) => {
     dispatch(setSearchedQuery(query));
@@ -59,10 +61,10 @@ function CategoryCaraousal() {
     <section aria-labelledby="trades-heading" className="mx-auto max-w-5xl px-4 py-12">
       <div className="text-center">
         <h2 id="trades-heading" className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Browse by trade
+          {t("trades.heading")}
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Jump straight to the work you know best
+          {t("trades.subtitle")}
         </p>
       </div>
 

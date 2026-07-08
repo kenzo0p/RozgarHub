@@ -18,6 +18,7 @@ import {
 import { JobListSkeleton } from "./shared/Skeleton";
 import EmptyState from "./shared/EmptyState";
 import ErrorBoundary from "./shared/ErrorBoundary";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const LOCATIONS = ["Pune", "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"];
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
@@ -28,16 +29,11 @@ const WAGE_TYPES = [
   { value: "weekly", label: "Weekly" },
   { value: "fixed", label: "Fixed / per job" },
 ];
-const SORT_OPTIONS = [
-  { value: "createdAt-desc", label: "Newest first" },
-  { value: "salary-desc", label: "Pay: high to low" },
-  { value: "salary-asc", label: "Pay: low to high" },
-];
-
 const ALL = "all";
 
 function Jobs() {
   const dispatch = useDispatch();
+  const { t } = useI18n();
   const { allJobs, searchedQuery } = useSelector((store) => store.job);
 
   const [location, setLocation] = useState(ALL);
@@ -48,6 +44,12 @@ function Jobs() {
   const [locating, setLocating] = useState(false);
 
   const [sortBy, sortOrder] = sort.split("-");
+
+  const SORT_OPTIONS = [
+    { value: "createdAt-desc", label: t("jobs.newest") },
+    { value: "salary-desc", label: t("jobs.salaryHigh") },
+    { value: "salary-asc", label: t("jobs.salaryLow") },
+  ];
 
   // Server-side filtering — every change refetches from the API
   const { loading, error, total } = useGetAllJobs({
@@ -110,14 +112,14 @@ function Jobs() {
             <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-border bg-card px-3 focus-within:border-primary/50">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <label htmlFor="jobs-search" className="sr-only">
-                Search jobs
+                {t("jobs.findJobs")}
               </label>
               <input
                 id="jobs-search"
                 type="text"
                 value={searchedQuery}
                 onChange={(e) => dispatch(setSearchedQuery(e.target.value))}
-                placeholder="Search title, trade, or keyword…"
+                placeholder={t("jobs.searchPlaceholder")}
                 className="h-10 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
             </div>
@@ -135,16 +137,16 @@ function Jobs() {
               ) : (
                 <MapPin className="h-4 w-4" aria-hidden="true" />
               )}
-              {coords ? "Near me: on" : "Near me"}
+              {t("jobs.nearMe")}
             </Button>
 
             {/* Location */}
             <Select value={location} onValueChange={setLocation} disabled={!!coords}>
-              <SelectTrigger className="w-[150px]" aria-label="Filter by location">
-                <SelectValue placeholder="Location" />
+              <SelectTrigger className="w-[150px]" aria-label={t("jobs.location")}>
+                <SelectValue placeholder={t("jobs.location")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>All locations</SelectItem>
+                <SelectItem value={ALL}>{t("jobs.allLocations")}</SelectItem>
                 {LOCATIONS.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
@@ -155,11 +157,11 @@ function Jobs() {
 
             {/* Job type */}
             <Select value={jobType} onValueChange={setJobType}>
-              <SelectTrigger className="w-[140px]" aria-label="Filter by job type">
-                <SelectValue placeholder="Job type" />
+              <SelectTrigger className="w-[140px]" aria-label={t("jobs.jobType")}>
+                <SelectValue placeholder={t("jobs.jobType")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>All types</SelectItem>
+                <SelectItem value={ALL}>{t("jobs.allTypes")}</SelectItem>
                 {JOB_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
@@ -170,11 +172,11 @@ function Jobs() {
 
             {/* Wage type */}
             <Select value={wageType} onValueChange={setWageType}>
-              <SelectTrigger className="w-[150px]" aria-label="Filter by pay period">
-                <SelectValue placeholder="Pay period" />
+              <SelectTrigger className="w-[150px]" aria-label={t("jobs.salary")}>
+                <SelectValue placeholder={t("jobs.salary")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={ALL}>Any pay period</SelectItem>
+                <SelectItem value={ALL}>{t("jobs.anySalary")}</SelectItem>
                 {WAGE_TYPES.map(({ value, label }) => (
                   <SelectItem key={value} value={value}>
                     {label}
@@ -205,7 +207,7 @@ function Jobs() {
                 className="gap-1.5 text-muted-foreground"
               >
                 <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-                Reset
+                {t("jobs.reset")}
               </Button>
             )}
           </div>
@@ -216,12 +218,13 @@ function Jobs() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="flex items-baseline justify-between">
           <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            {searchedQuery ? `Results for “${searchedQuery}”` : "Find jobs"}
+            {searchedQuery ? t("jobs.resultsFor", { q: searchedQuery }) : t("jobs.findJobs")}
           </h1>
           {!loading && (
             <p className="text-sm text-muted-foreground">
-              {total.toLocaleString("en-IN")} {total === 1 ? "job" : "jobs"}
-              {total > (allJobs?.length || 0) && ` · showing first ${allJobs.length}`}
+              {total.toLocaleString("en-IN")} {total === 1 ? t("jobs.job") : t("jobs.jobsCount")}
+              {total > (allJobs?.length || 0) &&
+                ` · ${t("jobs.showingFirst", { n: allJobs.length })}`}
             </p>
           )}
         </div>
@@ -235,7 +238,7 @@ function Jobs() {
             <div className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
               <p className="font-medium text-foreground">{error}</p>
               <Button variant="outline" onClick={() => window.location.reload()}>
-                Retry
+                {t("jobs.retry")}
               </Button>
             </div>
           ) : !allJobs || allJobs.length === 0 ? (
@@ -244,7 +247,7 @@ function Jobs() {
               {hasActiveFilters && (
                 <div className="mt-4 text-center">
                   <Button variant="outline" onClick={resetFilters}>
-                    Clear filters and show all jobs
+                    {t("jobs.clearFilters")}
                   </Button>
                 </div>
               )}

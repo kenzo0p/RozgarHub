@@ -12,10 +12,12 @@ import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
 import useSavedJobs from "../hooks/useSavedJobs";
 import VerifiedBadge from "./shared/VerifiedBadge";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function Job({ job }) {
   const navigate = useNavigate();
   const { isJobSaved, toggleSave } = useSavedJobs();
+  const { t } = useI18n();
   const saved = isJobSaved(job?._id);
 
   const daysAgoFunction = (mongodbtime) => {
@@ -32,7 +34,7 @@ function Job({ job }) {
       {/* Header: date + bookmark */}
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {daysAgo === 0 ? "Posted today" : `${daysAgo} days ago`}
+          {daysAgo === 0 ? t("card.postedToday") : t("card.daysAgo", { n: daysAgo })}
         </p>
         <Button
           variant="ghost"
@@ -94,14 +96,14 @@ function Job({ job }) {
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Users className="h-3 w-3" aria-hidden="true" />
-          {job?.position} {job?.position === 1 ? "opening" : "openings"}
+          {job?.position} {job?.position === 1 ? t("card.opening") : t("card.openings")}
         </span>
       </div>
 
       {/* Actions */}
       <div className="mt-auto flex items-center gap-2 pt-4">
         <Button onClick={() => navigate(`/details/${job?._id}`)} className="flex-1" size="sm">
-          View details
+          {t("card.viewDetails")}
         </Button>
         <Button
           onClick={() => toggleSave(job?._id)}
@@ -109,7 +111,7 @@ function Job({ job }) {
           size="sm"
           className={saved ? "border-primary/40 text-primary" : ""}
         >
-          {saved ? "Saved" : "Save"}
+          {saved ? t("card.saved") : t("card.save")}
         </Button>
       </div>
     </div>

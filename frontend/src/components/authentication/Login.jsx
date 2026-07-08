@@ -11,6 +11,7 @@ import { setLoading, setUser } from "@/redux/authSlice";
 import { Loader2, Phone, Mail } from "lucide-react";
 import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
 import PhoneOtpForm from "./PhoneOtpForm";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function Login() {
   // Phone is the default path — it's the primary way this audience signs in.
@@ -23,6 +24,7 @@ function Login() {
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useI18n();
   const { loading, user } = useSelector((store) => store.auth);
 
   const changeEventHandler = (e) => {
@@ -61,8 +63,8 @@ function Login() {
 
   return (
     <AuthLayout
-      title="Welcome back"
-      subtitle="Log in to continue your job search or manage your postings."
+      title={t("auth.welcomeBack")}
+      subtitle={t("auth.loginSubtitle")}
     >
       {/* Method toggle */}
       <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-border bg-muted/50 p-1">
@@ -76,7 +78,7 @@ function Login() {
           }`}
         >
           <Phone className="h-4 w-4" aria-hidden="true" />
-          Phone / OTP
+          {t("auth.phoneOtp")}
         </button>
         <button
           type="button"
@@ -88,7 +90,7 @@ function Login() {
           }`}
         >
           <Mail className="h-4 w-4" aria-hidden="true" />
-          Email
+          {t("auth.email")}
         </button>
       </div>
 

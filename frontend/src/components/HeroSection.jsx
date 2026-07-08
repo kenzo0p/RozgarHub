@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { setSearchedQuery } from "@/redux/jobSlice";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const POPULAR_SEARCHES = ["Electrician", "Driver", "Plumber", "Security Guard"];
 
@@ -37,6 +38,7 @@ function HeroSection() {
   const [stats, setStats] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   useEffect(() => {
     let cancelled = false;
@@ -81,7 +83,7 @@ function HeroSection() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          India&apos;s job platform for skilled workers
+          {t("hero.badge")}
         </motion.span>
 
         <motion.h1
@@ -91,9 +93,9 @@ function HeroSection() {
           variants={fadeUp}
           className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl"
         >
-          Find work that values
+          {t("hero.title1")}
           <span className="block bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-            your skills
+            {t("hero.title2")}
           </span>
         </motion.h1>
 
@@ -104,8 +106,7 @@ function HeroSection() {
           variants={fadeUp}
           className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg"
         >
-          Thousands of verified openings for electricians, drivers, carpenters,
-          and more — across India. No middlemen, no fees.
+          {t("hero.subtitle")}
         </motion.p>
 
         {/* Search */}
@@ -128,12 +129,12 @@ function HeroSection() {
             id="hero-search"
             type="text"
             value={query}
-            placeholder="Try “electrician” or “driver”…"
+            placeholder={t("hero.searchPlaceholder")}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
           />
           <Button type="submit" size="lg" className="rounded-full px-6">
-            Search
+            {t("hero.search")}
           </Button>
         </motion.form>
 
@@ -145,7 +146,7 @@ function HeroSection() {
           variants={fadeUp}
           className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm"
         >
-          <span className="text-muted-foreground">Popular:</span>
+          <span className="text-muted-foreground">{t("hero.popular")}</span>
           {POPULAR_SEARCHES.map((term) => (
             <button
               key={term}
@@ -166,10 +167,10 @@ function HeroSection() {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="mx-auto mt-12 grid max-w-3xl grid-cols-2 justify-items-center gap-x-6 gap-y-6 sm:grid-cols-4"
           >
-            <StatItem icon={Briefcase} value={formatCount(stats.totalJobs)} label="Open jobs" />
-            <StatItem icon={Building2} value={formatCount(stats.totalCompanies)} label="Hiring companies" />
-            <StatItem icon={Users} value={formatCount(stats.totalUsers)} label="Registered workers" />
-            <StatItem icon={MapPin} value="All India" label="Cities covered" />
+            <StatItem icon={Briefcase} value={formatCount(stats.totalJobs)} label={t("hero.openJobs")} />
+            <StatItem icon={Building2} value={formatCount(stats.totalCompanies)} label={t("hero.companies")} />
+            <StatItem icon={Users} value={formatCount(stats.totalUsers)} label={t("hero.workers")} />
+            <StatItem icon={MapPin} value={t("hero.allIndia")} label={t("hero.cities")} />
           </motion.div>
         )}
       </div>
