@@ -63,6 +63,10 @@ const userSchema = new Schema<IUser>(
       company: { type: Schema.Types.ObjectId, ref: 'Company' },
       profilePhoto: { type: String, default: '' },
     },
+    // Reputation — denormalized from Review docs for cheap display in lists,
+    // cards, and badges. Recomputed whenever a new review lands.
+    ratingAverage: { type: Number, default: 0, min: 0, max: 5 },
+    ratingCount: { type: Number, default: 0, min: 0 },
     // Password reset fields
     passwordResetToken: { type: String, default: undefined },
     passwordResetExpires: { type: Date, default: undefined },

@@ -30,6 +30,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'Start by creating your company profile, then post your first job to find the right workers.',
     'password_changed.title': 'Password changed',
     'password_changed.message': 'Your password has been successfully reset. If you did not do this, please contact support immediately.',
+    'review_received.title': 'You received a rating',
+    'review_received.message': 'You got a {rating}★ rating for "{jobTitle}"',
   },
   hi: {
     'application_received.title': 'नया आवेदन प्राप्त हुआ',
@@ -46,6 +48,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'अपनी कंपनी प्रोफ़ाइल बनाकर शुरू करें, फिर सही कामगार खोजने के लिए अपनी पहली नौकरी पोस्ट करें।',
     'password_changed.title': 'पासवर्ड बदल गया',
     'password_changed.message': 'आपका पासवर्ड सफलतापूर्वक रीसेट कर दिया गया है। यदि यह आपने नहीं किया, तो कृपया तुरंत सहायता से संपर्क करें।',
+    'review_received.title': 'आपको एक रेटिंग मिली',
+    'review_received.message': '"{jobTitle}" के लिए आपको {rating}★ रेटिंग मिली',
   },
   mr: {
     'application_received.title': 'नवीन अर्ज प्राप्त झाला',
@@ -62,6 +66,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'तुमची कंपनी प्रोफाइल तयार करून सुरुवात करा, नंतर योग्य कामगार शोधण्यासाठी तुमची पहिली नोकरी पोस्ट करा.',
     'password_changed.title': 'पासवर्ड बदलला',
     'password_changed.message': 'तुमचा पासवर्ड यशस्वीरित्या रीसेट झाला आहे. जर हे तुम्ही केले नसेल, तर कृपया त्वरित सपोर्टशी संपर्क साधा.',
+    'review_received.title': 'तुम्हाला रेटिंग मिळाली',
+    'review_received.message': '"{jobTitle}" साठी तुम्हाला {rating}★ रेटिंग मिळाली',
   },
   bn: {
     'application_received.title': 'নতুন আবেদন পাওয়া গেছে',
@@ -78,6 +84,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'আপনার কোম্পানির প্রোফাইল তৈরি করে শুরু করুন, তারপর সঠিক কর্মী খুঁজতে আপনার প্রথম চাকরি পোস্ট করুন।',
     'password_changed.title': 'পাসওয়ার্ড পরিবর্তিত হয়েছে',
     'password_changed.message': 'আপনার পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে। যদি আপনি এটি না করে থাকেন, তবে অনুগ্রহ করে অবিলম্বে সহায়তার সাথে যোগাযোগ করুন।',
+    'review_received.title': 'আপনি একটি রেটিং পেয়েছেন',
+    'review_received.message': '"{jobTitle}" এর জন্য আপনি {rating}★ রেটিং পেয়েছেন',
   },
   gu: {
     'application_received.title': 'નવી અરજી પ્રાપ્ત થઈ',
@@ -94,6 +102,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'તમારી કંપની પ્રોફાઇલ બનાવીને શરૂ કરો, પછી યોગ્ય કામદારો શોધવા તમારી પ્રથમ નોકરી પોસ્ટ કરો.',
     'password_changed.title': 'પાસવર્ડ બદલાયો',
     'password_changed.message': 'તમારો પાસવર્ડ સફળતાપૂર્વક રીસેટ થયો છે. જો આ તમે કર્યું ન હોય, તો કૃપા કરીને તરત જ સપોર્ટનો સંપર્ક કરો.',
+    'review_received.title': 'તમને રેટિંગ મળ્યું',
+    'review_received.message': '"{jobTitle}" માટે તમને {rating}★ રેટિંગ મળ્યું',
   },
   pa: {
     'application_received.title': 'ਨਵੀਂ ਅਰਜ਼ੀ ਪ੍ਰਾਪਤ ਹੋਈ',
@@ -110,6 +120,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'ਆਪਣੀ ਕੰਪਨੀ ਪ੍ਰੋਫ਼ਾਈਲ ਬਣਾ ਕੇ ਸ਼ੁਰੂ ਕਰੋ, ਫਿਰ ਸਹੀ ਕਾਮੇ ਲੱਭਣ ਲਈ ਆਪਣੀ ਪਹਿਲੀ ਨੌਕਰੀ ਪੋਸਟ ਕਰੋ।',
     'password_changed.title': 'ਪਾਸਵਰਡ ਬਦਲਿਆ',
     'password_changed.message': 'ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸਫਲਤਾਪੂਰਵਕ ਰੀਸੈਟ ਹੋ ਗਿਆ ਹੈ। ਜੇ ਇਹ ਤੁਸੀਂ ਨਹੀਂ ਕੀਤਾ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਤੁਰੰਤ ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।',
+    'review_received.title': 'ਤੁਹਾਨੂੰ ਰੇਟਿੰਗ ਮਿਲੀ',
+    'review_received.message': '"{jobTitle}" ਲਈ ਤੁਹਾਨੂੰ {rating}★ ਰੇਟਿੰਗ ਮਿਲੀ',
   },
   ta: {
     'application_received.title': 'புதிய விண்ணப்பம் பெறப்பட்டது',
@@ -126,6 +138,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'உங்கள் நிறுவன சுயவிவரத்தை உருவாக்கித் தொடங்குங்கள், பிறகு சரியான தொழிலாளர்களைக் கண்டறிய உங்கள் முதல் வேலையை இடுங்கள்.',
     'password_changed.title': 'கடவுச்சொல் மாற்றப்பட்டது',
     'password_changed.message': 'உங்கள் கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது. இதை நீங்கள் செய்யவில்லை என்றால், உடனடியாக ஆதரவைத் தொடர்பு கொள்ளவும்.',
+    'review_received.title': 'உங்களுக்கு மதிப்பீடு கிடைத்தது',
+    'review_received.message': '"{jobTitle}" க்கு உங்களுக்கு {rating}★ மதிப்பீடு கிடைத்தது',
   },
   te: {
     'application_received.title': 'కొత్త దరఖాస్తు అందింది',
@@ -142,6 +156,8 @@ const messages: Record<Language, Dict> = {
     'welcome.employer': 'మీ కంపెనీ ప్రొఫైల్‌ను సృష్టించడం ద్వారా ప్రారంభించండి, ఆపై సరైన కార్మికులను కనుగొనడానికి మీ మొదటి ఉద్యోగాన్ని పోస్ట్ చేయండి.',
     'password_changed.title': 'పాస్‌వర్డ్ మార్చబడింది',
     'password_changed.message': 'మీ పాస్‌వర్డ్ విజయవంతంగా రీసెట్ చేయబడింది. ఇది మీరు చేయకపోతే, దయచేసి వెంటనే మద్దతును సంప్రదించండి.',
+    'review_received.title': 'మీకు రేటింగ్ వచ్చింది',
+    'review_received.message': '"{jobTitle}" కోసం మీకు {rating}★ రేటింగ్ వచ్చింది',
   },
 };
 

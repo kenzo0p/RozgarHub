@@ -136,6 +136,21 @@ export function registerEventHandlers(): void {
     logger.info(`[Event] user.registered → welcome notification for ${payload.email}`);
   });
 
+  eventBus.on('review.created', async (payload) => {
+    // Let the reviewed party know, in their language
+    const { language } = await getRecipient(payload.rateeId);
+    const vars = { rating: payload.rating, jobTitle: payload.jobTitle };
+    await notificationService.create({
+      recipientId: payload.rateeId,
+      type: NOTIFICATION_TYPES.SYSTEM,
+      title: tn(language, 'review_received.title'),
+      message: tn(language, 'review_received.message', vars),
+      relatedEntity: { kind: 'User', id: payload.rateeId },
+    });
+
+    logger.info(`[Event] review.created → notification sent to ${payload.rateeId}`);
+  });
+
   eventBus.on('user.passwordReset', async (payload) => {
     // Security notification in the user's language
     const { language } = await getRecipient(payload.userId);

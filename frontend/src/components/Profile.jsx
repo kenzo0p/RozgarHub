@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfile from "./UpdateProfile";
+import ReviewsList from "./shared/ReviewsList";
+import { StarRatingDisplay } from "./shared/StarRating";
 import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -78,6 +80,15 @@ function Profile() {
                 {user?.fullname}
               </h1>
               <p className="text-sm text-muted-foreground">@{user?.username}</p>
+              {user?.ratingCount > 0 && (
+                <div className="mt-1.5">
+                  <StarRatingDisplay
+                    value={user.ratingAverage}
+                    count={user.ratingCount}
+                    size="lg"
+                  />
+                </div>
+              )}
               {user?.profile?.bio ? (
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
                   {user.profile.bio}
@@ -171,6 +182,16 @@ function Profile() {
           </h2>
           <div className="mt-4">
             <AppliedJobTable />
+          </div>
+        </div>
+
+        {/* ─── Reviews received ───────────────────────────────────────── */}
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-bold tracking-tight text-foreground">
+            {t("reviews.received")}
+          </h2>
+          <div className="mt-4">
+            <ReviewsList userId={user?._id} />
           </div>
         </div>
       </div>

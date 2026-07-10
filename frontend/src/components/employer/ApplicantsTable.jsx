@@ -9,12 +9,15 @@ import {
 } from "../ui/table";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { FileText, Check, X, Inbox } from "lucide-react";
+import { FileText, Check, X, Inbox, Star } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import ContactButtons from "../shared/ContactButtons";
+import ReviewDialog from "../shared/ReviewDialog";
+import { StarRatingDisplay } from "../shared/StarRating";
+import useGivenReviews from "@/hooks/useGivenReviews";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const STATUS_STYLES = {
@@ -38,6 +41,8 @@ function ApplicantsTable() {
   // Local status overrides so the UI reflects an accept/reject immediately
   const [statusOverrides, setStatusOverrides] = useState({});
   const [pendingId, setPendingId] = useState(null);
+  const { reviewedIds, markReviewed } = useGivenReviews();
+  const [reviewFor, setReviewFor] = useState(null);
 
   const statusHandler = async (status, id) => {
     try {
@@ -104,9 +109,19 @@ function ApplicantsTable() {
                         {applicant?.fullname?.charAt(0)?.toUpperCase() || "?"}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-foreground">
-                      {applicant?.fullname}
-                    </span>
+                    <div className="min-w-0">
+                      <span className="font-medium text-foreground">
+                        {applicant?.fullname}
+                      </span>
+                      {applicant?.ratingCount > 0 && (
+                        <div className="mt-0.5">
+                          <StarRatingDisplay
+                            value={applicant.ratingAverage}
+                            count={applicant.ratingCount}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -170,6 +185,25 @@ function ApplicantsTable() {
                       <X className="h-3.5 w-3.5" aria-hidden="true" />
                       {t("employer.reject")}
                     </Button>
+                    {status === "accepted" &&
+                      (reviewedIds.has(item._id) ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />
+                          {t("reviews.rated")}
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                          onClick={() =>
+                            setReviewFor({ id: item._id, name: applicant?.fullname })
+                          }
+                        >
+                          <Star className="h-3.5 w-3.5" aria-hidden="true" />
+                          {t("reviews.rateWorker")}
+                        </Button>
+                      ))}
                   </div>
                 </TableCell>
               </TableRow>
@@ -177,6 +211,13 @@ function ApplicantsTable() {
           })}
         </TableBody>
       </Table>
+      <ReviewDialog
+        open={!!reviewFor}
+        setOpen={(v) => !v && setReviewFor(null)}
+        applicationId={reviewFor?.id}
+        rateeName={reviewFor?.name}
+        onSubmitted={markReviewed}
+      />
     </div>
   );
 }

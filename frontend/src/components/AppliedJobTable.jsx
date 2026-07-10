@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,9 +9,11 @@ import {
 } from "./ui/table";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Inbox } from "lucide-react";
+import { Inbox, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import ContactButtons from "./shared/ContactButtons";
+import ReviewDialog from "./shared/ReviewDialog";
+import useGivenReviews from "@/hooks/useGivenReviews";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const STATUS_KEY = { pending: "profile.statusPending", accepted: "profile.statusAccepted", rejected: "profile.statusRejected" };
@@ -29,6 +31,8 @@ function AppliedJobTable() {
   const { allAppliedJobs } = useSelector((store) => store.job);
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { reviewedIds, markReviewed } = useGivenReviews();
+  const [reviewFor, setReviewFor] = useState(null);
 
   if (!allAppliedJobs || allAppliedJobs.length === 0) {
     return (
@@ -46,6 +50,7 @@ function AppliedJobTable() {
   }
 
   return (
+    <>
     <Table>
       <TableHeader>
         <TableRow>
@@ -85,12 +90,37 @@ function AppliedJobTable() {
               className="text-right"
               onClick={(e) => e.stopPropagation()}
             >
-              {appliedJob.status === "accepted" && appliedJob.employerContact ? (
-                <ContactButtons
-                  phone={appliedJob.employerContact.phone}
-                  size="xs"
-                  message={`Hi, I was accepted for "${appliedJob.job?.title}" on RozgarHub.`}
-                />
+              {appliedJob.status === "accepted" ? (
+                <div className="flex flex-col items-end gap-1.5">
+                  {appliedJob.employerContact && (
+                    <ContactButtons
+                      phone={appliedJob.employerContact.phone}
+                      size="xs"
+                      message={`Hi, I was accepted for "${appliedJob.job?.title}" on RozgarHub.`}
+                    />
+                  )}
+                  {reviewedIds.has(appliedJob._id) ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />
+                      {t("reviews.rated")}
+                    </span>
+                  ) : (
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      className="gap-1"
+                      onClick={() =>
+                        setReviewFor({
+                          id: appliedJob._id,
+                          name: appliedJob.employerContact?.name || appliedJob.job?.company?.name,
+                        })
+                      }
+                    >
+                      <Star className="h-3 w-3" aria-hidden="true" />
+                      {t("reviews.rateEmployer")}
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <span className="text-xs text-muted-foreground">—</span>
               )}
@@ -99,6 +129,14 @@ function AppliedJobTable() {
         ))}
       </TableBody>
     </Table>
+    <ReviewDialog
+      open={!!reviewFor}
+      setOpen={(v) => !v && setReviewFor(null)}
+      applicationId={reviewFor?.id}
+      rateeName={reviewFor?.name}
+      onSubmitted={markReviewed}
+    />
+    </>
   );
 }
 

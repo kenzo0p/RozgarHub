@@ -58,6 +58,13 @@ export interface DomainEvents {
     userId: string;
     email: string;
   };
+  'review.created': {
+    reviewId: string;
+    rateeId: string;
+    raterId: string;
+    rating: number;
+    jobTitle: string;
+  };
 }
 
 export type DomainEventName = keyof DomainEvents;
