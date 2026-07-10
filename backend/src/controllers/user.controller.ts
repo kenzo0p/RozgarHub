@@ -21,3 +21,12 @@ export const getProfile = asyncHandler(async (req: AuthRequest, res: Response) =
     ApiResponse.success({ user }, 'Profile retrieved successfully'),
   );
 });
+
+export const updateLanguage = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const user = await userService.updateLanguage(userId, req.body.language);
+
+  res.status(200).json(
+    ApiResponse.success({ user }, 'Language preference updated'),
+  );
+});

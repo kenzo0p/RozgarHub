@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
 import { Loader2, ImagePlus } from "lucide-react";
 import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function Signup() {
   const [input, setInput] = useState({
@@ -24,6 +25,7 @@ function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, user } = useSelector((store) => store.auth);
+  const { lang } = useI18n();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -46,6 +48,7 @@ function Signup() {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("password", input.password);
     formData.append("role", input.role);
+    formData.append("language", lang);
     if (input.file) {
       formData.append("file", input.file);
     }

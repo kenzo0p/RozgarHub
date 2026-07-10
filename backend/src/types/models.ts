@@ -1,4 +1,5 @@
 import { Types, Document } from 'mongoose';
+import type { Language } from '../utils/constants.js';
 
 // ─── User ──────────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ export interface IUser extends Document {
   phoneNumber: number;
   password?: string;
   role: UserRole;
+  language: Language;
   profile: IUserProfile;
   passwordResetToken?: string;
   passwordResetExpires?: Date;

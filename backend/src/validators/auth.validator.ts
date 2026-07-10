@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SUPPORTED_LANGUAGES } from '../utils/constants.js';
 
 /**
  * Zod v4 validation schemas for authentication endpoints.
@@ -34,6 +35,9 @@ export const registerSchema = z.object({
   role: z.enum(['employee', 'employer'], {
     error: 'Role must be employee or employer',
   }),
+  // Optional at signup — carries the UI language so the very first
+  // notification/SMS already speaks the user's language.
+  language: z.enum(SUPPORTED_LANGUAGES).optional(),
 });
 
 export const loginSchema = z.object({
@@ -61,6 +65,12 @@ export const updateProfileSchema = z.object({
   phoneNumber: z.string().or(z.number()).transform(Number).optional(),
   bio: z.string().max(500).optional(),
   skills: z.string().optional(), // Comma-separated string, parsed in service layer
+});
+
+export const updateLanguageSchema = z.object({
+  language: z.enum(SUPPORTED_LANGUAGES, {
+    error: 'Unsupported language',
+  }),
 });
 
 export const forgotPasswordSchema = z.object({
@@ -104,6 +114,8 @@ export const otpVerifySchema = z.object({
   // Required only when the phone number belongs to a brand-new user.
   fullname: z.string().min(2).max(100).trim().optional(),
   role: z.enum(['employee', 'employer']).optional(),
+  // Optional UI language, stored so the welcome/first SMS is localized.
+  language: z.enum(SUPPORTED_LANGUAGES).optional(),
 });
 
 // Infer TypeScript types from schemas
@@ -112,6 +124,7 @@ export type OtpVerifyInput = z.infer<typeof otpVerifySchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type UpdateLanguageInput = z.infer<typeof updateLanguageSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 

@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js';
 import { NotFoundError, ConflictError } from '../utils/ApiError.js';
 import type { UpdateProfileInput } from '../validators/auth.validator.js';
 import type { SafeUser } from '../types/models.js';
+import type { Language } from '../utils/constants.js';
 
 /**
  * User Service — profile management business logic.
@@ -61,6 +62,21 @@ export class UserService {
 
     await userDoc.save();
 
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /**
+   * Persist the user's preferred language. The UI language lives in the
+   * browser, but notifications and SMS are generated server-side, so we store
+   * the choice to reach the user in their own language when they are offline.
+   */
+  async updateLanguage(userId: string, language: Language): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+    userDoc.language = language;
+    await userDoc.save();
     return userDoc.toJSON() as unknown as SafeUser;
   }
 }

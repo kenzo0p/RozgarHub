@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setUser } from "./redux/authSlice";
+import { useI18n } from "./i18n/I18nProvider";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 // ─── Eagerly loaded (needed immediately on first render) ─────────────────────
@@ -168,6 +169,8 @@ const appRouter = createBrowserRouter([
 
 function App() {
   const dispatch = useDispatch();
+  const { setLang } = useI18n();
+  const userLanguage = useSelector((store) => store.auth.user?.language);
 
   // Listen for session expiry events from the Axios interceptor
   useEffect(() => {
@@ -180,6 +183,13 @@ function App() {
     return () =>
       window.removeEventListener("auth:session-expired", handleSessionExpired);
   }, [dispatch]);
+
+  // Hydrate the UI language from the logged-in account, so a returning user
+  // sees the app in the language they saved — even on a fresh device where
+  // localStorage hasn't got their choice yet.
+  useEffect(() => {
+    if (userLanguage) setLang(userLanguage);
+  }, [userLanguage, setLang]);
 
   return (
     <ErrorBoundary>

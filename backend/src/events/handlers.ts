@@ -1,24 +1,43 @@
 import { eventBus } from './eventBus.js';
 import { notificationService } from '../services/notification.service.js';
-import { NOTIFICATION_TYPES } from '../utils/constants.js';
+import { NOTIFICATION_TYPES, DEFAULT_LANGUAGE, type Language } from '../utils/constants.js';
 import { cacheInvalidatePattern } from '../utils/cache.js';
 import { sendSms } from '../utils/sms.js';
+import { tn } from '../utils/notificationI18n.js';
 import { userRepository } from '../repositories/user.repository.js';
 import logger from '../utils/logger.js';
 
 /**
- * Send an SMS to a user by id — fire-and-forget. In-app notifications reach
- * users who open the app; blue-collar workers largely won't, so the important
- * moments (new application, accept/reject) also go out over SMS.
+ * Look up the phone number and language preference of a notification recipient
+ * in one query. Language drives which translation we render; phone decides
+ * whether an SMS goes out. Falls back to English if the user is gone.
  */
-async function notifyBySms(userId: string, message: string): Promise<void> {
+async function getRecipient(
+  userId: string,
+): Promise<{ phoneNumber?: number; language: Language }> {
   try {
-    const user = await userRepository.findById(userId, 'phoneNumber');
-    if (user?.phoneNumber) {
-      await sendSms(user.phoneNumber, message);
-    }
+    const user = await userRepository.findById(userId, 'phoneNumber language');
+    return {
+      phoneNumber: user?.phoneNumber,
+      language: (user?.language as Language) ?? DEFAULT_LANGUAGE,
+    };
   } catch (error) {
-    logger.warn(`SMS notification failed for user ${userId}: ${(error as Error).message}`);
+    logger.warn(`Recipient lookup failed for user ${userId}: ${(error as Error).message}`);
+    return { language: DEFAULT_LANGUAGE };
+  }
+}
+
+/**
+ * Send an SMS — fire-and-forget. In-app notifications reach users who open the
+ * app; blue-collar workers largely won't, so the important moments (new
+ * application, accept/reject) also go out over SMS, in the user's language.
+ */
+async function sendSmsSafe(phoneNumber: number | undefined, message: string): Promise<void> {
+  if (!phoneNumber) return;
+  try {
+    await sendSms(phoneNumber, message);
+  } catch (error) {
+    logger.warn(`SMS send failed for ${phoneNumber}: ${(error as Error).message}`);
   }
 }
 
@@ -40,20 +59,20 @@ export function registerEventHandlers(): void {
   // ─── Application Events ─────────────────────────────────────────────────────
 
   eventBus.on('application.created', async (payload) => {
-    // Notify the employer that they have a new applicant
+    // Notify the employer that they have a new applicant, in their language
+    const { phoneNumber, language } = await getRecipient(payload.employerId);
+    const vars = { jobTitle: payload.jobTitle };
+
     await notificationService.create({
       recipientId: payload.employerId,
       type: NOTIFICATION_TYPES.APPLICATION_RECEIVED,
-      title: 'New Application Received',
-      message: `A new applicant has applied for "${payload.jobTitle}"`,
+      title: tn(language, 'application_received.title'),
+      message: tn(language, 'application_received.message', vars),
       relatedEntity: { kind: 'Application', id: payload.applicationId },
     });
 
     // Also reach the employer over SMS
-    await notifyBySms(
-      payload.employerId,
-      `RozgarHub: New application for "${payload.jobTitle}". Open the app to review.`,
-    );
+    await sendSmsSafe(phoneNumber, tn(language, 'application_received.sms', vars));
 
     // Invalidate analytics caches (trending jobs, employer dashboard)
     await cacheInvalidatePattern('analytics:*');
@@ -62,27 +81,27 @@ export function registerEventHandlers(): void {
   });
 
   eventBus.on('application.statusChanged', async (payload) => {
-    // Notify the applicant about their application status
-    const type = payload.newStatus === 'accepted'
+    // Notify the applicant about their application status, in their language
+    const accepted = payload.newStatus === 'accepted';
+    const type = accepted
       ? NOTIFICATION_TYPES.APPLICATION_ACCEPTED
       : NOTIFICATION_TYPES.APPLICATION_REJECTED;
+    const keyBase = accepted ? 'application_accepted' : 'application_rejected';
 
-    const statusText = payload.newStatus === 'accepted' ? 'accepted' : 'rejected';
+    const { phoneNumber, language } = await getRecipient(payload.applicantId);
+    const vars = { jobTitle: payload.jobTitle };
 
     await notificationService.create({
       recipientId: payload.applicantId,
       type,
-      title: `Application ${statusText.charAt(0).toUpperCase() + statusText.slice(1)}`,
-      message: `Your application for "${payload.jobTitle}" has been ${statusText}`,
+      title: tn(language, `${keyBase}.title`),
+      message: tn(language, `${keyBase}.message`, vars),
       relatedEntity: { kind: 'Application', id: payload.applicationId },
     });
 
     // SMS the worker — accepted workers are told to open the app for the
     // employer's contact details.
-    const smsBody = payload.newStatus === 'accepted'
-      ? `RozgarHub: Good news! You've been accepted for "${payload.jobTitle}". Open the app to contact the employer.`
-      : `RozgarHub: Update on your application for "${payload.jobTitle}": ${statusText}.`;
-    await notifyBySms(payload.applicantId, smsBody);
+    await sendSmsSafe(phoneNumber, tn(language, `${keyBase}.sms`, vars));
 
     logger.info(`[Event] application.statusChanged → notification sent to applicant ${payload.applicantId}`);
   });
@@ -103,26 +122,28 @@ export function registerEventHandlers(): void {
   // ─── User Events ────────────────────────────────────────────────────────────
 
   eventBus.on('user.registered', async (payload) => {
-    // Welcome notification
+    // Welcome notification in the user's language
+    const { language } = await getRecipient(payload.userId);
     await notificationService.create({
       recipientId: payload.userId,
       type: NOTIFICATION_TYPES.SYSTEM,
-      title: 'Welcome to RozgarHub!',
+      title: tn(language, 'welcome.title'),
       message: payload.role === 'employee'
-        ? 'Start exploring jobs that match your skills. Update your profile and skills to get personalized recommendations.'
-        : 'Start by creating your company profile, then post your first job to find the right workers.',
+        ? tn(language, 'welcome.employee')
+        : tn(language, 'welcome.employer'),
     });
 
     logger.info(`[Event] user.registered → welcome notification for ${payload.email}`);
   });
 
   eventBus.on('user.passwordReset', async (payload) => {
-    // Security notification
+    // Security notification in the user's language
+    const { language } = await getRecipient(payload.userId);
     await notificationService.create({
       recipientId: payload.userId,
       type: NOTIFICATION_TYPES.SYSTEM,
-      title: 'Password Changed',
-      message: 'Your password has been successfully reset. If you did not do this, please contact support immediately.',
+      title: tn(language, 'password_changed.title'),
+      message: tn(language, 'password_changed.message'),
     });
 
     logger.info(`[Event] user.passwordReset → security notification for ${payload.email}`);

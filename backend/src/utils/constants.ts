@@ -62,3 +62,14 @@ export const NOTIFICATION_TYPES = {
 
 export type NotificationType = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];
 
+// Languages the app is localized into. Used to validate the user's language
+// preference and to key server-side notification/SMS translations. Keep in
+// sync with the frontend i18n language list.
+export const SUPPORTED_LANGUAGES = [
+  'en', 'hi', 'mr', 'bn', 'gu', 'pa', 'ta', 'te',
+] as const;
+
+export type Language = typeof SUPPORTED_LANGUAGES[number];
+
+export const DEFAULT_LANGUAGE: Language = 'en';
+

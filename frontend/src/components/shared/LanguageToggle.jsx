@@ -1,8 +1,12 @@
 import React from "react";
 import { Languages } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useI18n } from "@/i18n/I18nProvider";
+import api from "@/lib/api";
+import { USER_API_END_POINT } from "@/utils/constant";
+import { setUser } from "@/redux/authSlice";
 
 const LANGS = [
   { code: "en", label: "English" },
@@ -21,6 +25,20 @@ const LANGS = [
  */
 function LanguageToggle() {
   const { lang, setLang } = useI18n();
+  const { user } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+
+  const chooseLang = (code) => {
+    setLang(code);
+    // Persist to the account so server-generated notifications and SMS reach
+    // the user in this language. Fire-and-forget; the UI already updated.
+    if (user) {
+      dispatch(setUser({ ...user, language: code }));
+      api.patch(`${USER_API_END_POINT}/language`, { language: code }).catch(() => {
+        // Non-critical: the choice still applies locally this session.
+      });
+    }
+  };
 
   return (
     <Popover>
@@ -39,7 +57,7 @@ function LanguageToggle() {
           <button
             key={code}
             type="button"
-            onClick={() => setLang(code)}
+            onClick={() => chooseLang(code)}
             className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted ${
               lang === code ? "font-semibold text-primary" : "text-foreground"
             }`}

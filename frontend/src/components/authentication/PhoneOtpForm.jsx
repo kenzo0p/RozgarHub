@@ -29,7 +29,7 @@ function PhoneOtpForm() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const requestOtp = async (e) => {
     e.preventDefault();
@@ -75,6 +75,7 @@ function PhoneOtpForm() {
       if (isNewUser) {
         payload.fullname = fullname;
         payload.role = role;
+        payload.language = lang;
       }
       const res = await api.post(`${AUTH_API_END_POINT}/otp/verify`, payload);
       if (res.data.success) {

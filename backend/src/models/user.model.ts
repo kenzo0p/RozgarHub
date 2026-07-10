@@ -1,5 +1,6 @@
 import mongoose, { Schema, Model } from 'mongoose';
 import type { IUser } from '../types/models.js';
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../utils/constants.js';
 
 const userSchema = new Schema<IUser>(
   {
@@ -45,6 +46,15 @@ const userSchema = new Schema<IUser>(
       },
       required: [true, 'Role is required'],
     },
+    // Preferred language for notifications and SMS. The UI language lives in
+    // the browser, but server-generated messages (accept/reject SMS, in-app
+    // notifications) need it persisted so a worker hears from us in their
+    // own language even when offline.
+    language: {
+      type: String,
+      enum: SUPPORTED_LANGUAGES,
+      default: DEFAULT_LANGUAGE,
+    },
     profile: {
       bio: { type: String, maxlength: [500, 'Bio cannot exceed 500 characters'] },
       skills: [{ type: String }],
@@ -77,6 +87,13 @@ const userSchema = new Schema<IUser>(
 // Additional indexes for common query patterns:
 userSchema.index({ role: 1 });
 userSchema.index({ 'profile.skills': 1 });
-userSchema.index({ fullname: 'text', 'profile.skills': 'text' });
+// `language_override: 'searchLanguage'` stops MongoDB from treating our
+// `language` preference field (values like 'hi', 'ta') as the text-index
+// language — those aren't valid text-search languages and would reject writes.
+// We never set `searchLanguage`, so the index just uses its default language.
+userSchema.index(
+  { fullname: 'text', 'profile.skills': 'text' },
+  { language_override: 'searchLanguage' },
+);
 
 export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
