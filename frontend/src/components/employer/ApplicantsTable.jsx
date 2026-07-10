@@ -15,6 +15,7 @@ import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import ContactButtons from "../shared/ContactButtons";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const STATUS_STYLES = {
   pending:
@@ -25,7 +26,14 @@ const STATUS_STYLES = {
     "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
 };
 
+const STATUS_LABEL = {
+  pending: "employer.statusPending",
+  accepted: "employer.statusAccepted",
+  rejected: "employer.statusRejected",
+};
+
 function ApplicantsTable() {
+  const { t } = useI18n();
   const { applicants } = useSelector((store) => store.application);
   // Local status overrides so the UI reflects an accept/reject immediately
   const [statusOverrides, setStatusOverrides] = useState({});
@@ -41,7 +49,7 @@ function ApplicantsTable() {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || t("employer.genericError"));
     } finally {
       setPendingId(null);
     }
@@ -53,9 +61,9 @@ function ApplicantsTable() {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
         <Inbox className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-        <p className="font-medium text-foreground">No applicants yet</p>
+        <p className="font-medium text-foreground">{t("employer.noApplicants")}</p>
         <p className="text-sm text-muted-foreground">
-          When someone applies to this job, they&apos;ll appear here.
+          {t("employer.noApplicantsSub")}
         </p>
       </div>
     );
@@ -66,12 +74,12 @@ function ApplicantsTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Applicant</TableHead>
-            <TableHead>Contact</TableHead>
-            <TableHead>Resume</TableHead>
-            <TableHead>Applied</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            <TableHead>{t("employer.applicantCol")}</TableHead>
+            <TableHead>{t("employer.contact")}</TableHead>
+            <TableHead>{t("employer.resume")}</TableHead>
+            <TableHead>{t("employer.applied")}</TableHead>
+            <TableHead>{t("employer.status")}</TableHead>
+            <TableHead className="text-right">{t("employer.action")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -110,7 +118,7 @@ function ApplicantsTable() {
                       <ContactButtons
                         phone={applicant.phoneNumber}
                         size="xs"
-                        message={`Hi ${applicant?.fullname || ""}, regarding your application on RozgarHub.`}
+                        message={t("employer.applicantMsg", { name: applicant?.fullname || "" })}
                       />
                     </div>
                   )}
@@ -124,7 +132,7 @@ function ApplicantsTable() {
                       className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
                     >
                       <FileText className="h-3.5 w-3.5" aria-hidden="true" />
-                      Resume
+                      {t("employer.resume")}
                     </a>
                   ) : (
                     <span className="text-sm text-muted-foreground">—</span>
@@ -133,11 +141,11 @@ function ApplicantsTable() {
                 <TableCell className="text-sm text-muted-foreground">{appliedOn}</TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                       STATUS_STYLES[status] || STATUS_STYLES.pending
                     }`}
                   >
-                    {status}
+                    {t(STATUS_LABEL[status] || STATUS_LABEL.pending)}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
@@ -150,7 +158,7 @@ function ApplicantsTable() {
                       className="gap-1 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
                     >
                       <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                      Accept
+                      {t("employer.accept")}
                     </Button>
                     <Button
                       size="sm"
@@ -160,7 +168,7 @@ function ApplicantsTable() {
                       className="gap-1 border-red-500/30 text-red-600 hover:bg-red-500/10 dark:text-red-400"
                     >
                       <X className="h-3.5 w-3.5" aria-hidden="true" />
-                      Reject
+                      {t("employer.reject")}
                     </Button>
                   </div>
                 </TableCell>

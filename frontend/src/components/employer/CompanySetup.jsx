@@ -13,10 +13,12 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setSingleCompany } from "@/redux/companySlice";
 import useGetCompanyById from "@/hooks/useGetCompanyById";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function CompanySetup() {
   const params = useParams();
   useGetCompanyById(params.id);
+  const { t } = useI18n();
   const { singleCompany } = useSelector((store) => store.company);
 
   const [input, setInput] = useState({
@@ -35,7 +37,7 @@ function CompanySetup() {
 
   const verifyHandler = async () => {
     if (!gst.trim()) {
-      toast.error("Enter your GST number.");
+      toast.error(t("employer.enterGst"));
       return;
     }
     try {
@@ -48,7 +50,7 @@ function CompanySetup() {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Verification failed. Please try again.");
+      toast.error(error.response?.data?.message || t("employer.verificationFailed"));
     } finally {
       setVerifying(false);
     }
@@ -83,7 +85,7 @@ function CompanySetup() {
         navigate("/admin/companies");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || t("employer.genericError"));
     } finally {
       setLoading(false);
     }
@@ -111,7 +113,7 @@ function CompanySetup() {
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back to companies
+          {t("employer.backToCompanies")}
         </button>
 
         <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
@@ -124,10 +126,10 @@ function CompanySetup() {
             </Avatar>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-foreground">
-                Company details
+                {t("employer.companyDetails")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                This is what job seekers see on your postings.
+                {t("employer.companyDetailsSub")}
               </p>
             </div>
           </div>
@@ -137,19 +139,18 @@ function CompanySetup() {
             <div className="mt-6 flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-400">
               <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden="true" />
               <span>
-                <span className="font-semibold">Verified business.</span> Workers
-                see a verified badge on your jobs.
+                <span className="font-semibold">{t("employer.verifiedBusiness")}</span>{" "}
+                {t("employer.verifiedBusinessSub")}
               </span>
             </div>
           ) : (
             <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
               <div className="flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-400">
                 <ShieldAlert className="h-5 w-5 shrink-0" aria-hidden="true" />
-                Get verified to build trust
+                {t("employer.getVerified")}
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                Enter your GST number to earn a &ldquo;Verified&rdquo; badge —
-                verified employers get more applications.
+                {t("employer.getVerifiedSub")}
               </p>
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <Input
@@ -163,10 +164,10 @@ function CompanySetup() {
                   {verifying ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                      Verifying…
+                      {t("employer.verifying")}
                     </>
                   ) : (
-                    "Verify"
+                    t("employer.verify")
                   )}
                 </Button>
               </div>
@@ -176,7 +177,7 @@ function CompanySetup() {
           <form onSubmit={submitHandler} className="mt-6 space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="company-name">Company name</Label>
+                <Label htmlFor="company-name">{t("employer.companyName")}</Label>
                 <Input
                   id="company-name"
                   type="text"
@@ -187,7 +188,7 @@ function CompanySetup() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="company-location">Location</Label>
+                <Label htmlFor="company-location">{t("employer.location")}</Label>
                 <Input
                   id="company-location"
                   type="text"
@@ -201,7 +202,7 @@ function CompanySetup() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="company-website">Website</Label>
+                <Label htmlFor="company-website">{t("employer.website")}</Label>
                 <Input
                   id="company-website"
                   type="text"
@@ -212,7 +213,7 @@ function CompanySetup() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="company-contact">Contact number</Label>
+                <Label htmlFor="company-contact">{t("employer.contactNumber")}</Label>
                 <Input
                   id="company-contact"
                   type="tel"
@@ -222,13 +223,13 @@ function CompanySetup() {
                   placeholder="98765 43210"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Shown to workers you accept so they can call or WhatsApp you.
+                  {t("employer.contactNumberSub")}
                 </p>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="company-description">Description</Label>
+              <Label htmlFor="company-description">{t("employer.description")}</Label>
               <textarea
                 id="company-description"
                 name="description"
@@ -244,7 +245,8 @@ function CompanySetup() {
             <div className="space-y-1.5">
               <Label htmlFor="company-logo" className="flex items-center gap-1.5">
                 <Upload className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                Logo <span className="font-normal text-muted-foreground">(image)</span>
+                {t("employer.logo")}{" "}
+                <span className="font-normal text-muted-foreground">{t("employer.logoImage")}</span>
               </Label>
               <Input
                 id="company-logo"
@@ -254,7 +256,7 @@ function CompanySetup() {
                 className="cursor-pointer file:mr-3 file:font-medium file:text-foreground"
               />
               {input.file && (
-                <p className="text-xs text-muted-foreground">New: {input.file.name}</p>
+                <p className="text-xs text-muted-foreground">{t("employer.newFilePrefix", { name: input.file.name })}</p>
               )}
             </div>
 
@@ -265,16 +267,16 @@ function CompanySetup() {
                 onClick={() => navigate("/admin/companies")}
                 disabled={loading}
               >
-                Cancel
+                {t("employer.cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                    Saving…
+                    {t("employer.saving")}
                   </>
                 ) : (
-                  "Save changes"
+                  t("employer.saveChanges")
                 )}
               </Button>
             </div>

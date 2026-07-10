@@ -4,9 +4,11 @@ import { Button } from "../ui/button";
 import { Building2, Pencil, CalendarDays, Globe, MapPin, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function CompanyCard({ company }) {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const created = company?.createdAt
     ? new Date(company.createdAt).toLocaleDateString("en-IN", {
         day: "numeric",
@@ -28,7 +30,7 @@ function CompanyCard({ company }) {
           <h3 className="truncate font-semibold text-foreground">{company.name}</h3>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <CalendarDays className="h-3 w-3" aria-hidden="true" />
-            Added {created}
+            {t("employer.added")} {created}
           </p>
         </div>
       </div>
@@ -49,7 +51,7 @@ function CompanyCard({ company }) {
         {company.website && (
           <span className="inline-flex items-center gap-1">
             <Globe className="h-3 w-3" aria-hidden="true" />
-            Website
+            {t("employer.website")}
           </span>
         )}
       </div>
@@ -61,7 +63,7 @@ function CompanyCard({ company }) {
         className="mt-4 w-full gap-2"
       >
         <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-        Edit details
+        {t("employer.editDetails")}
       </Button>
     </div>
   );
@@ -70,6 +72,7 @@ function CompanyCard({ company }) {
 function CompaniesTable({ loading }) {
   const { companies, searchCompanyByText } = useSelector((store) => store.company);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const filtered = useMemo(() => {
     if (!companies) return [];
@@ -93,13 +96,13 @@ function CompaniesTable({ loading }) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card py-16 text-center">
         <Building2 className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-        <p className="font-medium text-foreground">No companies yet</p>
+        <p className="font-medium text-foreground">{t("employer.noCompanies")}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Create a company profile before you can post jobs and receive applications.
+          {t("employer.noCompaniesSub")}
         </p>
         <Button onClick={() => navigate("/admin/companies/create")} className="mt-1 gap-2">
           <Plus className="h-4 w-4" aria-hidden="true" />
-          Create your first company
+          {t("employer.createFirstCompany")}
         </Button>
       </div>
     );
@@ -109,7 +112,7 @@ function CompaniesTable({ loading }) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card py-12 text-center">
         <p className="text-sm text-muted-foreground">
-          No companies match &ldquo;{searchCompanyByText}&rdquo;.
+          {t("employer.noCompaniesMatch", { q: searchCompanyByText })}
         </p>
       </div>
     );

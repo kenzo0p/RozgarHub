@@ -10,17 +10,19 @@ import { COMPANY_API_END_POINT } from "@/utils/constant";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { setSingleCompany } from "@/redux/companySlice";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function CreateCompany() {
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const { t } = useI18n();
 
   const registerNewCompany = async (e) => {
     e.preventDefault();
     if (!companyName.trim()) {
-      toast.error("Please enter a company name.");
+      toast.error(t("employer.enterCompanyName"));
       return;
     }
     try {
@@ -33,7 +35,7 @@ function CreateCompany() {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Couldn't create company. Please try again.");
+      toast.error(error.response?.data?.message || t("employer.createCompanyError"));
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ function CreateCompany() {
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back to companies
+          {t("employer.backToCompanies")}
         </button>
 
         <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
@@ -57,15 +59,14 @@ function CreateCompany() {
             <Building2 className="h-6 w-6" aria-hidden="true" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
-            Name your company
+            {t("employer.nameCompany")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            What would you like to call it? You can add more details and a logo
-            in the next step — and change everything later.
+            {t("employer.nameCompanySubForm")}
           </p>
 
           <form onSubmit={registerNewCompany} className="mt-6 space-y-1.5">
-            <Label htmlFor="company-name">Company name</Label>
+            <Label htmlFor="company-name">{t("employer.companyName")}</Label>
             <Input
               id="company-name"
               type="text"
@@ -82,16 +83,16 @@ function CreateCompany() {
                 onClick={() => navigate("/admin/companies")}
                 disabled={loading}
               >
-                Cancel
+                {t("employer.cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                    Creating…
+                    {t("employer.creating")}
                   </>
                 ) : (
-                  "Continue"
+                  t("employer.continueBtn")
                 )}
               </Button>
             </div>

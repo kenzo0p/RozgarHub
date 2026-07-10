@@ -3,7 +3,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { translations } from "./translations";
 
 const STORAGE_KEY = "rozgarhub-lang";
-const SUPPORTED = ["en", "hi"];
+const SUPPORTED = ["en", "hi", "mr", "bn", "gu", "pa", "ta", "te"];
 
 const I18nContext = createContext(null);
 

@@ -7,11 +7,13 @@ import { ArrowLeft } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllApplicants } from "@/redux/applicationSlice";
+import { useI18n } from "@/i18n/I18nProvider";
 
 function Applicants() {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useI18n();
   const { applicants } = useSelector((store) => store.application);
 
   useEffect(() => {
@@ -38,16 +40,18 @@ function Applicants() {
           className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back to jobs
+          {t("employer.backToJobs")}
         </button>
 
         <div className="mt-4">
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Applicants
+            {t("employer.applicantsTitle")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {applicants?.title ? `for “${applicants.title}” · ` : ""}
-            {count} {count === 1 ? "person has" : "people have"} applied
+            {applicants?.title ? `${t("employer.forTitle", { title: applicants.title })} · ` : ""}
+            {count === 1
+              ? t("employer.personApplied", { n: count })
+              : t("employer.peopleApplied", { n: count })}
           </p>
         </div>
 

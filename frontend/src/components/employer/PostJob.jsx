@@ -17,20 +17,22 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, Building2 } from "lucide-react";
 import useGetAllCompanies from "@/hooks/useGetAllCompanies";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
 const WAGE_TYPES = [
-  { value: "monthly", label: "Per month" },
-  { value: "daily", label: "Per day" },
-  { value: "hourly", label: "Per hour" },
-  { value: "weekly", label: "Per week" },
-  { value: "fixed", label: "Fixed / per job" },
+  { value: "monthly", labelKey: "perMonth" },
+  { value: "daily", labelKey: "perDay" },
+  { value: "hourly", labelKey: "perHour" },
+  { value: "weekly", labelKey: "perWeek" },
+  { value: "fixed", labelKey: "fixedPay" },
 ];
 
 function PostJob() {
   // Load the employer's companies so the company dropdown is populated even
   // when arriving here directly (not via the Companies page).
   useGetAllCompanies();
+  const { t } = useI18n();
   const [input, setInput] = useState({
     title: "",
     description: "",
@@ -54,11 +56,11 @@ function PostJob() {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!input.companyId) {
-      toast.error("Please select a company for this job.");
+      toast.error(t("employer.selectCompanyToast"));
       return;
     }
     if (!input.jobType) {
-      toast.error("Please select a job type.");
+      toast.error(t("employer.selectTypeToast"));
       return;
     }
     try {
@@ -69,7 +71,7 @@ function PostJob() {
         navigate("/admin/jobs");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || t("employer.genericError"));
     } finally {
       setLoading(false);
     }
@@ -87,30 +89,30 @@ function PostJob() {
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          Back to jobs
+          {t("employer.backToJobs")}
         </button>
 
         <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Post a job</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">{t("employer.postJob")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Fill in the details — this is exactly what job seekers will see.
+            {t("employer.postJobSubForm")}
           </p>
 
           {noCompanies ? (
             <div className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center">
               <Building2 className="h-9 w-9 text-muted-foreground" aria-hidden="true" />
-              <p className="font-medium text-foreground">Create a company first</p>
+              <p className="font-medium text-foreground">{t("employer.createCompanyFirst")}</p>
               <p className="max-w-xs text-sm text-muted-foreground">
-                Jobs are posted under a company. Add one before creating a job.
+                {t("employer.createCompanyFirstSub")}
               </p>
               <Button onClick={() => navigate("/admin/companies/create")} className="mt-1">
-                Create a company
+                {t("employer.createCompany")}
               </Button>
             </div>
           ) : (
             <form onSubmit={submitHandler} className="mt-6 space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="job-title">Job title</Label>
+                <Label htmlFor="job-title">{t("employer.jobTitle")}</Label>
                 <Input
                   id="job-title"
                   name="title"
@@ -122,7 +124,7 @@ function PostJob() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="job-description">Description</Label>
+                <Label htmlFor="job-description">{t("employer.description")}</Label>
                 <textarea
                   id="job-description"
                   name="description"
@@ -137,7 +139,7 @@ function PostJob() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="job-requirements">Requirements</Label>
+                <Label htmlFor="job-requirements">{t("employer.requirements")}</Label>
                 <textarea
                   id="job-requirements"
                   name="requirements"
@@ -151,7 +153,7 @@ function PostJob() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="job-location">Location</Label>
+                  <Label htmlFor="job-location">{t("employer.location")}</Label>
                   <Input
                     id="job-location"
                     name="location"
@@ -162,7 +164,7 @@ function PostJob() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="job-salary">Pay amount (₹)</Label>
+                  <Label htmlFor="job-salary">{t("employer.payAmount")}</Label>
                   <Input
                     id="job-salary"
                     name="salary"
@@ -174,25 +176,25 @@ function PostJob() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Pay period</Label>
+                  <Label>{t("employer.payPeriod")}</Label>
                   <Select
                     value={input.wageType}
                     onValueChange={(v) => setInput({ ...input, wageType: v })}
                   >
-                    <SelectTrigger aria-label="Pay period">
-                      <SelectValue placeholder="Select period" />
+                    <SelectTrigger aria-label={t("employer.payPeriod")}>
+                      <SelectValue placeholder={t("employer.selectPeriod")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {WAGE_TYPES.map(({ value, label }) => (
+                      {WAGE_TYPES.map(({ value, labelKey }) => (
                         <SelectItem key={value} value={value}>
-                          {label}
+                          {t(`employer.${labelKey}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="job-experience">Experience (years)</Label>
+                  <Label htmlFor="job-experience">{t("employer.experienceYears")}</Label>
                   <Input
                     id="job-experience"
                     name="experience"
@@ -204,7 +206,7 @@ function PostJob() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="job-position">No. of positions</Label>
+                  <Label htmlFor="job-position">{t("employer.positions")}</Label>
                   <Input
                     id="job-position"
                     name="position"
@@ -216,13 +218,13 @@ function PostJob() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Job type</Label>
+                  <Label>{t("employer.jobType")}</Label>
                   <Select
                     value={input.jobType}
                     onValueChange={(v) => setInput({ ...input, jobType: v })}
                   >
-                    <SelectTrigger aria-label="Job type">
-                      <SelectValue placeholder="Select type" />
+                    <SelectTrigger aria-label={t("employer.jobType")}>
+                      <SelectValue placeholder={t("employer.selectType")} />
                     </SelectTrigger>
                     <SelectContent>
                       {JOB_TYPES.map((type) => (
@@ -234,13 +236,13 @@ function PostJob() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Company</Label>
+                  <Label>{t("employer.company")}</Label>
                   <Select
                     value={input.companyId}
                     onValueChange={(v) => setInput({ ...input, companyId: v })}
                   >
-                    <SelectTrigger aria-label="Company">
-                      <SelectValue placeholder="Select company" />
+                    <SelectTrigger aria-label={t("employer.company")}>
+                      <SelectValue placeholder={t("employer.selectCompany")} />
                     </SelectTrigger>
                     <SelectContent>
                       {companies.map((company) => (
@@ -260,16 +262,16 @@ function PostJob() {
                   onClick={() => navigate("/admin/jobs")}
                   disabled={loading}
                 >
-                  Cancel
+                  {t("employer.cancel")}
                 </Button>
                 <Button type="submit" disabled={loading}>
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                      Posting…
+                      {t("employer.posting")}
                     </>
                   ) : (
-                    "Post job"
+                    t("employer.postJobBtn")
                   )}
                 </Button>
               </div>
