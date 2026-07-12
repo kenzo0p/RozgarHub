@@ -16,6 +16,7 @@ import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import ContactButtons from "../shared/ContactButtons";
 import ReviewDialog from "../shared/ReviewDialog";
+import VerifiedBadge from "../shared/VerifiedBadge";
 import { StarRatingDisplay } from "../shared/StarRating";
 import useGivenReviews from "@/hooks/useGivenReviews";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -110,8 +111,9 @@ function ApplicantsTable() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <span className="font-medium text-foreground">
+                      <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
                         {applicant?.fullname}
+                        <VerifiedBadge status={applicant?.verificationStatus} />
                       </span>
                       {applicant?.ratingCount > 0 && (
                         <div className="mt-0.5">

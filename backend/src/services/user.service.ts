@@ -5,6 +5,7 @@ import { NotFoundError, ConflictError } from '../utils/ApiError.js';
 import type { UpdateProfileInput } from '../validators/auth.validator.js';
 import type { SafeUser } from '../types/models.js';
 import type { Language } from '../utils/constants.js';
+import logger from '../utils/logger.js';
 
 /**
  * User Service — profile management business logic.
@@ -77,6 +78,28 @@ export class UserService {
     }
     userDoc.language = language;
     await userDoc.save();
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /**
+   * Verify a worker's identity from an Aadhaar number — the worker-side
+   * counterpart to employer GST verification.
+   *
+   * DEMO: this trusts a valid Aadhaar *format* and marks the user verified.
+   * Production must call an Aadhaar/DigiLocker KYC provider to confirm. We
+   * store only the last 4 digits — never the full national ID.
+   */
+  async verifyIdentity(userId: string, idNumber: string): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+    userDoc.idType = 'aadhaar';
+    userDoc.idLast4 = idNumber.slice(-4);
+    userDoc.verificationStatus = 'verified';
+    await userDoc.save();
+
+    logger.info(`User identity verified: ${userId} (aadhaar …${userDoc.idLast4})`);
     return userDoc.toJSON() as unknown as SafeUser;
   }
 }

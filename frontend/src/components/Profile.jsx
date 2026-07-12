@@ -16,6 +16,8 @@ import {
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfile from "./UpdateProfile";
 import ReviewsList from "./shared/ReviewsList";
+import WorkerVerification from "./WorkerVerification";
+import VerifiedBadge from "./shared/VerifiedBadge";
 import { StarRatingDisplay } from "./shared/StarRating";
 import { useSelector } from "react-redux";
 import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
@@ -76,9 +78,12 @@ function Profile() {
             </div>
 
             <div className="mt-3">
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                {user?.fullname}
-              </h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                  {user?.fullname}
+                </h1>
+                <VerifiedBadge status={user?.verificationStatus} />
+              </div>
               <p className="text-sm text-muted-foreground">@{user?.username}</p>
               {user?.ratingCount > 0 && (
                 <div className="mt-1.5">
@@ -151,6 +156,11 @@ function Profile() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* ─── Identity verification ──────────────────────────────────── */}
+        <div className="mt-6">
+          <WorkerVerification />
         </div>
 
         {/* ─── Application stats ───────────────────────────────────────── */}

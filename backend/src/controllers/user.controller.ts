@@ -30,3 +30,12 @@ export const updateLanguage = asyncHandler(async (req: AuthRequest, res: Respons
     ApiResponse.success({ user }, 'Language preference updated'),
   );
 });
+
+export const verifyIdentity = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const user = await userService.verifyIdentity(userId, req.body.idNumber);
+
+  res.status(200).json(
+    ApiResponse.success({ user }, 'Identity verified successfully'),
+  );
+});

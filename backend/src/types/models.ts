@@ -26,6 +26,9 @@ export interface IUser extends Document {
   profile: IUserProfile;
   ratingAverage: number;
   ratingCount: number;
+  verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
+  idType?: 'aadhaar';
+  idLast4?: string;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   createdAt: Date;

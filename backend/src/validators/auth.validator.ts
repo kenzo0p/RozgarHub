@@ -73,6 +73,15 @@ export const updateLanguageSchema = z.object({
   }),
 });
 
+// Aadhaar: 12 digits, never starting with 0 or 1 (UIDAI rule). We validate the
+// full number for the check but persist only the last 4 (see user.service).
+export const verifyIdentitySchema = z.object({
+  idNumber: z
+    .string({ error: 'Aadhaar number is required' })
+    .transform((v) => v.replace(/\s+/g, ''))
+    .pipe(z.string().regex(/^[2-9]\d{11}$/, 'Enter a valid 12-digit Aadhaar number')),
+});
+
 export const forgotPasswordSchema = z.object({
   email: z
     .string({ error: 'Email is required' })
@@ -125,6 +134,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type UpdateLanguageInput = z.infer<typeof updateLanguageSchema>;
+export type VerifyIdentityInput = z.infer<typeof verifyIdentitySchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 

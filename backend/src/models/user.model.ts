@@ -67,6 +67,17 @@ const userSchema = new Schema<IUser>(
     // cards, and badges. Recomputed whenever a new review lands.
     ratingAverage: { type: Number, default: 0, min: 0, max: 5 },
     ratingCount: { type: Number, default: 0, min: 0 },
+    // Identity verification — the worker-side counterpart to employer GST
+    // verification, so trust runs both ways. We deliberately never store the
+    // full Aadhaar (unlike a public GSTIN): only the last 4 digits are kept,
+    // enough to show "…1234" without holding a sensitive national ID.
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected'],
+      default: 'unverified',
+    },
+    idType: { type: String, enum: ['aadhaar'] },
+    idLast4: { type: String },
     // Password reset fields
     passwordResetToken: { type: String, default: undefined },
     passwordResetExpires: { type: Date, default: undefined },
