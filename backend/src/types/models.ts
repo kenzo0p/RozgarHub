@@ -91,7 +91,13 @@ export interface IJob extends Document {
 
 // ─── Application ───────────────────────────────────────────────────────────────
 
-export type ApplicationStatus = 'pending' | 'accepted' | 'rejected';
+export type ApplicationStatus =
+  | 'pending'
+  | 'accepted'
+  | 'rejected'
+  | 'started'
+  | 'completed'
+  | 'paid';
 
 export interface IApplication extends Document {
   _id: Types.ObjectId;

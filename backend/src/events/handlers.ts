@@ -1,6 +1,11 @@
 import { eventBus } from './eventBus.js';
 import { notificationService } from '../services/notification.service.js';
-import { NOTIFICATION_TYPES, DEFAULT_LANGUAGE, type Language } from '../utils/constants.js';
+import {
+  NOTIFICATION_TYPES,
+  DEFAULT_LANGUAGE,
+  type Language,
+  type NotificationType,
+} from '../utils/constants.js';
 import { cacheInvalidatePattern } from '../utils/cache.js';
 import { sendSms } from '../utils/sms.js';
 import { tn } from '../utils/notificationI18n.js';
@@ -81,29 +86,37 @@ export function registerEventHandlers(): void {
   });
 
   eventBus.on('application.statusChanged', async (payload) => {
-    // Notify the applicant about their application status, in their language
-    const accepted = payload.newStatus === 'accepted';
-    const type = accepted
-      ? NOTIFICATION_TYPES.APPLICATION_ACCEPTED
-      : NOTIFICATION_TYPES.APPLICATION_REJECTED;
-    const keyBase = accepted ? 'application_accepted' : 'application_rejected';
+    // Each lifecycle status maps to a translation key + notification type.
+    // accepted/rejected keep their dedicated types; the later lifecycle steps
+    // (started/completed/paid) ride on SYSTEM. Unmapped statuses are silent.
+    const STATUS_NOTIF: Record<string, { key: string; type: NotificationType }> = {
+      accepted: { key: 'application_accepted', type: NOTIFICATION_TYPES.APPLICATION_ACCEPTED },
+      rejected: { key: 'application_rejected', type: NOTIFICATION_TYPES.APPLICATION_REJECTED },
+      started: { key: 'application_started', type: NOTIFICATION_TYPES.SYSTEM },
+      completed: { key: 'application_completed', type: NOTIFICATION_TYPES.SYSTEM },
+      paid: { key: 'application_paid', type: NOTIFICATION_TYPES.SYSTEM },
+    };
+    const mapping = STATUS_NOTIF[payload.newStatus];
+    if (!mapping) return;
 
+    // Notify the applicant about their application status, in their language
     const { phoneNumber, language } = await getRecipient(payload.applicantId);
     const vars = { jobTitle: payload.jobTitle };
 
     await notificationService.create({
       recipientId: payload.applicantId,
-      type,
-      title: tn(language, `${keyBase}.title`),
-      message: tn(language, `${keyBase}.message`, vars),
+      type: mapping.type,
+      title: tn(language, `${mapping.key}.title`),
+      message: tn(language, `${mapping.key}.message`, vars),
       relatedEntity: { kind: 'Application', id: payload.applicationId },
     });
 
-    // SMS the worker — accepted workers are told to open the app for the
-    // employer's contact details.
-    await sendSmsSafe(phoneNumber, tn(language, `${keyBase}.sms`, vars));
+    // SMS the worker — the paid/accepted moments especially matter offline.
+    await sendSmsSafe(phoneNumber, tn(language, `${mapping.key}.sms`, vars));
 
-    logger.info(`[Event] application.statusChanged → notification sent to applicant ${payload.applicantId}`);
+    logger.info(
+      `[Event] application.statusChanged → '${payload.newStatus}' notified to applicant ${payload.applicantId}`,
+    );
   });
 
   // ─── Job Events ─────────────────────────────────────────────────────────────

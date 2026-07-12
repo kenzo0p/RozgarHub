@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const updateStatusSchema = z.object({
-  status: z.enum(['pending', 'accepted', 'rejected'], {
-    error: 'Status must be pending, accepted, or rejected',
+  status: z.enum(['pending', 'accepted', 'rejected', 'started', 'completed', 'paid'], {
+    error: 'Invalid application status',
   }),
 });
 

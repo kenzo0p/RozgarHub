@@ -16,7 +16,17 @@ import ReviewDialog from "./shared/ReviewDialog";
 import useGivenReviews from "@/hooks/useGivenReviews";
 import { useI18n } from "@/i18n/I18nProvider";
 
-const STATUS_KEY = { pending: "profile.statusPending", accepted: "profile.statusAccepted", rejected: "profile.statusRejected" };
+// Statuses where a real engagement exists — worker can contact & rate.
+const ENGAGED = ["accepted", "started", "completed", "paid"];
+
+const STATUS_KEY = {
+  pending: "profile.statusPending",
+  accepted: "profile.statusAccepted",
+  rejected: "profile.statusRejected",
+  started: "profile.statusStarted",
+  completed: "profile.statusCompleted",
+  paid: "profile.statusPaid",
+};
 
 const STATUS_STYLES = {
   pending:
@@ -25,6 +35,12 @@ const STATUS_STYLES = {
     "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
   rejected:
     "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
+  started:
+    "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20",
+  completed:
+    "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20",
+  paid:
+    "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30",
 };
 
 function AppliedJobTable() {
@@ -90,7 +106,7 @@ function AppliedJobTable() {
               className="text-right"
               onClick={(e) => e.stopPropagation()}
             >
-              {appliedJob.status === "accepted" ? (
+              {ENGAGED.includes(appliedJob.status) ? (
                 <div className="flex flex-col items-end gap-1.5">
                   {appliedJob.employerContact && (
                     <ContactButtons

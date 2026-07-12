@@ -33,8 +33,10 @@ export class ReviewService {
       throw new NotFoundError('Application');
     }
 
-    // Reviews are only meaningful once the worker was actually hired.
-    if (application.status !== 'accepted') {
+    // Reviews are only meaningful once there's a real engagement — i.e. the
+    // worker was hired (accepted) or the job has since progressed.
+    const ENGAGED = ['accepted', 'started', 'completed', 'paid'];
+    if (!ENGAGED.includes(application.status)) {
       throw new ForbiddenError('You can only review after the application is accepted');
     }
 

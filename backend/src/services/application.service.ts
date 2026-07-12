@@ -1,6 +1,6 @@
 import { applicationRepository } from '../repositories/application.repository.js';
 import { jobRepository } from '../repositories/job.repository.js';
-import { ConflictError, NotFoundError, ForbiddenError } from '../utils/ApiError.js';
+import { ConflictError, NotFoundError, ForbiddenError, ValidationError } from '../utils/ApiError.js';
 import type { IApplication, ApplicationStatus, IJob } from '../types/models.js';
 import { Job } from '../models/job.model.js';
 import { eventBus } from '../events/eventBus.js';
@@ -16,6 +16,21 @@ import logger from '../utils/logger.js';
  * - Emits 'application.created' when a user applies (triggers employer notification)
  * - Emits 'application.statusChanged' on accept/reject (triggers applicant notification)
  */
+/**
+ * Legal forward-only status transitions the employer may make. The lifecycle
+ * runs pending → accepted → started → completed → paid; rejection is allowed
+ * while the worker hasn't started. This prevents illegal jumps (e.g. marking
+ * a pending application "paid").
+ */
+const ALLOWED_TRANSITIONS: Record<ApplicationStatus, ApplicationStatus[]> = {
+  pending: ['accepted', 'rejected'],
+  accepted: ['started', 'rejected'],
+  started: ['completed'],
+  completed: ['paid'],
+  rejected: [],
+  paid: [],
+};
+
 export class ApplicationService {
   async applyToJob(jobId: string, applicantId: string): Promise<IApplication> {
     // Verify job exists
@@ -74,7 +89,12 @@ export class ApplicationService {
       const employer = job?.created_By;
 
       let employerContact = null;
-      if (application.status === 'accepted' && job) {
+      // Reveal the employer's contact once hired — and keep it revealed through
+      // the rest of the lifecycle (started/completed/paid), not just 'accepted'.
+      const engaged = ['accepted', 'started', 'completed', 'paid'].includes(
+        application.status,
+      );
+      if (engaged && job) {
         const phone = job.company?.contactPhone || employer?.phoneNumber;
         if (phone) {
           employerContact = {
@@ -127,6 +147,12 @@ export class ApplicationService {
     );
     if (!job || job.created_By.toString() !== employerId) {
       throw new ForbiddenError('You can only manage applications for your own jobs');
+    }
+
+    // Enforce a legal forward-only lifecycle transition.
+    const current = application.status;
+    if (current !== status && !ALLOWED_TRANSITIONS[current].includes(status)) {
+      throw new ValidationError(`Cannot change status from '${current}' to '${status}'`);
     }
 
     application.status = status;

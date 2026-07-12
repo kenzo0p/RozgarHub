@@ -9,7 +9,7 @@ import {
 } from "../ui/table";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { FileText, Check, X, Inbox, Star } from "lucide-react";
+import { FileText, Check, X, Inbox, Star, ArrowRight } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
@@ -28,13 +28,31 @@ const STATUS_STYLES = {
     "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
   rejected:
     "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20",
+  started:
+    "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20",
+  completed:
+    "bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20",
+  paid:
+    "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30",
 };
 
 const STATUS_LABEL = {
   pending: "employer.statusPending",
   accepted: "employer.statusAccepted",
   rejected: "employer.statusRejected",
+  started: "employer.statusStarted",
+  completed: "employer.statusCompleted",
+  paid: "employer.statusPaid",
 };
+
+// The single forward action available at each lifecycle step, and its label.
+const NEXT_STEP = { accepted: "started", started: "completed", completed: "paid" };
+const NEXT_LABEL = {
+  accepted: "employer.markStarted",
+  started: "employer.markCompleted",
+  completed: "employer.markPaid",
+};
+const ENGAGED = ["accepted", "started", "completed", "paid"];
 
 function ApplicantsTable() {
   const { t } = useI18n();
@@ -167,27 +185,42 @@ function ApplicantsTable() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={pendingId === item._id || status === "accepted"}
-                      onClick={() => statusHandler("accepted", item._id)}
-                      className="gap-1 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
-                    >
-                      <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t("employer.accept")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={pendingId === item._id || status === "rejected"}
-                      onClick={() => statusHandler("rejected", item._id)}
-                      className="gap-1 border-red-500/30 text-red-600 hover:bg-red-500/10 dark:text-red-400"
-                    >
-                      <X className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t("employer.reject")}
-                    </Button>
-                    {status === "accepted" &&
+                    {status === "pending" && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={pendingId === item._id}
+                          onClick={() => statusHandler("accepted", item._id)}
+                          className="gap-1 border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
+                        >
+                          <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                          {t("employer.accept")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={pendingId === item._id}
+                          onClick={() => statusHandler("rejected", item._id)}
+                          className="gap-1 border-red-500/30 text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                        >
+                          <X className="h-3.5 w-3.5" aria-hidden="true" />
+                          {t("employer.reject")}
+                        </Button>
+                      </>
+                    )}
+                    {NEXT_STEP[status] && (
+                      <Button
+                        size="sm"
+                        disabled={pendingId === item._id}
+                        onClick={() => statusHandler(NEXT_STEP[status], item._id)}
+                        className="gap-1"
+                      >
+                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t(NEXT_LABEL[status])}
+                      </Button>
+                    )}
+                    {ENGAGED.includes(status) &&
                       (reviewedIds.has(item._id) ? (
                         <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                           <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />

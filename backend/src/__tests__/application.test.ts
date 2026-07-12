@@ -131,6 +131,62 @@ describe('Applications', () => {
       expect(res.body.data.application.status).toBe('accepted');
     });
 
+    it('advances the full lifecycle accepted → started → completed → paid', async () => {
+      const { jobId, employer } = await setupJob();
+      const employee = await createAuthedUser('employee');
+      const applyRes = await api()
+        .post(`/api/v1/application/apply/${jobId}`)
+        .set('Cookie', employee.cookies);
+      const applicationId = applyRes.body.data.application._id;
+
+      for (const status of ['accepted', 'started', 'completed', 'paid']) {
+        const res = await api()
+          .patch(`/api/v1/application/${applicationId}/status`)
+          .set('Cookie', employer.cookies)
+          .send({ status });
+        expect(res.status).toBe(200);
+        expect(res.body.data.application.status).toBe(status);
+      }
+    });
+
+    it('rejects an illegal transition (pending → paid) with 400', async () => {
+      const { jobId, employer } = await setupJob();
+      const employee = await createAuthedUser('employee');
+      const applyRes = await api()
+        .post(`/api/v1/application/apply/${jobId}`)
+        .set('Cookie', employee.cookies);
+      const applicationId = applyRes.body.data.application._id;
+
+      const res = await api()
+        .patch(`/api/v1/application/${applicationId}/status`)
+        .set('Cookie', employer.cookies)
+        .send({ status: 'paid' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('cannot move backwards (paid → started)', async () => {
+      const { jobId, employer } = await setupJob();
+      const employee = await createAuthedUser('employee');
+      const applyRes = await api()
+        .post(`/api/v1/application/apply/${jobId}`)
+        .set('Cookie', employee.cookies);
+      const applicationId = applyRes.body.data.application._id;
+
+      for (const status of ['accepted', 'started', 'completed', 'paid']) {
+        await api()
+          .patch(`/api/v1/application/${applicationId}/status`)
+          .set('Cookie', employer.cookies)
+          .send({ status });
+      }
+
+      const back = await api()
+        .patch(`/api/v1/application/${applicationId}/status`)
+        .set('Cookie', employer.cookies)
+        .send({ status: 'started' });
+      expect(back.status).toBe(400);
+    });
+
     it("blocks other employers from changing application status (IDOR)", async () => {
       const { jobId } = await setupJob();
       const employee = await createAuthedUser('employee');

@@ -13,11 +13,14 @@ const applicationSchema = new Schema<IApplication>(
       ref: 'User',
       required: [true, 'Applicant reference is required'],
     },
+    // Lifecycle: pending → accepted → started → completed → paid
+    // (or rejected). Blue-collar work doesn't end at "hired" — the states
+    // that matter are showing up, finishing, and getting paid.
     status: {
       type: String,
       enum: {
-        values: ['pending', 'accepted', 'rejected'],
-        message: 'Status must be pending, accepted, or rejected',
+        values: ['pending', 'accepted', 'rejected', 'started', 'completed', 'paid'],
+        message: 'Invalid application status',
       },
       default: 'pending',
     },
