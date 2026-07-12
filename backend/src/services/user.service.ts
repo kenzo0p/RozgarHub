@@ -54,6 +54,33 @@ export class UserService {
       userDoc.profile.skills = data.skills.split(',').map((s: string) => s.trim());
     }
 
+    // ─── Blue-collar worker fields ──────────────────────────────────────────
+    if (data.primaryTrade !== undefined) userDoc.profile.primaryTrade = data.primaryTrade;
+    if (data.experienceYears !== undefined) {
+      userDoc.profile.experienceYears = data.experienceYears;
+    }
+    if (data.expectedWage !== undefined) userDoc.profile.expectedWage = data.expectedWage;
+    if (data.expectedWageType !== undefined) {
+      userDoc.profile.expectedWageType = data.expectedWageType;
+    }
+    if (data.available !== undefined) userDoc.profile.available = data.available;
+    if (data.preferredLocation !== undefined) {
+      userDoc.profile.preferredLocation = data.preferredLocation;
+    }
+    // Comma-separated → trimmed, non-empty array (mirrors skills handling)
+    if (data.languagesSpoken !== undefined) {
+      userDoc.profile.languagesSpoken = data.languagesSpoken
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+    }
+    if (data.toolsOwned !== undefined) {
+      userDoc.profile.toolsOwned = data.toolsOwned
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter(Boolean);
+    }
+
     // Upload resume if file is provided
     if (file) {
       const resumeUrl = await uploadService.uploadResume(file);

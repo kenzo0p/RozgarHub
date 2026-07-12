@@ -12,7 +12,13 @@ import {
   Briefcase,
   Clock,
   CheckCircle2,
+  CircleSlash,
+  Wrench,
+  MapPin,
+  Languages,
+  Coins,
 } from "lucide-react";
+import { formatWage } from "@/utils/wage";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfile from "./UpdateProfile";
 import ReviewsList from "./shared/ReviewsList";
@@ -37,6 +43,22 @@ function StatCard({ icon: Icon, value, label, tone }) {
   );
 }
 
+/** A single labelled work-detail row; renders nothing when the value is empty. */
+function WorkDetail({ icon: Icon, label, value }) {
+  const { t } = useI18n();
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <div className="min-w-0">
+        <dt className="text-xs text-muted-foreground">{label}</dt>
+        <dd className={`text-sm font-medium ${value ? "text-foreground" : "italic text-muted-foreground"}`}>
+          {value || t("profile.notSet")}
+        </dd>
+      </div>
+    </div>
+  );
+}
+
 function Profile() {
   useGetAppliedJobs();
   const [open, setOpen] = useState(false);
@@ -44,6 +66,8 @@ function Profile() {
   const { user } = useSelector((store) => store.auth);
   const { allAppliedJobs } = useSelector((store) => store.job);
 
+  const prof = user?.profile || {};
+  const isWorker = user?.role === "employee";
   const skills = user?.profile?.skills || [];
   const resume = user?.profile?.resume;
   const applied = allAppliedJobs?.length || 0;
@@ -158,10 +182,93 @@ function Profile() {
           </div>
         </div>
 
-        {/* ─── Identity verification ──────────────────────────────────── */}
-        <div className="mt-6">
-          <WorkerVerification />
-        </div>
+        {/* ─── Worker-only: work details + identity verification ───────── */}
+        {isWorker && (
+          <>
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold tracking-tight text-foreground">
+                  {t("profile.workDetails")}
+                </h2>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    prof.available === false
+                      ? "bg-muted text-muted-foreground"
+                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  }`}
+                >
+                  {prof.available === false ? (
+                    <CircleSlash className="h-3.5 w-3.5" aria-hidden="true" />
+                  ) : (
+                    <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
+                  {prof.available === false
+                    ? t("profile.notAvailable")
+                    : t("profile.availableForWork")}
+                </span>
+              </div>
+
+              <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <WorkDetail icon={Briefcase} label={t("profile.primaryTrade")} value={prof.primaryTrade} />
+                <WorkDetail
+                  icon={Clock}
+                  label={t("profile.experience")}
+                  value={
+                    prof.experienceYears != null
+                      ? `${prof.experienceYears} ${t("profile.yearsSuffix")}`
+                      : null
+                  }
+                />
+                <WorkDetail
+                  icon={Coins}
+                  label={t("profile.expectedPay")}
+                  value={
+                    prof.expectedWage != null
+                      ? formatWage(prof.expectedWage, prof.expectedWageType)
+                      : null
+                  }
+                />
+                <WorkDetail icon={MapPin} label={t("profile.preferredLocation")} value={prof.preferredLocation} />
+              </dl>
+
+              {prof.languagesSpoken?.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                    <Languages className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    {t("profile.languagesSpoken")}
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {prof.languagesSpoken.map((l) => (
+                      <Badge key={l} variant="secondary" className="font-medium">
+                        {l}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {prof.toolsOwned?.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                    <Wrench className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    {t("profile.toolsOwned")}
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {prof.toolsOwned.map((tool) => (
+                      <Badge key={tool} variant="secondary" className="font-medium">
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <WorkerVerification />
+            </div>
+          </>
+        )}
 
         {/* ─── Application stats ───────────────────────────────────────── */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">

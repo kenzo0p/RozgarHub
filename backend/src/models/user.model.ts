@@ -62,6 +62,21 @@ const userSchema = new Schema<IUser>(
       resumeOriginalName: { type: String },
       company: { type: Schema.Types.ObjectId, ref: 'Company' },
       profilePhoto: { type: String, default: '' },
+      // ─── Blue-collar worker fields ─────────────────────────────────────
+      // A resume PDF is white-collar thinking; a mason or driver is better
+      // described by trade, rate, availability, and the tools they own.
+      primaryTrade: { type: String, trim: true, maxlength: 100 },
+      experienceYears: { type: Number, min: 0, max: 70 },
+      expectedWage: { type: Number, min: 0 },
+      expectedWageType: {
+        type: String,
+        enum: ['hourly', 'daily', 'weekly', 'monthly', 'fixed'],
+        default: 'monthly',
+      },
+      available: { type: Boolean, default: true },
+      preferredLocation: { type: String, trim: true, maxlength: 100 },
+      languagesSpoken: [{ type: String }],
+      toolsOwned: [{ type: String }],
     },
     // Reputation — denormalized from Review docs for cheap display in lists,
     // cards, and badges. Recomputed whenever a new review lands.

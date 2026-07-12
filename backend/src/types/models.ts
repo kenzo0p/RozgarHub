@@ -12,6 +12,15 @@ export interface IUserProfile {
   resumeOriginalName?: string;
   company?: Types.ObjectId;
   profilePhoto: string;
+  // Blue-collar worker fields
+  primaryTrade?: string;
+  experienceYears?: number;
+  expectedWage?: number;
+  expectedWageType?: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'fixed';
+  available?: boolean;
+  preferredLocation?: string;
+  languagesSpoken?: string[];
+  toolsOwned?: string[];
 }
 
 export interface IUser extends Document {

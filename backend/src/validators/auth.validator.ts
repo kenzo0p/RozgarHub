@@ -65,6 +65,27 @@ export const updateProfileSchema = z.object({
   phoneNumber: z.string().or(z.number()).transform(Number).optional(),
   bio: z.string().max(500).optional(),
   skills: z.string().optional(), // Comma-separated string, parsed in service layer
+  // ─── Blue-collar worker fields (all optional) ────────────────────────────
+  primaryTrade: z.string().max(100).trim().optional(),
+  // Blank fields arrive as "" from the multipart form — treat as "unset"
+  // (undefined) rather than coercing to 0.
+  experienceYears: z.preprocess(
+    (v) => (v === '' || v == null ? undefined : Number(v)),
+    z.number().min(0).max(70).optional(),
+  ),
+  expectedWage: z.preprocess(
+    (v) => (v === '' || v == null ? undefined : Number(v)),
+    z.number().min(0).optional(),
+  ),
+  expectedWageType: z.enum(['hourly', 'daily', 'weekly', 'monthly', 'fixed']).optional(),
+  // Multipart form sends booleans as strings — normalize to a real boolean.
+  available: z
+    .union([z.boolean(), z.string()])
+    .transform((v) => v === true || v === 'true')
+    .optional(),
+  preferredLocation: z.string().max(100).trim().optional(),
+  languagesSpoken: z.string().optional(), // Comma-separated, parsed in service
+  toolsOwned: z.string().optional(), // Comma-separated, parsed in service
 });
 
 export const updateLanguageSchema = z.object({

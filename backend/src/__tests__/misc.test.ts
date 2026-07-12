@@ -15,6 +15,48 @@ describe('User Profile', () => {
     expect(res.body.data.user.profile.skills).toEqual(['node', 'react', 'mongodb']);
   });
 
+  it('saves blue-collar fields (trade, wage, availability, tools)', async () => {
+    const { cookies } = await createAuthedUser('employee');
+
+    const res = await api()
+      .put('/api/v1/user/profile/update')
+      .set('Cookie', cookies)
+      .send({
+        primaryTrade: 'Electrician',
+        experienceYears: '6',
+        expectedWage: '900',
+        expectedWageType: 'daily',
+        available: 'false',
+        preferredLocation: 'Pune',
+        languagesSpoken: 'Hindi, Marathi',
+        toolsOwned: 'drill, multimeter',
+      });
+
+    expect(res.status).toBe(200);
+    const p = res.body.data.user.profile;
+    expect(p.primaryTrade).toBe('Electrician');
+    expect(p.experienceYears).toBe(6);
+    expect(p.expectedWage).toBe(900);
+    expect(p.expectedWageType).toBe('daily');
+    expect(p.available).toBe(false);
+    expect(p.preferredLocation).toBe('Pune');
+    expect(p.languagesSpoken).toEqual(['Hindi', 'Marathi']);
+    expect(p.toolsOwned).toEqual(['drill', 'multimeter']);
+  });
+
+  it('leaves a blank expected wage unset rather than saving 0', async () => {
+    const { cookies } = await createAuthedUser('employee');
+
+    const res = await api()
+      .put('/api/v1/user/profile/update')
+      .set('Cookie', cookies)
+      .send({ primaryTrade: 'Plumber', expectedWage: '' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.user.profile.primaryTrade).toBe('Plumber');
+    expect(res.body.data.user.profile.expectedWage).toBeUndefined();
+  });
+
   it("rejects taking another user's email with 409", async () => {
     const alice = await createAuthedUser('employee');
     const bob = await createAuthedUser('employee');
