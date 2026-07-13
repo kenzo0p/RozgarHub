@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { setUser } from "./redux/authSlice";
 import { useI18n } from "./i18n/I18nProvider";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
+import PwaBanner from "./components/shared/PwaBanner";
 
 // ─── Eagerly loaded (needed immediately on first render) ─────────────────────
 import Home from "./components/Home";
@@ -204,6 +205,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <PwaBanner />
       <RouterProvider router={appRouter} />
     </ErrorBoundary>
   );

@@ -23,3 +23,13 @@ createRoot(document.getElementById("root")).render(
     </I18nProvider>
   </StrictMode>
 );
+
+// Register the service worker for offline support. Production only — a SW in
+// dev would cache stale modules and fight Vite's HMR.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Non-critical — the app works fine without offline support.
+    });
+  });
+}

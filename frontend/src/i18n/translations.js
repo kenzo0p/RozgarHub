@@ -335,6 +335,12 @@ export const translations = {
       pickReason: "Please choose a reason.",
       error: "Couldn't submit. Please try again.",
     },
+    pwa: {
+      install: "Install app",
+      installHint: "Opens instantly, works offline",
+      dismiss: "Not now",
+      offline: "You're offline — showing saved content",
+    },
     voice: {
       search: "Search by voice",
       listening: "Listening…",
@@ -669,6 +675,12 @@ export const translations = {
       pickReason: "कृपया कारण चुनें।",
       error: "सबमिट नहीं हो सका। कृपया पुनः प्रयास करें।",
     },
+    pwa: {
+      install: "ऐप इंस्टॉल करें",
+      installHint: "तुरंत खुलता है, ऑफ़लाइन काम करता है",
+      dismiss: "अभी नहीं",
+      offline: "आप ऑफ़लाइन हैं — सहेजी गई सामग्री दिखा रहे हैं",
+    },
     voice: {
       search: "बोलकर खोजें",
       listening: "सुन रहे हैं…",
@@ -913,6 +925,12 @@ export const translations = {
       cancel: "रद्द करा",
       pickReason: "कृपया कारण निवडा.",
       error: "सबमिट होऊ शकले नाही. कृपया पुन्हा प्रयत्न करा.",
+    },
+    pwa: {
+      install: "अ‍ॅप इंस्टॉल करा",
+      installHint: "लगेच उघडते, ऑफलाइन चालते",
+      dismiss: "आत्ता नको",
+      offline: "तुम्ही ऑफलाइन आहात — जतन केलेली सामग्री दाखवत आहे",
     },
     voice: {
       search: "बोलून शोधा",
@@ -1159,6 +1177,12 @@ export const translations = {
       pickReason: "একটি কারণ নির্বাচন করুন।",
       error: "জমা দেওয়া যায়নি। আবার চেষ্টা করুন।",
     },
+    pwa: {
+      install: "অ্যাপ ইনস্টল করুন",
+      installHint: "সঙ্গে সঙ্গে খোলে, অফলাইনে কাজ করে",
+      dismiss: "এখন নয়",
+      offline: "আপনি অফলাইনে আছেন — সংরক্ষিত সামগ্রী দেখানো হচ্ছে",
+    },
     voice: {
       search: "বলে খুঁজুন",
       listening: "শুনছি…",
@@ -1403,6 +1427,12 @@ export const translations = {
       cancel: "રદ કરો",
       pickReason: "કૃપા કરીને કારણ પસંદ કરો.",
       error: "સબમિટ થઈ શક્યું નહીં. કૃપા કરીને ફરી પ્રયાસ કરો.",
+    },
+    pwa: {
+      install: "એપ ઇન્સ્ટોલ કરો",
+      installHint: "તરત ખૂલે છે, ઑફલાઇન ચાલે છે",
+      dismiss: "હમણાં નહીં",
+      offline: "તમે ઑફલાઇન છો — સાચવેલી સામગ્રી બતાવી રહ્યા છીએ",
     },
     voice: {
       search: "બોલીને શોધો",
@@ -1649,6 +1679,12 @@ export const translations = {
       pickReason: "ਕਿਰਪਾ ਕਰਕੇ ਕਾਰਨ ਚੁਣੋ।",
       error: "ਸਬਮਿਟ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
     },
+    pwa: {
+      install: "ਐਪ ਇੰਸਟਾਲ ਕਰੋ",
+      installHint: "ਤੁਰੰਤ ਖੁੱਲ੍ਹਦਾ ਹੈ, ਆਫਲਾਈਨ ਚੱਲਦਾ ਹੈ",
+      dismiss: "ਹੁਣੇ ਨਹੀਂ",
+      offline: "ਤੁਸੀਂ ਆਫਲਾਈਨ ਹੋ — ਸੰਭਾਲੀ ਸਮੱਗਰੀ ਦਿਖਾ ਰਹੇ ਹਾਂ",
+    },
     voice: {
       search: "ਬੋਲ ਕੇ ਖੋਜੋ",
       listening: "ਸੁਣ ਰਹੇ ਹਾਂ…",
@@ -1894,6 +1930,12 @@ export const translations = {
       pickReason: "ஒரு காரணத்தைத் தேர்வு செய்யவும்.",
       error: "சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
     },
+    pwa: {
+      install: "ஆப்பை நிறுவு",
+      installHint: "உடனே திறக்கும், ஆஃப்லைனில் இயங்கும்",
+      dismiss: "இப்போது வேண்டாம்",
+      offline: "நீங்கள் ஆஃப்லைனில் உள்ளீர்கள் — சேமித்த உள்ளடக்கம் காட்டப்படுகிறது",
+    },
     voice: {
       search: "பேசித் தேடு",
       listening: "கேட்கிறது…",
@@ -2138,6 +2180,12 @@ export const translations = {
       cancel: "రద్దు",
       pickReason: "దయచేసి ఒక కారణాన్ని ఎంచుకోండి.",
       error: "సమర్పించలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
+    },
+    pwa: {
+      install: "యాప్‌ను ఇన్‌స్టాల్ చేయండి",
+      installHint: "వెంటనే తెరుచుకుంటుంది, ఆఫ్‌లైన్‌లో పనిచేస్తుంది",
+      dismiss: "ఇప్పుడు కాదు",
+      offline: "మీరు ఆఫ్‌లైన్‌లో ఉన్నారు — సేవ్ చేసిన కంటెంట్ చూపిస్తోంది",
     },
     voice: {
       search: "మాట్లాడి వెతకండి",
