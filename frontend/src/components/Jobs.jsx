@@ -18,6 +18,7 @@ import {
 import { JobListSkeleton } from "./shared/Skeleton";
 import EmptyState from "./shared/EmptyState";
 import ErrorBoundary from "./shared/ErrorBoundary";
+import VoiceSearchButton from "./shared/VoiceSearchButton";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const LOCATIONS = ["Pune", "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"];
@@ -121,6 +122,10 @@ function Jobs() {
                 onChange={(e) => dispatch(setSearchedQuery(e.target.value))}
                 placeholder={t("jobs.searchPlaceholder")}
                 className="h-10 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              />
+              <VoiceSearchButton
+                size="sm"
+                onResult={(text) => dispatch(setSearchedQuery(text))}
               />
             </div>
 

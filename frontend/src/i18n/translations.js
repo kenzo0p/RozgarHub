@@ -314,6 +314,13 @@ export const translations = {
       confirmedChip: "Payment confirmed",
       confirmError: "Couldn't confirm. Please try again.",
     },
+    voice: {
+      search: "Search by voice",
+      listening: "Listening…",
+      listen: "Listen",
+      stop: "Stop",
+      error: "Voice search failed. Please try again.",
+    },
   },
 
   hi: {
@@ -620,6 +627,13 @@ export const translations = {
       confirmedChip: "भुगतान की पुष्टि हुई",
       confirmError: "पुष्टि नहीं हो सकी। कृपया पुनः प्रयास करें।",
     },
+    voice: {
+      search: "बोलकर खोजें",
+      listening: "सुन रहे हैं…",
+      listen: "सुनें",
+      stop: "रोकें",
+      error: "वॉइस सर्च विफल रहा। कृपया पुनः प्रयास करें।",
+    },
   },
 
   // ─── Marathi ───────────────────────────────────────────────────────────────
@@ -836,6 +850,13 @@ export const translations = {
       confirming: "पुष्टी होत आहे…",
       confirmedChip: "पेमेंटची पुष्टी झाली",
       confirmError: "पुष्टी करता आली नाही. कृपया पुन्हा प्रयत्न करा.",
+    },
+    voice: {
+      search: "बोलून शोधा",
+      listening: "ऐकत आहे…",
+      listen: "ऐका",
+      stop: "थांबा",
+      error: "व्हॉइस सर्च अयशस्वी झाला. कृपया पुन्हा प्रयत्न करा.",
     },
   },
 
@@ -1054,6 +1075,13 @@ export const translations = {
       confirmedChip: "পেমেন্ট নিশ্চিত হয়েছে",
       confirmError: "নিশ্চিত করা যায়নি। আবার চেষ্টা করুন।",
     },
+    voice: {
+      search: "বলে খুঁজুন",
+      listening: "শুনছি…",
+      listen: "শুনুন",
+      stop: "থামুন",
+      error: "ভয়েস সার্চ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+    },
   },
 
   // ─── Gujarati ──────────────────────────────────────────────────────────────
@@ -1270,6 +1298,13 @@ export const translations = {
       confirming: "પુષ્ટિ થઈ રહી છે…",
       confirmedChip: "ચુકવણી પુષ્ટ થઈ",
       confirmError: "પુષ્ટિ કરી શકાઈ નહીં. કૃપા કરીને ફરી પ્રયાસ કરો.",
+    },
+    voice: {
+      search: "બોલીને શોધો",
+      listening: "સાંભળી રહ્યાં છીએ…",
+      listen: "સાંભળો",
+      stop: "રોકો",
+      error: "વૉઇસ સર્ચ નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
     },
   },
 
@@ -1488,6 +1523,13 @@ export const translations = {
       confirmedChip: "ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਹੋਈ",
       confirmError: "ਪੁਸ਼ਟੀ ਨਹੀਂ ਹੋ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
     },
+    voice: {
+      search: "ਬੋਲ ਕੇ ਖੋਜੋ",
+      listening: "ਸੁਣ ਰਹੇ ਹਾਂ…",
+      listen: "ਸੁਣੋ",
+      stop: "ਰੋਕੋ",
+      error: "ਵੌਇਸ ਖੋਜ ਅਸਫਲ ਰਹੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    },
   },
 
   // ─── Tamil ─────────────────────────────────────────────────────────────────
@@ -1705,6 +1747,13 @@ export const translations = {
       confirmedChip: "பணம் உறுதிப்படுத்தப்பட்டது",
       confirmError: "உறுதிப்படுத்த முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
     },
+    voice: {
+      search: "பேசித் தேடு",
+      listening: "கேட்கிறது…",
+      listen: "கேள்",
+      stop: "நிறுத்து",
+      error: "குரல் தேடல் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.",
+    },
   },
 
   // ─── Telugu ────────────────────────────────────────────────────────────────
@@ -1921,6 +1970,13 @@ export const translations = {
       confirming: "నిర్ధారిస్తోంది…",
       confirmedChip: "చెల్లింపు నిర్ధారించబడింది",
       confirmError: "నిర్ధారించలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
+    },
+    voice: {
+      search: "మాట్లాడి వెతకండి",
+      listening: "వింటోంది…",
+      listen: "వినండి",
+      stop: "ఆపు",
+      error: "వాయిస్ శోధన విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.",
     },
   },
 };

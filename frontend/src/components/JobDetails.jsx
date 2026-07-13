@@ -27,6 +27,7 @@ import {
   Flag,
 } from "lucide-react";
 import VerifiedBadge from "./shared/VerifiedBadge";
+import ListenButton from "./shared/ListenButton";
 import ReportJobDialog from "./ReportJobDialog";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -222,9 +223,16 @@ function JobDetails() {
 
             {/* Description card */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-bold tracking-tight text-foreground">
-                {t("details.description")}
-              </h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold tracking-tight text-foreground">
+                  {t("details.description")}
+                </h2>
+                <ListenButton
+                  text={[singleJob?.title, singleJob?.description, singleJob?.requirements]
+                    .filter(Boolean)
+                    .join(". ")}
+                />
+              </div>
               <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                 {singleJob?.description}
               </p>

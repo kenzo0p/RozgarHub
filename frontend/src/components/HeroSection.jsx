@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Search, MapPin, Briefcase, Building2, Users } from "lucide-react";
+import VoiceSearchButton from "./shared/VoiceSearchButton";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { useDispatch } from "react-redux";
@@ -132,6 +133,12 @@ function HeroSection() {
             placeholder={t("hero.searchPlaceholder")}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
+          />
+          <VoiceSearchButton
+            onResult={(text) => {
+              setQuery(text);
+              searchJobHandler(text);
+            }}
           />
           <Button type="submit" size="lg" className="rounded-full px-6">
             {t("hero.search")}
