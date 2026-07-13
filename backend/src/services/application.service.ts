@@ -1,7 +1,7 @@
 import { applicationRepository } from '../repositories/application.repository.js';
 import { jobRepository } from '../repositories/job.repository.js';
 import { ConflictError, NotFoundError, ForbiddenError, ValidationError } from '../utils/ApiError.js';
-import type { IApplication, ApplicationStatus, IJob } from '../types/models.js';
+import type { IApplication, ApplicationStatus, IJob, PaymentMethod } from '../types/models.js';
 import { Job } from '../models/job.model.js';
 import { eventBus } from '../events/eventBus.js';
 import logger from '../utils/logger.js';
@@ -135,6 +135,7 @@ export class ApplicationService {
     applicationId: string,
     status: ApplicationStatus,
     employerId: string,
+    payment?: { paidAmount?: number; paymentMethod?: PaymentMethod },
   ): Promise<IApplication> {
     const application = await applicationRepository.findById(applicationId);
     if (!application) {
@@ -156,6 +157,11 @@ export class ApplicationService {
     }
 
     application.status = status;
+    // Record the payment details the employer entered when marking it paid.
+    if (status === 'paid') {
+      if (payment?.paidAmount !== undefined) application.paidAmount = payment.paidAmount;
+      if (payment?.paymentMethod !== undefined) application.paymentMethod = payment.paymentMethod;
+    }
     await application.save();
 
     logger.info(
@@ -167,6 +173,44 @@ export class ApplicationService {
       jobId: (application.job as unknown as { toString(): string }).toString(),
       applicantId: (application.applicant as unknown as { toString(): string }).toString(),
       newStatus: status,
+      jobTitle: job?.title || 'Unknown Job',
+    });
+
+    return application;
+  }
+
+  /**
+   * The worker confirms they actually received the payment the employer
+   * recorded. Only the applicant can confirm, and only once the employer has
+   * marked the work 'paid'. This is the trust half of the payment record —
+   * "the boss says paid" is not the same as "I got the money".
+   */
+  async confirmPayment(applicationId: string, applicantId: string): Promise<IApplication> {
+    const application = await applicationRepository.findById(applicationId);
+    if (!application) {
+      throw new NotFoundError('Application');
+    }
+    if ((application.applicant as unknown as { toString(): string }).toString() !== applicantId) {
+      throw new ForbiddenError('You can only confirm payment for your own application');
+    }
+    if (application.status !== 'paid') {
+      throw new ValidationError('Payment can only be confirmed once the employer marks it paid');
+    }
+
+    application.paymentConfirmed = true;
+    application.paymentConfirmedAt = new Date();
+    await application.save();
+
+    const job = await jobRepository.findByIdLean(
+      (application.job as unknown as { toString(): string }).toString(),
+    );
+
+    logger.info(`Payment confirmed by worker ${applicantId} on application ${applicationId}`);
+
+    eventBus.emit('payment.confirmed', {
+      applicationId,
+      employerId: job?.created_By.toString() || '',
+      applicantId,
       jobTitle: job?.title || 'Unknown Job',
     });
 

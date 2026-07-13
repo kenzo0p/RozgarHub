@@ -50,4 +50,12 @@ router.patch(
   applicationController.updateStatus,
 );
 
+router.patch(
+  '/:id/confirm-payment',
+  authenticate,
+  authorize('employee'),
+  auditLog('Application'),
+  applicationController.confirmPayment,
+);
+
 export default router;

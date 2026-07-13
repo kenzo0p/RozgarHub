@@ -65,6 +65,12 @@ export interface DomainEvents {
     rating: number;
     jobTitle: string;
   };
+  'payment.confirmed': {
+    applicationId: string;
+    employerId: string;
+    applicantId: string;
+    jobTitle: string;
+  };
 }
 
 export type DomainEventName = keyof DomainEvents;

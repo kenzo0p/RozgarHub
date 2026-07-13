@@ -39,9 +39,21 @@ export const updateStatus = asyncHandler(async (req: AuthRequest, res: Response)
     req.params.id as string,
     req.body.status,
     req.user!.id,
+    { paidAmount: req.body.paidAmount, paymentMethod: req.body.paymentMethod },
   );
 
   res.status(200).json(
     ApiResponse.success({ application }, 'Application status updated successfully'),
+  );
+});
+
+export const confirmPayment = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const application = await applicationService.confirmPayment(
+    req.params.id as string,
+    req.user!.id,
+  );
+
+  res.status(200).json(
+    ApiResponse.success({ application }, 'Payment confirmed'),
   );
 });

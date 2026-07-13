@@ -41,6 +41,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'Payment marked',
     'application_paid.message': 'You have been marked paid for "{jobTitle}"',
     'application_paid.sms': 'RozgarHub: You have been marked paid for "{jobTitle}". Please confirm you received it.',
+    'payment_confirmed.title': 'Payment confirmed',
+    'payment_confirmed.message': 'The worker confirmed receiving payment for "{jobTitle}"',
   },
   hi: {
     'application_received.title': 'नया आवेदन प्राप्त हुआ',
@@ -68,6 +70,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'भुगतान चिह्नित',
     'application_paid.message': '"{jobTitle}" के लिए आपको भुगतान किया गया चिह्नित किया गया है',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" के लिए आपको भुगतान किया गया चिह्नित किया गया है। कृपया प्राप्ति की पुष्टि करें।',
+    'payment_confirmed.title': 'भुगतान की पुष्टि हुई',
+    'payment_confirmed.message': 'कामगार ने "{jobTitle}" के लिए भुगतान मिलने की पुष्टि की',
   },
   mr: {
     'application_received.title': 'नवीन अर्ज प्राप्त झाला',
@@ -95,6 +99,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'पेमेंट चिन्हांकित',
     'application_paid.message': '"{jobTitle}" साठी तुम्हाला पैसे दिल्याचे चिन्हांकित केले आहे',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" साठी तुम्हाला पैसे दिल्याचे चिन्हांकित केले आहे. कृपया मिळाल्याची पुष्टी करा.',
+    'payment_confirmed.title': 'पेमेंटची पुष्टी झाली',
+    'payment_confirmed.message': 'कामगाराने "{jobTitle}" साठी पैसे मिळाल्याची पुष्टी केली',
   },
   bn: {
     'application_received.title': 'নতুন আবেদন পাওয়া গেছে',
@@ -122,6 +128,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'পেমেন্ট চিহ্নিত',
     'application_paid.message': '"{jobTitle}" এর জন্য আপনাকে পরিশোধিত হিসেবে চিহ্নিত করা হয়েছে',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" এর জন্য আপনাকে পরিশোধিত হিসেবে চিহ্নিত করা হয়েছে। অনুগ্রহ করে প্রাপ্তি নিশ্চিত করুন।',
+    'payment_confirmed.title': 'পেমেন্ট নিশ্চিত হয়েছে',
+    'payment_confirmed.message': 'কর্মী "{jobTitle}" এর জন্য পেমেন্ট পাওয়ার নিশ্চিত করেছেন',
   },
   gu: {
     'application_received.title': 'નવી અરજી પ્રાપ્ત થઈ',
@@ -149,6 +157,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'ચુકવણી ચિહ્નિત',
     'application_paid.message': '"{jobTitle}" માટે તમને ચૂકવેલ તરીકે ચિહ્નિત કરાયું છે',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" માટે તમને ચૂકવેલ તરીકે ચિહ્નિત કરાયું છે. કૃપા કરીને પ્રાપ્તિની પુષ્ટિ કરો.',
+    'payment_confirmed.title': 'ચુકવણી પુષ્ટ થઈ',
+    'payment_confirmed.message': 'કામદારે "{jobTitle}" માટે ચુકવણી મળ્યાની પુષ્ટિ કરી',
   },
   pa: {
     'application_received.title': 'ਨਵੀਂ ਅਰਜ਼ੀ ਪ੍ਰਾਪਤ ਹੋਈ',
@@ -176,6 +186,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'ਭੁਗਤਾਨ ਨਿਸ਼ਾਨਬੱਧ',
     'application_paid.message': '"{jobTitle}" ਲਈ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ ਗਿਆ ਹੈ',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" ਲਈ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪ੍ਰਾਪਤੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।',
+    'payment_confirmed.title': 'ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਹੋਈ',
+    'payment_confirmed.message': 'ਕਾਮੇ ਨੇ "{jobTitle}" ਲਈ ਭੁਗਤਾਨ ਮਿਲਣ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ',
   },
   ta: {
     'application_received.title': 'புதிய விண்ணப்பம் பெறப்பட்டது',
@@ -203,6 +215,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'பணம் குறிக்கப்பட்டது',
     'application_paid.message': '"{jobTitle}" க்கு உங்களுக்குப் பணம் வழங்கப்பட்டதாகக் குறிக்கப்பட்டுள்ளது',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" க்கு உங்களுக்குப் பணம் வழங்கப்பட்டதாகக் குறிக்கப்பட்டுள்ளது. பெற்றதை உறுதிப்படுத்தவும்.',
+    'payment_confirmed.title': 'பணம் உறுதிப்படுத்தப்பட்டது',
+    'payment_confirmed.message': 'தொழிலாளர் "{jobTitle}" க்கான பணம் பெற்றதை உறுதிப்படுத்தினார்',
   },
   te: {
     'application_received.title': 'కొత్త దరఖాస్తు అందింది',
@@ -230,6 +244,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.title': 'చెల్లింపు గుర్తించబడింది',
     'application_paid.message': '"{jobTitle}" కోసం మీకు చెల్లించినట్లు గుర్తించబడింది',
     'application_paid.sms': 'RozgarHub: "{jobTitle}" కోసం మీకు చెల్లించినట్లు గుర్తించబడింది. దయచేసి అందిన విషయాన్ని నిర్ధారించండి.',
+    'payment_confirmed.title': 'చెల్లింపు నిర్ధారించబడింది',
+    'payment_confirmed.message': 'కార్మికుడు "{jobTitle}" కోసం చెల్లింపు అందినట్లు నిర్ధారించారు',
   },
 };
 

@@ -99,11 +99,17 @@ export type ApplicationStatus =
   | 'completed'
   | 'paid';
 
+export type PaymentMethod = 'cash' | 'upi' | 'bank';
+
 export interface IApplication extends Document {
   _id: Types.ObjectId;
   job: Types.ObjectId | IJob;
   applicant: Types.ObjectId | IUser;
   status: ApplicationStatus;
+  paidAmount?: number;
+  paymentMethod?: PaymentMethod;
+  paymentConfirmed: boolean;
+  paymentConfirmedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

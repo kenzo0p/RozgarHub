@@ -24,6 +24,14 @@ const applicationSchema = new Schema<IApplication>(
       },
       default: 'pending',
     },
+    // Payment record — set by the employer when they mark the work paid. We
+    // don't move money (that needs a gateway); we record what was paid and
+    // then let the *worker* confirm they received it. Wage disputes are the
+    // #1 blue-collar complaint, so closing this loop matters.
+    paidAmount: { type: Number, min: 0 },
+    paymentMethod: { type: String, enum: ['cash', 'upi', 'bank'] },
+    paymentConfirmed: { type: Boolean, default: false },
+    paymentConfirmedAt: { type: Date },
   },
   {
     timestamps: true,

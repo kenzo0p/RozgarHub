@@ -9,7 +9,10 @@ import {
 } from "./ui/table";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Inbox, Star } from "lucide-react";
+import { Inbox, Star, CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import api from "@/lib/api";
+import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { Button } from "./ui/button";
 import ContactButtons from "./shared/ContactButtons";
 import ReviewDialog from "./shared/ReviewDialog";
@@ -49,6 +52,24 @@ function AppliedJobTable() {
   const { t } = useI18n();
   const { reviewedIds, markReviewed } = useGivenReviews();
   const [reviewFor, setReviewFor] = useState(null);
+  // Track locally-confirmed payments so the row updates without a refetch.
+  const [confirmedIds, setConfirmedIds] = useState(() => new Set());
+  const [confirmingId, setConfirmingId] = useState(null);
+
+  const confirmPayment = async (id) => {
+    try {
+      setConfirmingId(id);
+      const res = await api.patch(`${APPLICATION_API_END_POINT}/${id}/confirm-payment`);
+      if (res.data.success) {
+        setConfirmedIds((prev) => new Set(prev).add(id));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || t("pay.confirmError"));
+    } finally {
+      setConfirmingId(null);
+    }
+  };
 
   if (!allAppliedJobs || allAppliedJobs.length === 0) {
     return (
@@ -115,6 +136,27 @@ function AppliedJobTable() {
                       message={`Hi, I was accepted for "${appliedJob.job?.title}" on RozgarHub.`}
                     />
                   )}
+                  {appliedJob.status === "paid" &&
+                    (appliedJob.paymentConfirmed || confirmedIds.has(appliedJob._id) ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                        {t("pay.confirmedChip")}
+                      </span>
+                    ) : (
+                      <Button
+                        size="xs"
+                        className="gap-1"
+                        disabled={confirmingId === appliedJob._id}
+                        onClick={() => confirmPayment(appliedJob._id)}
+                      >
+                        {confirmingId === appliedJob._id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                        )}
+                        {t("pay.confirmReceived")}
+                      </Button>
+                    ))}
                   {reviewedIds.has(appliedJob._id) ? (
                     <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden="true" />

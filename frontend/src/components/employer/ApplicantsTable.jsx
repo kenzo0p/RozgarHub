@@ -9,7 +9,24 @@ import {
 } from "../ui/table";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { FileText, Check, X, Inbox, Star, ArrowRight } from "lucide-react";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { FileText, Check, X, Inbox, Star, ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
@@ -62,12 +79,18 @@ function ApplicantsTable() {
   const [pendingId, setPendingId] = useState(null);
   const { reviewedIds, markReviewed } = useGivenReviews();
   const [reviewFor, setReviewFor] = useState(null);
+  // Mark-paid dialog state (records amount + method when advancing to 'paid').
+  const [payFor, setPayFor] = useState(null);
+  const [payAmount, setPayAmount] = useState("");
+  const [payMethod, setPayMethod] = useState("cash");
 
-  const statusHandler = async (status, id) => {
+  const statusHandler = async (status, id, payment) => {
     try {
       setPendingId(id);
-      // Backend validator expects lowercase: 'accepted' | 'rejected'
-      const res = await api.patch(`${APPLICATION_API_END_POINT}/${id}/status`, { status });
+      const res = await api.patch(`${APPLICATION_API_END_POINT}/${id}/status`, {
+        status,
+        ...(payment || {}),
+      });
       if (res.data.success) {
         setStatusOverrides((prev) => ({ ...prev, [id]: status }));
         toast.success(res.data.message);
@@ -77,6 +100,26 @@ function ApplicantsTable() {
     } finally {
       setPendingId(null);
     }
+  };
+
+  const advance = (status, id) => {
+    // Marking paid opens a dialog to record the amount + method.
+    if (status === "paid") {
+      setPayAmount("");
+      setPayMethod("cash");
+      setPayFor(id);
+    } else {
+      statusHandler(status, id);
+    }
+  };
+
+  const submitPayment = async () => {
+    const id = payFor;
+    setPayFor(null);
+    await statusHandler("paid", id, {
+      paidAmount: payAmount ? Number(payAmount) : undefined,
+      paymentMethod: payMethod,
+    });
   };
 
   const applications = applicants?.applications || [];
@@ -213,12 +256,30 @@ function ApplicantsTable() {
                       <Button
                         size="sm"
                         disabled={pendingId === item._id}
-                        onClick={() => statusHandler(NEXT_STEP[status], item._id)}
+                        onClick={() => advance(NEXT_STEP[status], item._id)}
                         className="gap-1"
                       >
                         <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                         {t(NEXT_LABEL[status])}
                       </Button>
+                    )}
+                    {status === "paid" && (
+                      <span
+                        className={`inline-flex items-center gap-1 text-xs ${
+                          item.paymentConfirmed
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {item.paymentConfirmed ? (
+                          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        ) : (
+                          <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
+                        {item.paymentConfirmed
+                          ? t("pay.confirmedByWorker")
+                          : t("pay.awaitingConfirm")}
+                      </span>
                     )}
                     {ENGAGED.includes(status) &&
                       (reviewedIds.has(item._id) ? (
@@ -253,6 +314,49 @@ function ApplicantsTable() {
         rateeName={reviewFor?.name}
         onSubmitted={markReviewed}
       />
+
+      <Dialog open={!!payFor} onOpenChange={(v) => !v && setPayFor(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("pay.markPaidTitle")}</DialogTitle>
+            <DialogDescription>{t("pay.markPaidSub")}</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="pay-amount">{t("pay.amount")}</Label>
+              <Input
+                id="pay-amount"
+                type="number"
+                min="0"
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+                placeholder="1500"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("pay.method")}</Label>
+              <Select value={payMethod} onValueChange={setPayMethod}>
+                <SelectTrigger aria-label={t("pay.method")}>
+                  <SelectValue placeholder={t("pay.selectMethod")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">{t("pay.methodCash")}</SelectItem>
+                  <SelectItem value="upi">{t("pay.methodUpi")}</SelectItem>
+                  <SelectItem value="bank">{t("pay.methodBank")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPayFor(null)}>
+              {t("employer.cancel")}
+            </Button>
+            <Button type="button" onClick={submitPayment} disabled={pendingId === payFor}>
+              {t("pay.markPaidBtn")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

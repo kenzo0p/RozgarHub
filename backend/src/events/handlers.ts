@@ -149,6 +149,20 @@ export function registerEventHandlers(): void {
     logger.info(`[Event] user.registered → welcome notification for ${payload.email}`);
   });
 
+  eventBus.on('payment.confirmed', async (payload) => {
+    // Tell the employer the worker acknowledged receiving payment.
+    if (!payload.employerId) return;
+    const { language } = await getRecipient(payload.employerId);
+    await notificationService.create({
+      recipientId: payload.employerId,
+      type: NOTIFICATION_TYPES.SYSTEM,
+      title: tn(language, 'payment_confirmed.title'),
+      message: tn(language, 'payment_confirmed.message', { jobTitle: payload.jobTitle }),
+      relatedEntity: { kind: 'Application', id: payload.applicationId },
+    });
+    logger.info(`[Event] payment.confirmed → notification sent to employer ${payload.employerId}`);
+  });
+
   eventBus.on('review.created', async (payload) => {
     // Let the reviewed party know, in their language
     const { language } = await getRecipient(payload.rateeId);
