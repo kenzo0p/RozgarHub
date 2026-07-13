@@ -71,6 +71,13 @@ export interface DomainEvents {
     applicantId: string;
     jobTitle: string;
   };
+  'dispute.raised': {
+    disputeId: string;
+    againstId: string;
+    raisedById: string;
+    reason: string;
+    jobTitle: string;
+  };
 }
 
 export type DomainEventName = keyof DomainEvents;

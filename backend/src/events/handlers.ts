@@ -149,6 +149,18 @@ export function registerEventHandlers(): void {
     logger.info(`[Event] user.registered → welcome notification for ${payload.email}`);
   });
 
+  eventBus.on('dispute.raised', async (payload) => {
+    // Notify the party the dispute is against, in their language.
+    const { language } = await getRecipient(payload.againstId);
+    await notificationService.create({
+      recipientId: payload.againstId,
+      type: NOTIFICATION_TYPES.SYSTEM,
+      title: tn(language, 'dispute_raised.title'),
+      message: tn(language, 'dispute_raised.message', { jobTitle: payload.jobTitle }),
+    });
+    logger.info(`[Event] dispute.raised → notification sent to ${payload.againstId}`);
+  });
+
   eventBus.on('payment.confirmed', async (payload) => {
     // Tell the employer the worker acknowledged receiving payment.
     if (!payload.employerId) return;

@@ -43,6 +43,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: You have been marked paid for "{jobTitle}". Please confirm you received it.',
     'payment_confirmed.title': 'Payment confirmed',
     'payment_confirmed.message': 'The worker confirmed receiving payment for "{jobTitle}"',
+    'dispute_raised.title': 'An issue was reported',
+    'dispute_raised.message': 'An issue was reported on your engagement for "{jobTitle}". Please review it.',
   },
   hi: {
     'application_received.title': 'नया आवेदन प्राप्त हुआ',
@@ -72,6 +74,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" के लिए आपको भुगतान किया गया चिह्नित किया गया है। कृपया प्राप्ति की पुष्टि करें।',
     'payment_confirmed.title': 'भुगतान की पुष्टि हुई',
     'payment_confirmed.message': 'कामगार ने "{jobTitle}" के लिए भुगतान मिलने की पुष्टि की',
+    'dispute_raised.title': 'एक समस्या दर्ज की गई',
+    'dispute_raised.message': '"{jobTitle}" के लिए आपकी सगाई पर एक समस्या दर्ज की गई है। कृपया समीक्षा करें।',
   },
   mr: {
     'application_received.title': 'नवीन अर्ज प्राप्त झाला',
@@ -101,6 +105,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" साठी तुम्हाला पैसे दिल्याचे चिन्हांकित केले आहे. कृपया मिळाल्याची पुष्टी करा.',
     'payment_confirmed.title': 'पेमेंटची पुष्टी झाली',
     'payment_confirmed.message': 'कामगाराने "{jobTitle}" साठी पैसे मिळाल्याची पुष्टी केली',
+    'dispute_raised.title': 'एक समस्या नोंदवली गेली',
+    'dispute_raised.message': '"{jobTitle}" साठी तुमच्या कामावर एक समस्या नोंदवली गेली आहे. कृपया पुनरावलोकन करा.',
   },
   bn: {
     'application_received.title': 'নতুন আবেদন পাওয়া গেছে',
@@ -130,6 +136,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" এর জন্য আপনাকে পরিশোধিত হিসেবে চিহ্নিত করা হয়েছে। অনুগ্রহ করে প্রাপ্তি নিশ্চিত করুন।',
     'payment_confirmed.title': 'পেমেন্ট নিশ্চিত হয়েছে',
     'payment_confirmed.message': 'কর্মী "{jobTitle}" এর জন্য পেমেন্ট পাওয়ার নিশ্চিত করেছেন',
+    'dispute_raised.title': 'একটি সমস্যা জানানো হয়েছে',
+    'dispute_raised.message': '"{jobTitle}" এর জন্য আপনার কাজে একটি সমস্যা জানানো হয়েছে। অনুগ্রহ করে পর্যালোচনা করুন।',
   },
   gu: {
     'application_received.title': 'નવી અરજી પ્રાપ્ત થઈ',
@@ -159,6 +167,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" માટે તમને ચૂકવેલ તરીકે ચિહ્નિત કરાયું છે. કૃપા કરીને પ્રાપ્તિની પુષ્ટિ કરો.',
     'payment_confirmed.title': 'ચુકવણી પુષ્ટ થઈ',
     'payment_confirmed.message': 'કામદારે "{jobTitle}" માટે ચુકવણી મળ્યાની પુષ્ટિ કરી',
+    'dispute_raised.title': 'એક સમસ્યા નોંધાવાઈ',
+    'dispute_raised.message': '"{jobTitle}" માટે તમારા કામ પર એક સમસ્યા નોંધાવાઈ છે. કૃપા કરીને સમીક્ષા કરો.',
   },
   pa: {
     'application_received.title': 'ਨਵੀਂ ਅਰਜ਼ੀ ਪ੍ਰਾਪਤ ਹੋਈ',
@@ -188,6 +198,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" ਲਈ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪ੍ਰਾਪਤੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ।',
     'payment_confirmed.title': 'ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਹੋਈ',
     'payment_confirmed.message': 'ਕਾਮੇ ਨੇ "{jobTitle}" ਲਈ ਭੁਗਤਾਨ ਮਿਲਣ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ',
+    'dispute_raised.title': 'ਇੱਕ ਸਮੱਸਿਆ ਦਰਜ ਕੀਤੀ ਗਈ',
+    'dispute_raised.message': '"{jobTitle}" ਲਈ ਤੁਹਾਡੇ ਕੰਮ ਉੱਤੇ ਇੱਕ ਸਮੱਸਿਆ ਦਰਜ ਕੀਤੀ ਗਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਮੀਖਿਆ ਕਰੋ।',
   },
   ta: {
     'application_received.title': 'புதிய விண்ணப்பம் பெறப்பட்டது',
@@ -217,6 +229,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" க்கு உங்களுக்குப் பணம் வழங்கப்பட்டதாகக் குறிக்கப்பட்டுள்ளது. பெற்றதை உறுதிப்படுத்தவும்.',
     'payment_confirmed.title': 'பணம் உறுதிப்படுத்தப்பட்டது',
     'payment_confirmed.message': 'தொழிலாளர் "{jobTitle}" க்கான பணம் பெற்றதை உறுதிப்படுத்தினார்',
+    'dispute_raised.title': 'ஒரு சிக்கல் தெரிவிக்கப்பட்டது',
+    'dispute_raised.message': '"{jobTitle}" க்கான உங்கள் வேலையில் ஒரு சிக்கல் தெரிவிக்கப்பட்டுள்ளது. மதிப்பாய்வு செய்யவும்.',
   },
   te: {
     'application_received.title': 'కొత్త దరఖాస్తు అందింది',
@@ -246,6 +260,8 @@ const messages: Record<Language, Dict> = {
     'application_paid.sms': 'RozgarHub: "{jobTitle}" కోసం మీకు చెల్లించినట్లు గుర్తించబడింది. దయచేసి అందిన విషయాన్ని నిర్ధారించండి.',
     'payment_confirmed.title': 'చెల్లింపు నిర్ధారించబడింది',
     'payment_confirmed.message': 'కార్మికుడు "{jobTitle}" కోసం చెల్లింపు అందినట్లు నిర్ధారించారు',
+    'dispute_raised.title': 'ఒక సమస్య నివేదించబడింది',
+    'dispute_raised.message': '"{jobTitle}" కోసం మీ పనిపై ఒక సమస్య నివేదించబడింది. దయచేసి సమీక్షించండి.',
   },
 };
 

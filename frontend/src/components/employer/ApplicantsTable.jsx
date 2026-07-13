@@ -26,16 +26,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { FileText, Check, X, Inbox, Star, ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import { FileText, Check, X, Inbox, Star, ArrowRight, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import ContactButtons from "../shared/ContactButtons";
 import ReviewDialog from "../shared/ReviewDialog";
+import DisputeDialog from "../shared/DisputeDialog";
 import VerifiedBadge from "../shared/VerifiedBadge";
 import { StarRatingDisplay } from "../shared/StarRating";
 import useGivenReviews from "@/hooks/useGivenReviews";
+import useRaisedDisputes from "@/hooks/useRaisedDisputes";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const STATUS_STYLES = {
@@ -78,7 +80,9 @@ function ApplicantsTable() {
   const [statusOverrides, setStatusOverrides] = useState({});
   const [pendingId, setPendingId] = useState(null);
   const { reviewedIds, markReviewed } = useGivenReviews();
+  const { raisedIds, markRaised } = useRaisedDisputes();
   const [reviewFor, setReviewFor] = useState(null);
+  const [disputeFor, setDisputeFor] = useState(null);
   // Mark-paid dialog state (records amount + method when advancing to 'paid').
   const [payFor, setPayFor] = useState(null);
   const [payAmount, setPayAmount] = useState("");
@@ -300,6 +304,22 @@ function ApplicantsTable() {
                           {t("reviews.rateWorker")}
                         </Button>
                       ))}
+                    {ENGAGED.includes(status) &&
+                      (raisedIds.has(item._id) ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                          {t("dispute.reported")}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setDisputeFor(item._id)}
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
+                        >
+                          <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                          {t("dispute.report")}
+                        </button>
+                      ))}
                   </div>
                 </TableCell>
               </TableRow>
@@ -313,6 +333,13 @@ function ApplicantsTable() {
         applicationId={reviewFor?.id}
         rateeName={reviewFor?.name}
         onSubmitted={markReviewed}
+      />
+      <DisputeDialog
+        open={!!disputeFor}
+        setOpen={(v) => !v && setDisputeFor(null)}
+        applicationId={disputeFor}
+        role="employer"
+        onSubmitted={markRaised}
       />
 
       <Dialog open={!!payFor} onOpenChange={(v) => !v && setPayFor(null)}>

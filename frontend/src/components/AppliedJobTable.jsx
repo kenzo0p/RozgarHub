@@ -9,14 +9,16 @@ import {
 } from "./ui/table";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Inbox, Star, CheckCircle2, Loader2 } from "lucide-react";
+import { Inbox, Star, CheckCircle2, Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
 import { Button } from "./ui/button";
 import ContactButtons from "./shared/ContactButtons";
 import ReviewDialog from "./shared/ReviewDialog";
+import DisputeDialog from "./shared/DisputeDialog";
 import useGivenReviews from "@/hooks/useGivenReviews";
+import useRaisedDisputes from "@/hooks/useRaisedDisputes";
 import { useI18n } from "@/i18n/I18nProvider";
 
 // Statuses where a real engagement exists — worker can contact & rate.
@@ -51,7 +53,9 @@ function AppliedJobTable() {
   const navigate = useNavigate();
   const { t } = useI18n();
   const { reviewedIds, markReviewed } = useGivenReviews();
+  const { raisedIds, markRaised } = useRaisedDisputes();
   const [reviewFor, setReviewFor] = useState(null);
+  const [disputeFor, setDisputeFor] = useState(null);
   // Track locally-confirmed payments so the row updates without a refetch.
   const [confirmedIds, setConfirmedIds] = useState(() => new Set());
   const [confirmingId, setConfirmingId] = useState(null);
@@ -178,6 +182,21 @@ function AppliedJobTable() {
                       {t("reviews.rateEmployer")}
                     </Button>
                   )}
+                  {raisedIds.has(appliedJob._id) ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                      {t("dispute.reported")}
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setDisputeFor(appliedJob._id)}
+                      className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
+                    >
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                      {t("dispute.report")}
+                    </button>
+                  )}
                 </div>
               ) : (
                 <span className="text-xs text-muted-foreground">—</span>
@@ -193,6 +212,13 @@ function AppliedJobTable() {
       applicationId={reviewFor?.id}
       rateeName={reviewFor?.name}
       onSubmitted={markReviewed}
+    />
+    <DisputeDialog
+      open={!!disputeFor}
+      setOpen={(v) => !v && setDisputeFor(null)}
+      applicationId={disputeFor}
+      role="employee"
+      onSubmitted={markRaised}
     />
     </>
   );

@@ -9,6 +9,7 @@ import recommendationRoutes from './recommendation.routes.js';
 import notificationRoutes from './notification.routes.js';
 import savedJobRoutes from './savedJob.routes.js';
 import reviewRoutes from './review.routes.js';
+import disputeRoutes from './dispute.routes.js';
 import healthRoutes from './health.routes.js';
 
 const router = Router();
@@ -39,6 +40,7 @@ router.use('/recommendations', recommendationRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/saved-jobs', savedJobRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/disputes', disputeRoutes);
 router.use('/health', healthRoutes);
 
 export default router;
