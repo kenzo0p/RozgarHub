@@ -7,6 +7,20 @@ import type { SafeUser } from '../types/models.js';
 import type { Language } from '../utils/constants.js';
 import logger from '../utils/logger.js';
 
+// Escape regex metacharacters in user input before building $regex filters.
+function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export interface WorkerSearchFilters {
+  q?: string;
+  trade?: string;
+  location?: string;
+  availableOnly?: boolean;
+  verifiedOnly?: boolean;
+  minRating?: number;
+}
+
 /**
  * User Service — profile management business logic.
  *
@@ -128,6 +142,84 @@ export class UserService {
 
     logger.info(`User identity verified: ${userId} (aadhaar …${userDoc.idLast4})`);
     return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /**
+   * Employer-facing worker discovery. Turns the pull-only model (workers apply,
+   * employers wait) into a two-sided marketplace: an employer can search
+   * "plumbers in Pune, available now" and reach out.
+   *
+   * Privacy: email is never returned, and a worker's phone is revealed only
+   * when they are marked available (i.e. opted into being contacted for work).
+   */
+  async searchWorkers(
+    filters: WorkerSearchFilters,
+    page = 1,
+    limit = 12,
+  ): Promise<{ workers: unknown[]; total: number }> {
+    const q: Record<string, unknown> = { role: 'employee' };
+
+    if (filters.availableOnly) q['profile.available'] = { $ne: false };
+    if (filters.verifiedOnly) q.verificationStatus = 'verified';
+    if (filters.trade) {
+      q['profile.primaryTrade'] = { $regex: escapeRegex(filters.trade), $options: 'i' };
+    }
+    if (filters.location) {
+      q['profile.preferredLocation'] = { $regex: escapeRegex(filters.location), $options: 'i' };
+    }
+    if (typeof filters.minRating === 'number' && filters.minRating > 0) {
+      q.ratingAverage = { $gte: filters.minRating };
+    }
+    if (filters.q) {
+      const kw = escapeRegex(filters.q);
+      q.$or = [
+        { fullname: { $regex: kw, $options: 'i' } },
+        { 'profile.primaryTrade': { $regex: kw, $options: 'i' } },
+        { 'profile.skills': { $regex: kw, $options: 'i' } },
+      ];
+    }
+
+    const [docs, total] = await Promise.all([
+      User.find(q)
+        .select(
+          'fullname profile ratingAverage ratingCount verificationStatus phoneNumber createdAt',
+        )
+        .sort({ ratingAverage: -1, ratingCount: -1, createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean()
+        .exec(),
+      User.countDocuments(q).exec(),
+    ]);
+
+    const workers = (docs as unknown as Array<Record<string, unknown>>).map((d) => {
+      const profile = (d.profile || {}) as Record<string, unknown>;
+      const available = profile.available !== false;
+      return {
+        _id: d._id,
+        fullname: d.fullname,
+        ratingAverage: d.ratingAverage,
+        ratingCount: d.ratingCount,
+        verificationStatus: d.verificationStatus,
+        profile: {
+          bio: profile.bio,
+          skills: profile.skills,
+          profilePhoto: profile.profilePhoto,
+          primaryTrade: profile.primaryTrade,
+          experienceYears: profile.experienceYears,
+          expectedWage: profile.expectedWage,
+          expectedWageType: profile.expectedWageType,
+          available,
+          preferredLocation: profile.preferredLocation,
+          languagesSpoken: profile.languagesSpoken,
+          toolsOwned: profile.toolsOwned,
+        },
+        // Contact is revealed only for workers open to work.
+        phone: available && d.phoneNumber ? String(d.phoneNumber) : null,
+      };
+    });
+
+    return { workers, total };
   }
 }
 

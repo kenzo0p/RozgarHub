@@ -7,3 +7,4 @@ export const JOB_API_END_POINT = "/job";
 export const APPLICATION_API_END_POINT = "/application";
 export const COMPANY_API_END_POINT = "/company";
 export const REVIEW_API_END_POINT = "/reviews";
+export const USER_SEARCH_API_END_POINT = "/user/workers";

@@ -60,6 +60,9 @@ function Navbar() {
                 <Link to="/admin/jobs">
                   <li className="hover:text-primary transition-colors">{t("nav.jobs")}</li>
                 </Link>
+                <Link to="/admin/workers">
+                  <li className="hover:text-primary transition-colors">{t("workers.nav")}</li>
+                </Link>
               </>
             ) : user ? (
               /* Logged-in employee — the landing page redirects away, so no
@@ -194,10 +197,13 @@ function Navbar() {
                 {user && user.role === "employer" ? (
                   <>
                     <Link to="/admin/companies">
-                      <li>Companies</li>
+                      <li>{t("nav.companies")}</li>
                     </Link>
                     <Link to="/admin/jobs">
-                      <li>Jobs</li>
+                      <li>{t("nav.jobs")}</li>
+                    </Link>
+                    <Link to="/admin/workers">
+                      <li>{t("workers.nav")}</li>
                     </Link>
                   </>
                 ) : user ? (

@@ -28,6 +28,7 @@ const CompanySetup = lazy(() => import("./components/employer/CompanySetup"));
 const EmployerJobs = lazy(() => import("./components/employer/EmployerJobs"));
 const PostJob = lazy(() => import("./components/employer/PostJob"));
 const Applicants = lazy(() => import("./components/employer/Applicants"));
+const FindWorkers = lazy(() => import("./components/employer/FindWorkers"));
 
 /**
  * Loading fallback — shown while lazy-loaded route chunks are downloading.
@@ -161,6 +162,16 @@ const appRouter = createBrowserRouter([
       <ProtectedRoute>
         <LazyRoute>
           <Applicants />
+        </LazyRoute>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/workers",
+    element: (
+      <ProtectedRoute>
+        <LazyRoute>
+          <FindWorkers />
         </LazyRoute>
       </ProtectedRoute>
     ),

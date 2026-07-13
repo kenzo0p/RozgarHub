@@ -19,8 +19,16 @@ const router = Router();
  * PUT   /profile/update — Update profile (with optional resume upload)
  * PATCH /language       — Update preferred language (notifications/SMS)
  * POST  /verify         — Verify identity via Aadhaar (worker only)
+ * GET   /workers        — Search/discover workers (employer only)
  */
 router.get('/profile', authenticate, userController.getProfile);
+
+router.get(
+  '/workers',
+  authenticate,
+  authorize('employer'),
+  userController.searchWorkers,
+);
 
 router.put(
   '/profile/update',
