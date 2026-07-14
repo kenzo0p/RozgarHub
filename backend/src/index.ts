@@ -4,6 +4,7 @@ import './config/redis.js'; // Initialize Redis client on startup
 import { disconnectRedis } from './config/redis.js';
 import { APP_CONSTANTS } from './utils/constants.js';
 import logger from './utils/logger.js';
+import { captureException } from './utils/monitoring.js';
 
 // Events
 import { registerEventHandlers } from './events/handlers.js';
@@ -56,11 +57,12 @@ const startServer = async (): Promise<void> => {
     // ─── Unhandled Error Safety Nets ─────────────────────────────────────────
     process.on('unhandledRejection', (reason: unknown) => {
       logger.error('Unhandled Promise Rejection:', reason);
-      // In production, you might want to restart the process here
+      captureException(reason, { source: 'unhandledRejection' });
     });
 
     process.on('uncaughtException', (error: Error) => {
       logger.error('Uncaught Exception:', error);
+      captureException(error, { source: 'uncaughtException' });
       // Uncaught exceptions leave the app in an undefined state — exit and let
       // the process manager (PM2, Docker, systemd) restart it
       process.exit(1);

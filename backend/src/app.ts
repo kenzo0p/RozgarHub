@@ -8,6 +8,7 @@ import { APP_CONSTANTS } from './utils/constants.js';
 
 // Middleware
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware.js';
+import { mongoSanitize } from './middlewares/sanitize.middleware.js';
 import { requestLogger } from './middlewares/requestLogger.middleware.js';
 import { requestIdMiddleware } from './middlewares/requestId.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
@@ -47,6 +48,9 @@ app.use(globalRateLimiter);         // Global rate limiting
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// Strip NoSQL operator ($) / dotted keys from all inputs (defense-in-depth).
+app.use(mongoSanitize);
 
 // ─── Observability ─────────────────────────────────────────────────────────────
 app.use(requestIdMiddleware);  // Must be before requestLogger

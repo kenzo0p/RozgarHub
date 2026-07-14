@@ -21,8 +21,8 @@ const envSchema = z.object({
   // Database
   MONGODB_URL: z.string().min(1, 'MongoDB connection string is required'),
 
-  // Auth
-  SECRET_KEY: z.string().min(16, 'JWT secret must be at least 16 characters'),
+  // Auth — 32+ chars so the JWT signing secret has real entropy.
+  SECRET_KEY: z.string().min(32, 'JWT secret must be at least 32 characters'),
 
   // Cloudinary
   CLOUD_NAME: z.string().min(1, 'Cloudinary cloud name is required'),
@@ -34,7 +34,28 @@ const envSchema = z.object({
 
   // Redis (optional — app works without it, just no caching)
   REDIS_URL: z.string().optional(),
-});
+
+  // Error monitoring (optional — captureException stays a no-op until set)
+  SENTRY_DSN: z.string().optional(),
+})
+  // Production guardrails — catch insecure defaults at boot rather than in prod.
+  .superRefine((val, ctx) => {
+    if (val.NODE_ENV !== 'production') return;
+    if (val.CORS_ORIGIN.includes('localhost')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CORS_ORIGIN'],
+        message: 'CORS_ORIGIN must not be localhost in production',
+      });
+    }
+    if (/change-this|your-jwt-secret|secret-key/i.test(val.SECRET_KEY)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SECRET_KEY'],
+        message: 'SECRET_KEY looks like the example placeholder — set a real secret',
+      });
+    }
+  });
 
 export type Env = z.infer<typeof envSchema>;
 

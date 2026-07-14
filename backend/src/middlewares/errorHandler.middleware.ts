@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../utils/ApiError.js';
 import logger from '../utils/logger.js';
+import { captureException } from '../utils/monitoring.js';
 import mongoose from 'mongoose';
 
 /**
@@ -74,13 +75,14 @@ export const errorHandler = (err: Error, req: Request, res: Response, _next: Nex
 
   // ─── Log the error ──────────────────────────────────────────────────────
   if (statusCode >= 500) {
-    // Server errors — log full details for debugging
+    // Server errors — log full details and report to error monitoring.
     logger.error(`[${code}] ${message}`, {
       error: err.message,
       stack: err.stack,
       url: req.originalUrl,
       method: req.method,
     });
+    captureException(err, { url: req.originalUrl, method: req.method, code });
   } else {
     // Client errors — log at warn level (expected, not urgent)
     logger.warn(`[${code}] ${message}`, {
