@@ -15,17 +15,21 @@ process.env.REDIS_URL = ''; // Falsy → redis client never created, cache disab
 
 import { beforeAll, afterAll, afterEach } from 'vitest';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-
-let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri());
+  // Connect to the single shared in-memory MongoDB started in globalSetup.
+  const uri = process.env.MONGO_TEST_URI;
+  if (!uri) {
+    throw new Error('MONGO_TEST_URI not set — is globalSetup.ts registered in vitest.config?');
+  }
+  // Each test file gets its OWN database on the shared server, so files can run
+  // in parallel without their collection-wipes clobbering each other.
+  const dbName = `test_${Math.random().toString(36).slice(2)}`;
+  await mongoose.connect(uri, { dbName });
 });
 
 afterEach(async () => {
-  // Isolate tests: wipe all collections between tests
+  // Isolate tests within a file: wipe this file's collections between tests.
   const collections = mongoose.connection.collections;
   await Promise.all(
     Object.values(collections).map((collection) => collection.deleteMany({})),
@@ -33,6 +37,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  // Only this file's mongoose connection — the shared server is stopped by
+  // globalSetup's teardown.
   await mongoose.disconnect();
-  await mongoServer.stop();
 });

@@ -8,6 +8,10 @@ import store from "./redux/store.js";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { I18nProvider } from "./i18n/I18nProvider";
+import { initGlobalErrorHandlers } from "./lib/monitoring";
+
+// Catch errors that escape React's render tree (uncaught / unhandled rejections).
+initGlobalErrorHandlers();
 
 const persistor = persistStore(store);
 

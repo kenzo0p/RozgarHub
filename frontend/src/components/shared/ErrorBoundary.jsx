@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
+import { captureException } from "@/lib/monitoring";
 
 /**
  * ErrorBoundary — catches JavaScript errors in child components.
@@ -32,8 +33,8 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     this.setState({ errorInfo });
 
-    // In production, send to error tracking service (Sentry, DataDog, etc.)
-    console.error("[ErrorBoundary] Caught error:", error, errorInfo);
+    // Report to the error-monitoring pipeline (see lib/monitoring.js).
+    captureException(error, { componentStack: errorInfo?.componentStack });
   }
 
   handleReset = () => {
