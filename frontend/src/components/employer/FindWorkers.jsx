@@ -13,7 +13,6 @@ function FindWorkers() {
   const [q, setQ] = useState("");
   const [location, setLocation] = useState("");
   const [availableOnly, setAvailableOnly] = useState(true);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [workers, setWorkers] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -28,7 +27,6 @@ function FindWorkers() {
         if (q.trim()) params.set("q", q.trim());
         if (location.trim()) params.set("location", location.trim());
         if (availableOnly) params.set("availableOnly", "true");
-        if (verifiedOnly) params.set("verifiedOnly", "true");
         const res = await api.get(`${USER_SEARCH_API_END_POINT}?${params.toString()}`);
         if (active && res.data?.success) {
           setWorkers(res.data.data);
@@ -44,7 +42,7 @@ function FindWorkers() {
       active = false;
       clearTimeout(timer);
     };
-  }, [q, location, availableOnly, verifiedOnly]);
+  }, [q, location, availableOnly]);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -92,16 +90,10 @@ function FindWorkers() {
             <Users className="h-3.5 w-3.5" aria-hidden="true" />
             {t("workers.availableOnly")}
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={verifiedOnly ? "default" : "outline"}
-            onClick={() => setVerifiedOnly((v) => !v)}
-            className="gap-1.5"
-          >
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
             <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            {t("workers.verifiedOnly")}
-          </Button>
+            {t("workers.allVerified")}
+          </span>
           {!loading && (
             <span className="ml-auto text-sm text-muted-foreground">
               {t("workers.count", { n: total })}

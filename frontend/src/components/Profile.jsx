@@ -23,6 +23,8 @@ import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfile from "./UpdateProfile";
 import ReviewsList from "./shared/ReviewsList";
 import WorkerVerification from "./WorkerVerification";
+import WorkPhotos from "./WorkPhotos";
+import Credentials from "./Credentials";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import { StarRatingDisplay } from "./shared/StarRating";
 import { useSelector } from "react-redux";
@@ -266,6 +268,14 @@ function Profile() {
 
             <div className="mt-6">
               <WorkerVerification />
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <Credentials />
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <WorkPhotos />
             </div>
           </>
         )}

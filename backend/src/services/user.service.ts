@@ -1,10 +1,10 @@
 import { userRepository } from '../repositories/user.repository.js';
 import { uploadService } from './upload.service.js';
 import { User } from '../models/user.model.js';
-import { NotFoundError, ConflictError } from '../utils/ApiError.js';
+import { NotFoundError, ConflictError, ValidationError } from '../utils/ApiError.js';
 import type { UpdateProfileInput } from '../validators/auth.validator.js';
-import type { SafeUser } from '../types/models.js';
-import type { Language } from '../utils/constants.js';
+import type { SafeUser, CredentialType, IUserProfile } from '../types/models.js';
+import { APP_CONSTANTS, type Language } from '../utils/constants.js';
 import logger from '../utils/logger.js';
 
 // Escape regex metacharacters in user input before building $regex filters.
@@ -17,7 +17,6 @@ export interface WorkerSearchFilters {
   trade?: string;
   location?: string;
   availableOnly?: boolean;
-  verifiedOnly?: boolean;
   minRating?: number;
 }
 
@@ -145,6 +144,97 @@ export class UserService {
   }
 
   /**
+   * Add work-portfolio photos. Uploads each image and appends its URL, capped
+   * at MAX_WORK_PHOTOS so the portfolio stays a highlight reel, not a dump.
+   */
+  async addWorkPhotos(userId: string, files: Express.Multer.File[]): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+    if (!files || files.length === 0) {
+      throw new ValidationError('No photos provided');
+    }
+    const current = userDoc.profile.workPhotos || [];
+    if (current.length + files.length > APP_CONSTANTS.MAX_WORK_PHOTOS) {
+      throw new ValidationError(
+        `You can have at most ${APP_CONSTANTS.MAX_WORK_PHOTOS} work photos`,
+      );
+    }
+
+    const urls = await Promise.all(files.map((f) => uploadService.uploadWorkPhoto(f)));
+    userDoc.profile.workPhotos = [...current, ...urls];
+    await userDoc.save();
+
+    logger.info(`User ${userId} added ${urls.length} work photo(s)`);
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /** Remove a single work photo by its URL. */
+  async removeWorkPhoto(userId: string, url: string): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+    userDoc.profile.workPhotos = (userDoc.profile.workPhotos || []).filter((u) => u !== url);
+    await userDoc.save();
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /**
+   * Add an occupation credential (driving licence, trade certificate, …).
+   *
+   * DEMO verification, same shape as GST/Aadhaar: a driving licence is accepted
+   * on a valid format and marked 'verified'; production would confirm it with
+   * the issuing authority (Parivahan/DigiLocker). An optional photo of the
+   * document can be attached.
+   */
+  async addCredential(
+    userId: string,
+    input: { type: CredentialType; number: string },
+    file?: Express.Multer.File,
+  ): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+
+    let number = input.number.trim();
+    if (input.type === 'driving_license') {
+      // Indian DL: 2-letter state + 2-digit RTO + 4-digit year + 7 digits.
+      const normalized = number.replace(/[\s-]/g, '').toUpperCase();
+      if (!/^[A-Z]{2}\d{13}$/.test(normalized)) {
+        throw new ValidationError('Enter a valid driving licence number');
+      }
+      number = normalized;
+    }
+
+    const documentUrl = file ? await uploadService.uploadFile(file, 'rozgarhub/credentials') : undefined;
+
+    userDoc.profile.credentials = [
+      ...(userDoc.profile.credentials || []),
+      { type: input.type, number, documentUrl, status: 'verified' },
+    ] as IUserProfile['credentials'];
+    await userDoc.save();
+
+    logger.info(`User ${userId} added credential: ${input.type}`);
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /** Remove a credential by its subdocument id. */
+  async removeCredential(userId: string, credentialId: string): Promise<SafeUser> {
+    const userDoc = await User.findById(userId);
+    if (!userDoc) {
+      throw new NotFoundError('User');
+    }
+    userDoc.profile.credentials = (userDoc.profile.credentials || []).filter(
+      (c) => c._id?.toString() !== credentialId,
+    ) as IUserProfile['credentials'];
+    await userDoc.save();
+    return userDoc.toJSON() as unknown as SafeUser;
+  }
+
+  /**
    * Employer-facing worker discovery. Turns the pull-only model (workers apply,
    * employers wait) into a two-sided marketplace: an employer can search
    * "plumbers in Pune, available now" and reach out.
@@ -157,10 +247,12 @@ export class UserService {
     page = 1,
     limit = 12,
   ): Promise<{ workers: unknown[]; total: number }> {
-    const q: Record<string, unknown> = { role: 'employee' };
+    // Discovery only ever surfaces identity-verified workers — an employer
+    // hiring a stranger into their home or site should never see an unverified
+    // profile. Verification is a hard filter, not an optional toggle.
+    const q: Record<string, unknown> = { role: 'employee', verificationStatus: 'verified' };
 
     if (filters.availableOnly) q['profile.available'] = { $ne: false };
-    if (filters.verifiedOnly) q.verificationStatus = 'verified';
     if (filters.trade) {
       q['profile.primaryTrade'] = { $regex: escapeRegex(filters.trade), $options: 'i' };
     }
@@ -213,6 +305,7 @@ export class UserService {
           preferredLocation: profile.preferredLocation,
           languagesSpoken: profile.languagesSpoken,
           toolsOwned: profile.toolsOwned,
+          workPhotos: profile.workPhotos,
         },
         // Contact is revealed only for workers open to work.
         phone: available && d.phoneNumber ? String(d.phoneNumber) : null,

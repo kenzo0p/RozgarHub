@@ -1,8 +1,9 @@
 import { applicationRepository } from '../repositories/application.repository.js';
 import { jobRepository } from '../repositories/job.repository.js';
 import { ConflictError, NotFoundError, ForbiddenError, ValidationError } from '../utils/ApiError.js';
-import type { IApplication, ApplicationStatus, IJob, PaymentMethod } from '../types/models.js';
+import type { IApplication, ApplicationStatus, IJob, PaymentMethod, ICredential } from '../types/models.js';
 import { Job } from '../models/job.model.js';
+import { User } from '../models/user.model.js';
 import { eventBus } from '../events/eventBus.js';
 import logger from '../utils/logger.js';
 
@@ -46,6 +47,39 @@ export class ApplicationService {
     );
     if (existing) {
       throw new ConflictError('You have already applied for this job');
+    }
+
+    // ─── Profile-completeness gates ─────────────────────────────────────────
+    const applicant = await User.findById(applicantId)
+      .select('verificationStatus profile.credentials')
+      .lean();
+
+    // 1. Identity gate — the worker must have verified their identity (Aadhaar)
+    //    before applying to anything. A trustable site doesn't let strangers in.
+    if (!applicant || applicant.verificationStatus !== 'verified') {
+      throw new ForbiddenError(
+        'Please verify your identity (Aadhaar) in your profile before applying.',
+      );
+    }
+
+    // 2. Credential gate — some jobs (e.g. a driver role) also require a
+    //    specific verified credential. No proof, no apply.
+    const required = (job as IJob).requiredCredential;
+    if (required) {
+      const creds = (applicant.profile?.credentials || []) as ICredential[];
+      const hasCredential = creds.some((c) => {
+        if (c.status !== 'verified') return false;
+        return required === 'driving_license'
+          ? c.type === 'driving_license'
+          : c.type === 'certificate' || c.type === 'other';
+      });
+      if (!hasCredential) {
+        throw new ForbiddenError(
+          required === 'driving_license'
+            ? 'This job requires a verified driving licence. Add yours in your profile to apply.'
+            : 'This job requires a verified certificate. Add yours in your profile to apply.',
+        );
+      }
     }
 
     // Create application

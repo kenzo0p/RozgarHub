@@ -26,6 +26,11 @@ beforeAll(async () => {
   // in parallel without their collection-wipes clobbering each other.
   const dbName = `test_${Math.random().toString(36).slice(2)}`;
   await mongoose.connect(uri, { dbName });
+
+  // Build every model's indexes up front. autoIndex is async/background, so
+  // without this a unique-constraint test can race ahead of its index and see
+  // no duplicate-key error (flaky 409 assertions).
+  await Promise.all(Object.values(mongoose.models).map((model) => model.createIndexes()));
 });
 
 afterEach(async () => {

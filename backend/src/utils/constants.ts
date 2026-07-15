@@ -35,6 +35,7 @@ export const APP_CONSTANTS = {
   MAX_FILE_SIZE: 5 * 1024 * 1024,   // 5MB
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
   ALLOWED_RESUME_TYPES: ['application/pdf'],
+  MAX_WORK_PHOTOS: 8,               // portfolio cap per worker
 
   // API versioning
   API_PREFIX: '/api',

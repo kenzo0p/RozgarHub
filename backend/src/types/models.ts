@@ -21,6 +21,19 @@ export interface IUserProfile {
   preferredLocation?: string;
   languagesSpoken?: string[];
   toolsOwned?: string[];
+  workPhotos?: string[];
+  credentials?: ICredential[];
+}
+
+export type CredentialType = 'driving_license' | 'certificate' | 'other';
+
+export interface ICredential {
+  _id?: Types.ObjectId;
+  type: CredentialType;
+  number: string;
+  documentUrl?: string;
+  status: 'submitted' | 'verified' | 'rejected';
+  createdAt?: Date;
 }
 
 export interface IUser extends Document {
@@ -79,6 +92,7 @@ export interface IJob extends Document {
   location: string;
   geo?: { type: 'Point'; coordinates: [number, number] };
   jobType: string;
+  requiredCredential?: 'driving_license' | 'certificate';
   position: number;
   company: Types.ObjectId | ICompany;
   created_By: Types.ObjectId;

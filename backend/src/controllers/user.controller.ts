@@ -40,6 +40,35 @@ export const verifyIdentity = asyncHandler(async (req: AuthRequest, res: Respons
   );
 });
 
+export const addWorkPhotos = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const files = (req.files as Express.Multer.File[]) || [];
+  const user = await userService.addWorkPhotos(req.user!.id, files);
+
+  res.status(200).json(ApiResponse.success({ user }, 'Work photos added'));
+});
+
+export const removeWorkPhoto = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const user = await userService.removeWorkPhoto(req.user!.id, req.body.url);
+
+  res.status(200).json(ApiResponse.success({ user }, 'Work photo removed'));
+});
+
+export const addCredential = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const user = await userService.addCredential(
+    req.user!.id,
+    { type: req.body.type, number: req.body.number },
+    req.file,
+  );
+
+  res.status(200).json(ApiResponse.success({ user }, 'Credential added'));
+});
+
+export const removeCredential = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const user = await userService.removeCredential(req.user!.id, req.params.id as string);
+
+  res.status(200).json(ApiResponse.success({ user }, 'Credential removed'));
+});
+
 export const searchWorkers = asyncHandler(async (req: AuthRequest, res: Response) => {
   const page = Number(req.query.page) || 1;
   const limit = Math.min(Number(req.query.limit) || 12, 50);
@@ -50,7 +79,6 @@ export const searchWorkers = asyncHandler(async (req: AuthRequest, res: Response
       trade: (req.query.trade as string) || undefined,
       location: (req.query.location as string) || undefined,
       availableOnly: req.query.availableOnly === 'true',
-      verifiedOnly: req.query.verifiedOnly === 'true',
       minRating: req.query.minRating ? Number(req.query.minRating) : undefined,
     },
     page,

@@ -51,6 +51,12 @@ const jobSchema = new Schema<IJob>(
       required: [true, 'Job type is required'],
       trim: true,
     },
+    // Optional: a credential the worker must hold to apply (e.g. a driver job
+    // requires a driving licence). Enforced in application.service.applyToJob.
+    requiredCredential: {
+      type: String,
+      enum: ['driving_license', 'certificate'],
+    },
     position: {
       type: Number,
       required: [true, 'Number of positions is required'],

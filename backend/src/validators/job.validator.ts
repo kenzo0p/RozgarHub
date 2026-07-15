@@ -37,6 +37,12 @@ export const createJobSchema = z.object({
   companyId: z
     .string({ error: 'Company ID is required' })
     .min(1, 'Company ID is required'),
+  // Optional credential the applicant must hold (e.g. a driving licence).
+  // "" (the "None" option) is treated as unset.
+  requiredCredential: z.preprocess(
+    (v) => (v === '' || v == null ? undefined : v),
+    z.enum(['driving_license', 'certificate']).optional(),
+  ),
 });
 
 export const jobQuerySchema = z.object({

@@ -36,3 +36,25 @@ const upload = multer({
 });
 
 export const singleUpload = upload.single('file');
+
+// Image-only, multi-file upload for the worker work-photos portfolio.
+const imageFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+): void => {
+  const imageTypes: string[] = [...APP_CONSTANTS.ALLOWED_IMAGE_TYPES];
+  if (imageTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`File type '${file.mimetype}' is not allowed`));
+  }
+};
+
+const imageUpload = multer({
+  storage,
+  fileFilter: imageFilter,
+  limits: { fileSize: APP_CONSTANTS.MAX_FILE_SIZE },
+});
+
+export const workPhotosUpload = imageUpload.array('photos', APP_CONSTANTS.MAX_WORK_PHOTOS);

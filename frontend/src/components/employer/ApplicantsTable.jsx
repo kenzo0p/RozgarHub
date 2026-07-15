@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { FileText, Check, X, Inbox, Star, ArrowRight, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { FileText, Check, X, Inbox, Star, ArrowRight, CheckCircle2, Clock, AlertTriangle, BadgeCheck } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "@/lib/api";
 import { APPLICATION_API_END_POINT } from "@/utils/constant";
@@ -72,6 +72,12 @@ const NEXT_LABEL = {
   completed: "employer.markPaid",
 };
 const ENGAGED = ["accepted", "started", "completed", "paid"];
+
+const CREDENTIAL_TYPE_KEY = {
+  driving_license: "credentials.typeDrivingLicense",
+  certificate: "credentials.typeCertificate",
+  other: "credentials.typeOther",
+};
 
 function ApplicantsTable() {
   const { t } = useI18n();
@@ -186,6 +192,19 @@ function ApplicantsTable() {
                             value={applicant.ratingAverage}
                             count={applicant.ratingCount}
                           />
+                        </div>
+                      )}
+                      {applicant?.profile?.credentials?.length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {applicant.profile.credentials.map((c) => (
+                            <span
+                              key={c._id}
+                              className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400"
+                            >
+                              <BadgeCheck className="h-3 w-3" aria-hidden="true" />
+                              {t(CREDENTIAL_TYPE_KEY[c.type] || CREDENTIAL_TYPE_KEY.other)}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>

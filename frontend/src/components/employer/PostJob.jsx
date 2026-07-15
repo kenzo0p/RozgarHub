@@ -44,6 +44,7 @@ function PostJob() {
     experience: "",
     position: 1,
     companyId: "",
+    requiredCredential: "",
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -250,6 +251,28 @@ function PostJob() {
                           {company.name}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t("credentials.requires")}</Label>
+                  <Select
+                    value={input.requiredCredential || "none"}
+                    onValueChange={(v) =>
+                      setInput({ ...input, requiredCredential: v === "none" ? "" : v })
+                    }
+                  >
+                    <SelectTrigger aria-label={t("credentials.requires")}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("credentials.requiresNone")}</SelectItem>
+                      <SelectItem value="driving_license">
+                        {t("credentials.typeDrivingLicense")}
+                      </SelectItem>
+                      <SelectItem value="certificate">
+                        {t("credentials.typeCertificate")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

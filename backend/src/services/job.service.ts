@@ -54,6 +54,7 @@ export class JobService {
       location: data.location,
       geo: coords ? { type: 'Point', coordinates: coords } : undefined,
       jobType: data.jobType,
+      requiredCredential: data.requiredCredential,
       position: Number(data.position),
       experienceLevel: Number(data.experience),
       company: data.companyId as unknown as IJob['company'],

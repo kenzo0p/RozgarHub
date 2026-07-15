@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../app.js';
+import { User } from '../models/user.model.js';
 
 export const api = () => request(app);
 
@@ -8,8 +9,15 @@ let userCounter = 0;
 /**
  * Register + login a user, returning auth cookies and the user object.
  * Each call creates a unique user.
+ *
+ * Employees are marked identity-verified by default so they can apply to jobs
+ * (applying now requires a verified profile). Pass `{ verified: false }` to
+ * test the identity gate itself.
  */
-export async function createAuthedUser(role: 'employee' | 'employer') {
+export async function createAuthedUser(
+  role: 'employee' | 'employer',
+  opts: { verified?: boolean } = {},
+) {
   userCounter += 1;
   const creds = {
     fullname: `Test User ${userCounter}`,
@@ -36,8 +44,16 @@ export async function createAuthedUser(role: 'employee' | 'employer') {
     throw new Error(`Test user login failed: ${JSON.stringify(loginRes.body)}`);
   }
 
+  const user = loginRes.body.data.user;
+
+  // Mark identity-verified by default (workers need this to apply).
+  if (role === 'employee' && opts.verified !== false) {
+    await User.updateOne({ _id: user._id }, { verificationStatus: 'verified' });
+    user.verificationStatus = 'verified';
+  }
+
   const cookies = loginRes.headers['set-cookie'] as unknown as string[];
-  return { creds, cookies, user: loginRes.body.data.user };
+  return { creds, cookies, user };
 }
 
 /**

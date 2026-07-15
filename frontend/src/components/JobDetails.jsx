@@ -25,6 +25,7 @@ import {
   Loader2,
   SearchX,
   Flag,
+  BadgeCheck,
 } from "lucide-react";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import ListenButton from "./shared/ListenButton";
@@ -58,6 +59,7 @@ function FactRow({ icon: Icon, label, value }) {
 
 function JobDetails() {
   const { singleJob } = useSelector((store) => store.job);
+  const { user } = useSelector((store) => store.auth);
   const [isApplied, setIsApplied] = useState(false);
   const [totalApplications, setTotalApplications] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -124,6 +126,27 @@ function JobDetails() {
         year: "numeric",
       })
     : "—";
+
+  // What (if anything) stops this worker from applying — mirrors the backend
+  // gates so we can prompt them to fix it instead of hitting a bare 403.
+  const req = singleJob?.requiredCredential;
+  const creds = user?.profile?.credentials || [];
+  const identityIncomplete =
+    user?.role === "employee" && user?.verificationStatus !== "verified";
+  const hasRequiredCredential =
+    !req ||
+    creds.some(
+      (c) =>
+        c.status === "verified" &&
+        (req === "driving_license"
+          ? c.type === "driving_license"
+          : c.type === "certificate" || c.type === "other"),
+    );
+  const applyBlocker = identityIncomplete
+    ? "identity"
+    : !hasRequiredCredential
+      ? req
+      : null;
 
   const location = singleJob?.location || "India";
   const coords = getCityCoords(location);
@@ -218,6 +241,14 @@ function JobDetails() {
                 <MetaChip icon={GraduationCap}>
                   {singleJob?.experienceLevel}+ {t("details.years")} {t("details.experience")}
                 </MetaChip>
+                {singleJob?.requiredCredential && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-sm font-medium text-amber-700 dark:text-amber-400">
+                    <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                    {singleJob.requiredCredential === "driving_license"
+                      ? t("credentials.badgeDrivingLicense")
+                      : t("credentials.badgeCertificate")}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -309,26 +340,46 @@ function JobDetails() {
                 <FactRow icon={CalendarDays} label={t("details.posted")} value={postedDate} />
               </div>
 
-              <Button
-                onClick={applyJobHandler}
-                disabled={isApplied || applying}
-                size="lg"
-                className="mt-5 w-full"
-              >
-                {applying ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                    {t("details.applying")}
-                  </>
-                ) : isApplied ? (
-                  <>
-                    <CheckCircle2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {t("details.applied")}
-                  </>
-                ) : (
-                  t("details.applyNow")
-                )}
-              </Button>
+              {applyBlocker && !isApplied ? (
+                <div className="mt-5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+                  <p className="flex items-start gap-2 text-sm font-medium text-amber-700 dark:text-amber-400">
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    {applyBlocker === "identity"
+                      ? t("credentials.applyNeedIdentity")
+                      : applyBlocker === "driving_license"
+                        ? t("credentials.applyNeedDrivingLicense")
+                        : t("credentials.applyNeedCertificate")}
+                  </p>
+                  <Button
+                    onClick={() => navigate("/profile")}
+                    size="lg"
+                    className="mt-3 w-full"
+                  >
+                    {t("credentials.completeProfile")}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={applyJobHandler}
+                  disabled={isApplied || applying}
+                  size="lg"
+                  className="mt-5 w-full"
+                >
+                  {applying ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                      {t("details.applying")}
+                    </>
+                  ) : isApplied ? (
+                    <>
+                      <CheckCircle2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                      {t("details.applied")}
+                    </>
+                  ) : (
+                    t("details.applyNow")
+                  )}
+                </Button>
+              )}
 
               <Button
                 onClick={() => toggleSave(jobId)}

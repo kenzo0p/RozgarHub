@@ -46,6 +46,10 @@ export class UploadService {
   async uploadCompanyLogo(file: Express.Multer.File): Promise<string> {
     return this.uploadFile(file, 'rozgarhub/companies');
   }
+
+  async uploadWorkPhoto(file: Express.Multer.File): Promise<string> {
+    return this.uploadFile(file, 'rozgarhub/work-photos');
+  }
 }
 
 export const uploadService = new UploadService();

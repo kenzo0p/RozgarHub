@@ -70,6 +70,28 @@ describe('Worker discovery', () => {
     expect(JSON.stringify(res.body)).not.toContain(worker.creds.email);
   });
 
+  it('never surfaces identity-unverified workers', async () => {
+    // Verified worker (helper default) appears; unverified one does not.
+    const verified = await createAuthedUser('employee');
+    await api()
+      .put('/api/v1/user/profile/update')
+      .set('Cookie', verified.cookies)
+      .send({ primaryTrade: 'Locksmith', available: 'true' });
+    const unverified = await createAuthedUser('employee', { verified: false });
+    await api()
+      .put('/api/v1/user/profile/update')
+      .set('Cookie', unverified.cookies)
+      .send({ primaryTrade: 'Locksmith', available: 'true' });
+    const employer = await createAuthedUser('employer');
+
+    const res = await api()
+      .get('/api/v1/user/workers?trade=Locksmith')
+      .set('Cookie', employer.cookies);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.length).toBe(1);
+  });
+
   it('availableOnly hides unavailable workers', async () => {
     await makeWorker({ primaryTrade: 'Roofer', available: 'false' });
     const employer = await createAuthedUser('employer');

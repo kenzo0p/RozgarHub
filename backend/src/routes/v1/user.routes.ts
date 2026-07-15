@@ -3,12 +3,13 @@ import * as userController from '../../controllers/user.controller.js';
 import { authenticate } from '../../middlewares/auth.middleware.js';
 import { authorize } from '../../middlewares/rbac.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
-import { singleUpload } from '../../middlewares/upload.middleware.js';
+import { singleUpload, workPhotosUpload } from '../../middlewares/upload.middleware.js';
 import {
   updateProfileSchema,
   updateLanguageSchema,
   verifyIdentitySchema,
 } from '../../validators/auth.validator.js';
+import { addCredentialSchema } from '../../validators/credential.validator.js';
 
 const router = Router();
 
@@ -51,6 +52,37 @@ router.post(
   authorize('employee'),
   validate(verifyIdentitySchema),
   userController.verifyIdentity,
+);
+
+router.post(
+  '/work-photos',
+  authenticate,
+  authorize('employee'),
+  workPhotosUpload,
+  userController.addWorkPhotos,
+);
+
+router.delete(
+  '/work-photos',
+  authenticate,
+  authorize('employee'),
+  userController.removeWorkPhoto,
+);
+
+router.post(
+  '/credentials',
+  authenticate,
+  authorize('employee'),
+  singleUpload,
+  validate(addCredentialSchema),
+  userController.addCredential,
+);
+
+router.delete(
+  '/credentials/:id',
+  authenticate,
+  authorize('employee'),
+  userController.removeCredential,
 );
 
 export default router;

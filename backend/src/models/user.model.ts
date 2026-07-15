@@ -77,6 +77,30 @@ const userSchema = new Schema<IUser>(
       preferredLocation: { type: String, trim: true, maxlength: 100 },
       languagesSpoken: [{ type: String }],
       toolsOwned: [{ type: String }],
+      // A portfolio of past work — photos of finished jobs say more about a
+      // mason or painter than a resume PDF ever could.
+      workPhotos: [{ type: String }],
+      // Occupation credentials — a driver's licence, a trade certificate, etc.
+      // A job can require one; without it the worker can't apply. Verified the
+      // same demo way as GST/Aadhaar (trust the format; production checks the
+      // issuing authority). We store the number + an optional photo of the doc.
+      credentials: [
+        {
+          type: {
+            type: String,
+            enum: ['driving_license', 'certificate', 'other'],
+            required: true,
+          },
+          number: { type: String, required: true, trim: true },
+          documentUrl: { type: String },
+          status: {
+            type: String,
+            enum: ['submitted', 'verified', 'rejected'],
+            default: 'verified',
+          },
+          createdAt: { type: Date, default: Date.now },
+        },
+      ],
     },
     // Reputation — denormalized from Review docs for cheap display in lists,
     // cards, and badges. Recomputed whenever a new review lands.

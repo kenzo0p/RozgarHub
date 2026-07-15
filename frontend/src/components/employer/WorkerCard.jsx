@@ -91,6 +91,20 @@ function WorkerCard({ worker }) {
         </div>
       )}
 
+      {p.workPhotos?.length > 0 && (
+        <div className="mt-3 flex gap-1.5">
+          {p.workPhotos.slice(0, 4).map((url) => (
+            <img
+              key={url}
+              src={url}
+              alt=""
+              loading="lazy"
+              className="h-14 w-14 shrink-0 rounded-md border border-border object-cover"
+            />
+          ))}
+        </div>
+      )}
+
       <div className="mt-4 border-t border-border pt-3">
         {worker?.phone ? (
           <ContactButtons
