@@ -56,7 +56,11 @@ export class SavedJobService {
         .limit(limit)
         .populate({
           path: 'jobId',
-          populate: { path: 'company', select: 'name logo' },
+          populate: [
+            { path: 'company', select: 'name logo' },
+            // Individual jobs have no company — surface the poster instead
+            { path: 'created_By', select: 'fullname verificationStatus employerType' },
+          ],
         })
         .lean()
         .exec(),

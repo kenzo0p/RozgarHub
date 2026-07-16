@@ -35,6 +35,8 @@ export const registerSchema = z.object({
   role: z.enum(['employee', 'employer'], {
     error: 'Role must be employee or employer',
   }),
+  // For employers: individual (hiring for themselves) vs business.
+  employerType: z.enum(['individual', 'business']).optional(),
   // Optional at signup — carries the UI language so the very first
   // notification/SMS already speaks the user's language.
   language: z.enum(SUPPORTED_LANGUAGES).optional(),
@@ -144,6 +146,7 @@ export const otpVerifySchema = z.object({
   // Required only when the phone number belongs to a brand-new user.
   fullname: z.string().min(2).max(100).trim().optional(),
   role: z.enum(['employee', 'employer']).optional(),
+  employerType: z.enum(['individual', 'business']).optional(),
   // Optional UI language, stored so the welcome/first SMS is localized.
   language: z.enum(SUPPORTED_LANGUAGES).optional(),
 });

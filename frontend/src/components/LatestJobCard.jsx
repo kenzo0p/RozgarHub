@@ -8,7 +8,14 @@ import { useI18n } from "@/i18n/I18nProvider";
 function LatestJobCard({ job }) {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const companyInitial = job?.company?.name?.charAt(0)?.toUpperCase() || "?";
+  // Business jobs show the company; individual jobs (e.g. someone hiring a
+  // driver for their own car) show the poster's own name.
+  const isCompany = !!job?.company;
+  const posterName = isCompany ? job?.company?.name : job?.created_By?.fullname;
+  const posterInitial = posterName?.charAt(0)?.toUpperCase() || "?";
+  const posterVerified = isCompany
+    ? job?.company?.verificationStatus === "verified"
+    : job?.created_By?.verificationStatus === "verified";
 
   return (
     <button
@@ -19,13 +26,16 @@ function LatestJobCard({ job }) {
       {/* Company row */}
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-lg font-bold text-primary">
-          {companyInitial}
+          {posterInitial}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="truncate font-semibold text-foreground">{job?.company?.name}</p>
-            {job?.company?.verificationStatus === "verified" && (
-              <VerifiedBadge status="verified" />
+            <p className="truncate font-semibold text-foreground">{posterName}</p>
+            {posterVerified && <VerifiedBadge status="verified" />}
+            {!isCompany && (
+              <span className="shrink-0 text-xs text-muted-foreground">
+                · {t("card.individual")}
+              </span>
             )}
           </div>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">

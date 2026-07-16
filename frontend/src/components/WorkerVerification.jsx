@@ -14,7 +14,7 @@ import { useI18n } from "@/i18n/I18nProvider";
  * verification, so trust runs both ways. The worker submits an Aadhaar; the
  * backend keeps only the last 4 digits and marks them verified.
  */
-function WorkerVerification() {
+function WorkerVerification({ audience = "worker" }) {
   const { t } = useI18n();
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
@@ -22,6 +22,8 @@ function WorkerVerification() {
   const [loading, setLoading] = useState(false);
 
   const verified = user?.verificationStatus === "verified";
+  const verifiedSubKey = audience === "employer" ? "idv.verifiedSubEmployer" : "idv.verifiedSub";
+  const getSubKey = audience === "employer" ? "idv.getSubEmployer" : "idv.getSub";
 
   const submit = async () => {
     if (!aadhaar.trim()) {
@@ -52,7 +54,7 @@ function WorkerVerification() {
         <div>
           <p className="font-semibold">{t("idv.verifiedTitle")}</p>
           <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80">
-            {t("idv.verifiedSub")}
+            {t(verifiedSubKey)}
             {user?.idLast4 ? ` · ${t("idv.endingIn", { last4: user.idLast4 })}` : ""}
           </p>
         </div>
@@ -66,7 +68,7 @@ function WorkerVerification() {
         <ShieldAlert className="h-5 w-5 shrink-0" aria-hidden="true" />
         {t("idv.getTitle")}
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">{t("idv.getSub")}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{t(getSubKey)}</p>
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <Input
           value={aadhaar}

@@ -29,6 +29,14 @@ function Job({ job }) {
 
   const daysAgo = daysAgoFunction(job?.createdAt);
 
+  // Business jobs show the company; individual jobs (e.g. someone hiring a
+  // driver for their own car) show the poster's own name.
+  const isCompany = !!job?.company;
+  const posterName = isCompany ? job?.company?.name : job?.created_By?.fullname;
+  const posterVerified = isCompany
+    ? job?.company?.verificationStatus === "verified"
+    : job?.created_By?.verificationStatus === "verified";
+
   return (
     <div className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
       {/* Header: date + bookmark */}
@@ -53,21 +61,24 @@ function Job({ job }) {
         </Button>
       </div>
 
-      {/* Company */}
+      {/* Poster: company for businesses, the person for individual jobs */}
       <div className="mt-2 flex items-center gap-3">
         <Avatar className="h-11 w-11 rounded-lg border border-border">
-          <AvatarImage src={job?.company?.logo} alt="" />
+          <AvatarImage src={isCompany ? job?.company?.logo : undefined} alt="" />
           <AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
-            {job?.company?.name?.charAt(0)?.toUpperCase() || "C"}
+            {posterName?.charAt(0)?.toUpperCase() || "?"}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h2 className="truncate font-semibold text-foreground">
-              {job?.company?.name || job?.name}
+              {posterName}
             </h2>
-            {job?.company?.verificationStatus === "verified" && (
-              <VerifiedBadge status="verified" />
+            {posterVerified && <VerifiedBadge status="verified" />}
+            {!isCompany && (
+              <span className="shrink-0 text-xs text-muted-foreground">
+                · {t("card.individual")}
+              </span>
             )}
           </div>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">

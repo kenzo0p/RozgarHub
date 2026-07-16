@@ -31,13 +31,17 @@ function escapeRegex(input: string): string {
 
 export class JobService {
   async createJob(data: CreateJobInput, userId: string): Promise<IJob> {
-    // The company must exist and belong to the posting employer
-    const company = await companyRepository.findById(data.companyId);
-    if (!company) {
-      throw new NotFoundError('Company');
-    }
-    if (company.userId.toString() !== userId) {
-      throw new ForbiddenError('You can only post jobs for your own company');
+    // Business jobs are posted under a company (which must exist and belong to
+    // the poster). Individual employers (e.g. hiring a driver for their own
+    // car) post directly with no company.
+    if (data.companyId) {
+      const company = await companyRepository.findById(data.companyId);
+      if (!company) {
+        throw new NotFoundError('Company');
+      }
+      if (company.userId.toString() !== userId) {
+        throw new ForbiddenError('You can only post jobs for your own company');
+      }
     }
 
     // Resolve the location string to coordinates for "near me" search.
@@ -57,7 +61,7 @@ export class JobService {
       requiredCredential: data.requiredCredential,
       position: Number(data.position),
       experienceLevel: Number(data.experience),
-      company: data.companyId as unknown as IJob['company'],
+      company: data.companyId ? (data.companyId as unknown as IJob['company']) : undefined,
       created_By: userId as unknown as IJob['created_By'],
     });
 

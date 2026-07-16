@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import api from "@/lib/api";
 import { AUTH_API_END_POINT } from "@/utils/constant";
 import { setUser } from "@/redux/authSlice";
-import { RoleSelector } from "./AuthLayout";
+import { RoleSelector, EmployerTypeSelector } from "./AuthLayout";
 import { useI18n } from "@/i18n/I18nProvider";
 
 /**
@@ -26,6 +26,7 @@ function PhoneOtpForm() {
   const [isNewUser, setIsNewUser] = useState(false);
   const [fullname, setFullname] = useState("");
   const [role, setRole] = useState("");
+  const [employerType, setEmployerType] = useState("individual");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -75,6 +76,7 @@ function PhoneOtpForm() {
       if (isNewUser) {
         payload.fullname = fullname;
         payload.role = role;
+        if (role === "employer") payload.employerType = employerType;
         payload.language = lang;
       }
       const res = await api.post(`${AUTH_API_END_POINT}/otp/verify`, payload);
@@ -166,6 +168,9 @@ function PhoneOtpForm() {
             <Label>{t("auth.howUse")}</Label>
             <RoleSelector value={role} onChange={setRole} />
           </div>
+          {role === "employer" && (
+            <EmployerTypeSelector value={employerType} onChange={setEmployerType} />
+          )}
         </>
       )}
 

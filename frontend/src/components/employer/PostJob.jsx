@@ -49,6 +49,9 @@ function PostJob() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { companies } = useSelector((store) => store.company);
+  const { user } = useSelector((store) => store.auth);
+  // Individual employers (hiring for themselves) post directly, with no company.
+  const isIndividual = user?.employerType === "individual";
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -56,7 +59,7 @@ function PostJob() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (!input.companyId) {
+    if (!isIndividual && !input.companyId) {
       toast.error(t("employer.selectCompanyToast"));
       return;
     }
@@ -99,7 +102,7 @@ function PostJob() {
             {t("employer.postJobSubForm")}
           </p>
 
-          {noCompanies ? (
+          {!isIndividual && noCompanies ? (
             <div className="mt-6 flex flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center">
               <Building2 className="h-9 w-9 text-muted-foreground" aria-hidden="true" />
               <p className="font-medium text-foreground">{t("employer.createCompanyFirst")}</p>
@@ -236,24 +239,26 @@ function PostJob() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>{t("employer.company")}</Label>
-                  <Select
-                    value={input.companyId}
-                    onValueChange={(v) => setInput({ ...input, companyId: v })}
-                  >
-                    <SelectTrigger aria-label={t("employer.company")}>
-                      <SelectValue placeholder={t("employer.selectCompany")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {companies.map((company) => (
-                        <SelectItem key={company._id} value={company._id}>
-                          {company.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {!isIndividual && (
+                  <div className="space-y-1.5">
+                    <Label>{t("employer.company")}</Label>
+                    <Select
+                      value={input.companyId}
+                      onValueChange={(v) => setInput({ ...input, companyId: v })}
+                    >
+                      <SelectTrigger aria-label={t("employer.company")}>
+                        <SelectValue placeholder={t("employer.selectCompany")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {companies.map((company) => (
+                          <SelectItem key={company._id} value={company._id}>
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <Label>{t("credentials.requires")}</Label>
                   <Select

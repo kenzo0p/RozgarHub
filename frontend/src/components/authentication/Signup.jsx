@@ -9,7 +9,7 @@ import api from "@/lib/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/redux/authSlice";
 import { Loader2, ImagePlus } from "lucide-react";
-import { AuthLayout, RoleSelector, PasswordInput } from "./AuthLayout";
+import { AuthLayout, RoleSelector, EmployerTypeSelector, PasswordInput } from "./AuthLayout";
 import { useI18n } from "@/i18n/I18nProvider";
 
 function Signup() {
@@ -20,6 +20,7 @@ function Signup() {
     phoneNumber: "",
     password: "",
     role: "",
+    employerType: "individual",
     file: "",
   });
   const navigate = useNavigate();
@@ -48,6 +49,9 @@ function Signup() {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("password", input.password);
     formData.append("role", input.role);
+    if (input.role === "employer") {
+      formData.append("employerType", input.employerType);
+    }
     formData.append("language", lang);
     if (input.file) {
       formData.append("file", input.file);
@@ -86,6 +90,13 @@ function Signup() {
           value={input.role}
           onChange={(role) => setInput({ ...input, role })}
         />
+
+        {input.role === "employer" && (
+          <EmployerTypeSelector
+            value={input.employerType}
+            onChange={(employerType) => setInput({ ...input, employerType })}
+          />
+        )}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-1.5">

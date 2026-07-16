@@ -15,6 +15,7 @@ export class JobRepository {
     // to every viewer. Callers needing application info query it separately.
     return Job.findById(id)
       .populate({ path: 'company' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
       .exec();
   }
 
@@ -39,6 +40,7 @@ export class JobRepository {
     const [jobs, total] = await Promise.all([
       Job.find(filter)
         .populate({ path: 'company' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
         .sort(sort)
         .skip(skip)
         .limit(limit)
@@ -75,6 +77,7 @@ export class JobRepository {
     // Fetch one extra to determine if there are more pages
     const jobs = await Job.find(combinedFilter)
       .populate({ path: 'company' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
       .sort(sort)
       .limit(limit + 1)
       .lean()
@@ -93,6 +96,7 @@ export class JobRepository {
   async findByCreator(userId: string): Promise<IJob[]> {
     return Job.find({ created_By: userId })
       .populate({ path: 'company' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
       .sort({ createdAt: -1 })
       .lean()
       .exec() as unknown as Promise<IJob[]>;

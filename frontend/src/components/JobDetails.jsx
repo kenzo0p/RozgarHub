@@ -148,6 +148,15 @@ function JobDetails() {
       ? req
       : null;
 
+  // Business jobs show the company; individual jobs show the poster's name.
+  const jobIsCompany = !!singleJob?.company;
+  const posterName = jobIsCompany ? singleJob?.company?.name : singleJob?.created_By?.fullname;
+  const posterLogo = jobIsCompany ? singleJob?.company?.logo : undefined;
+  const posterInitial = posterName?.charAt(0)?.toUpperCase() || (jobIsCompany ? "C" : "?");
+  const posterVerification = jobIsCompany
+    ? singleJob?.company?.verificationStatus
+    : singleJob?.created_By?.verificationStatus;
+
   const location = singleJob?.location || "India";
   const coords = getCityCoords(location);
 
@@ -203,20 +212,18 @@ function JobDetails() {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <div className="flex items-start gap-4">
                 <Avatar className="h-14 w-14 rounded-xl border border-border">
-                  <AvatarImage src={singleJob?.company?.logo} alt="" />
+                  <AvatarImage src={posterLogo} alt="" />
                   <AvatarFallback className="rounded-xl bg-primary/10 text-xl font-bold text-primary">
-                    {singleJob?.company?.name?.charAt(0)?.toUpperCase() || "C"}
+                    {posterInitial}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-semibold text-foreground">
-                      {singleJob?.company?.name}
-                    </p>
-                    <VerifiedBadge
-                      status={singleJob?.company?.verificationStatus}
-                      showUnverified
-                    />
+                    <p className="font-semibold text-foreground">{posterName}</p>
+                    <VerifiedBadge status={posterVerification} showUnverified />
+                    {!jobIsCompany && (
+                      <span className="text-xs text-muted-foreground">· {t("card.individual")}</span>
+                    )}
                   </div>
                   <p className="flex items-center gap-1 text-sm text-muted-foreground">
                     <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -415,31 +422,33 @@ function JobDetails() {
               )}
             </div>
 
-            {/* Company card */}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-foreground">
-                {t("details.aboutCompany")}
-              </h2>
-              <div className="mt-3 flex items-center gap-3">
-                <Avatar className="h-11 w-11 rounded-lg border border-border">
-                  <AvatarImage src={singleJob?.company?.logo} alt="" />
-                  <AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
-                    {singleJob?.company?.name?.charAt(0)?.toUpperCase() || "C"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-foreground">
-                    {singleJob?.company?.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{location}</p>
+            {/* Company card — only for business jobs */}
+            {jobIsCompany && (
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="text-sm font-semibold text-foreground">
+                  {t("details.aboutCompany")}
+                </h2>
+                <div className="mt-3 flex items-center gap-3">
+                  <Avatar className="h-11 w-11 rounded-lg border border-border">
+                    <AvatarImage src={singleJob?.company?.logo} alt="" />
+                    <AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
+                      {singleJob?.company?.name?.charAt(0)?.toUpperCase() || "C"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-foreground">
+                      {singleJob?.company?.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{location}</p>
+                  </div>
                 </div>
+                {singleJob?.company?.description && (
+                  <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+                    {singleJob.company.description}
+                  </p>
+                )}
               </div>
-              {singleJob?.company?.description && (
-                <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
-                  {singleJob.company.description}
-                </p>
-              )}
-            </div>
+            )}
 
             {/* Report */}
             <button

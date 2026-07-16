@@ -62,10 +62,12 @@ const jobSchema = new Schema<IJob>(
       required: [true, 'Number of positions is required'],
       min: [1, 'At least 1 position is required'],
     },
+    // Optional: business jobs are posted under a company; individual jobs
+    // (someone hiring a driver for their own car) have no company and show the
+    // poster's own name instead.
     company: {
       type: Schema.Types.ObjectId,
       ref: 'Company',
-      required: [true, 'Company is required'],
     },
     created_By: {
       type: Schema.Types.ObjectId,

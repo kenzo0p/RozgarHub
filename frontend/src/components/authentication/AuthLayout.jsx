@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, User, Briefcase, Eye, EyeOff } from "lucide-react";
+import { CheckCircle2, User, Briefcase, Home, Building2, Eye, EyeOff } from "lucide-react";
+import LogoMark from "../shared/Logo";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const SELLING_POINTS = [
@@ -22,8 +23,11 @@ export function AuthLayout({ title, subtitle, children }) {
         <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-16 h-96 w-96 rounded-full bg-white/5" />
 
-        <Link to="/" className="relative w-fit text-2xl font-extrabold tracking-tight">
-          Rozgar<span className="text-white/80">Hub</span>
+        <Link to="/" className="relative flex w-fit items-center gap-2 text-2xl font-extrabold tracking-tight">
+          <LogoMark className="h-8 w-8 text-white" />
+          <span>
+            Rozgar<span className="text-white/80">Hub</span>
+          </span>
         </Link>
 
         <div className="relative">
@@ -48,8 +52,11 @@ export function AuthLayout({ title, subtitle, children }) {
       {/* ─── Right: form column ────────────────────────────────────────── */}
       <div className="flex flex-col px-6 py-8 sm:px-10">
         {/* Mobile logo */}
-        <Link to="/" className="w-fit text-xl font-extrabold tracking-tight text-foreground lg:hidden">
-          Rozgar<span className="text-primary">Hub</span>
+        <Link to="/" className="flex w-fit items-center gap-2 text-xl font-extrabold tracking-tight text-foreground lg:hidden">
+          <LogoMark className="h-7 w-7 text-primary" />
+          <span>
+            Rozgar<span className="text-primary">Hub</span>
+          </span>
         </Link>
 
         <div className="flex flex-1 items-center justify-center py-8">
@@ -87,6 +94,47 @@ export function RoleSelector({ value, onChange }) {
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(role)}
+            className={`rounded-xl border p-4 text-left transition-all ${
+              selected
+                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                : "border-border bg-card hover:border-primary/40"
+            }`}
+          >
+            <Icon
+              className={`h-5 w-5 ${selected ? "text-primary" : "text-muted-foreground"}`}
+              aria-hidden="true"
+            />
+            <p className="mt-2 text-sm font-semibold text-foreground">{t(labelKey)}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t(hintKey)}</p>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const EMPLOYER_TYPES = [
+  { value: "individual", icon: Home, labelKey: "auth.hiringIndividual", hintKey: "auth.hiringIndividualSub" },
+  { value: "business", icon: Building2, labelKey: "auth.hiringBusiness", hintKey: "auth.hiringBusinessSub" },
+];
+
+/**
+ * Sub-picker shown once "Hiring" is chosen: an individual (hiring for
+ * themselves, e.g. a driver for their car) or a registered business.
+ */
+export function EmployerTypeSelector({ value, onChange }) {
+  const { t } = useI18n();
+  return (
+    <div role="radiogroup" aria-label="Employer type" className="grid grid-cols-2 gap-3">
+      {EMPLOYER_TYPES.map(({ value: type, icon: Icon, labelKey, hintKey }) => {
+        const selected = value === type;
+        return (
+          <button
+            key={type}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            onClick={() => onChange(type)}
             className={`rounded-xl border p-4 text-left transition-all ${
               selected
                 ? "border-primary bg-primary/5 ring-1 ring-primary"

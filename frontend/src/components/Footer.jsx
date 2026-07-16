@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Link as LinkScroll } from "react-scroll";
 import { Linkedin, Twitter, Facebook, Mail } from "lucide-react";
+import LogoMark from "./shared/Logo";
 
 /* Only destinations that actually exist in the app — a footer full of
    dead links erodes trust faster than a short one. */
@@ -37,7 +38,8 @@ function Footer() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-[2fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
-            <Link to="/">
+            <Link to="/" className="flex w-fit items-center gap-2">
+              <LogoMark className="h-8 w-8 text-primary" />
               <span className="text-2xl font-extrabold tracking-tight text-foreground">
                 Rozgar<span className="text-primary">Hub</span>
               </span>

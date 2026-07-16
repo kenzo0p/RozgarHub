@@ -25,13 +25,15 @@ function JobRow({ job }) {
         <Avatar className="h-11 w-11 rounded-lg border border-border">
           <AvatarImage src={job?.company?.logo} alt="" />
           <AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
-            {job?.company?.name?.charAt(0)?.toUpperCase() || "C"}
+            {(job?.company?.name || job?.title)?.charAt(0)?.toUpperCase() || "?"}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
           <h3 className="truncate font-semibold text-foreground">{job?.title}</h3>
           <p className="truncate text-sm text-muted-foreground">
-            {job?.company?.name} · {t("employer.posted")} {created}
+            {/* Individual jobs have no company — show just the posted date */}
+            {job?.company?.name ? `${job.company.name} · ` : ""}
+            {t("employer.posted")} {created}
           </p>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">

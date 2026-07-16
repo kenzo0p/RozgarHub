@@ -46,10 +46,11 @@ router.patch(
   userController.updateLanguage,
 );
 
+// Identity (Aadhaar) verification is open to any user — workers need it to
+// apply, and individual employers need it to build trust when hiring.
 router.post(
   '/verify',
   authenticate,
-  authorize('employee'),
   validate(verifyIdentitySchema),
   userController.verifyIdentity,
 );

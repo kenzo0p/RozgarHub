@@ -66,6 +66,7 @@ export class AuthService {
       password: hashedPassword,
       phoneNumber: data.phoneNumber,
       role: data.role,
+      employerType: data.role === 'employer' ? data.employerType : undefined,
       language: data.language,
       profile: {
         profilePhoto: profilePhotoUrl,
@@ -396,6 +397,7 @@ export class AuthService {
         username: `user_${data.phoneNumber}`,
         phoneNumber: data.phoneNumber,
         role: data.role as UserRole,
+        employerType: data.role === 'employer' ? data.employerType : undefined,
         language: data.language,
         profile: { skills: [], profilePhoto: '' },
       } as Partial<IUser>);

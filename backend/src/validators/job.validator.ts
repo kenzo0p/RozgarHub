@@ -34,9 +34,12 @@ export const createJobSchema = z.object({
     .number()
     .or(z.string().transform(Number))
     .pipe(z.number().min(0, 'Experience cannot be negative')),
-  companyId: z
-    .string({ error: 'Company ID is required' })
-    .min(1, 'Company ID is required'),
+  // Optional: business jobs are posted under a company; individual employers
+  // post directly. "" is treated as unset.
+  companyId: z.preprocess(
+    (v) => (v === '' || v == null ? undefined : v),
+    z.string().min(1).optional(),
+  ),
   // Optional credential the applicant must hold (e.g. a driving licence).
   // "" (the "None" option) is treated as unset.
   requiredCredential: z.preprocess(

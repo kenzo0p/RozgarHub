@@ -116,7 +116,7 @@ function AppliedJobTable() {
               {appliedJob.job?.title}
             </TableCell>
             <TableCell className="text-muted-foreground">
-              {appliedJob.job?.company?.name}
+              {appliedJob.job?.posterName || appliedJob.job?.company?.name}
             </TableCell>
             <TableCell>
               <span
@@ -174,7 +174,7 @@ function AppliedJobTable() {
                       onClick={() =>
                         setReviewFor({
                           id: appliedJob._id,
-                          name: appliedJob.employerContact?.name || appliedJob.job?.company?.name,
+                          name: appliedJob.employerContact?.name || appliedJob.job?.posterName,
                         })
                       }
                     >

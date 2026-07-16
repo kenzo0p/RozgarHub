@@ -57,6 +57,7 @@ export class RecommendationService {
       _id: { $nin: appliedJobIds },
     })
       .populate({ path: 'company', select: 'name logo' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
       .sort({ createdAt: -1 })
       .limit(200) // Cap candidates to keep computation fast
       .lean()
@@ -179,6 +180,7 @@ export class RecommendationService {
       ],
     })
       .populate({ path: 'company', select: 'name logo' })
+      .populate({ path: 'created_By', select: 'fullname verificationStatus employerType' })
       .sort({ createdAt: -1 })
       .limit(50)
       .lean()

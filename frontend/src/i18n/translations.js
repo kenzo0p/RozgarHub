@@ -77,7 +77,7 @@ export const translations = {
       viewDetails: "View details",
       save: "Save",
       saved: "Saved",
-      verified: "Verified", unverified: "Unverified",
+      verified: "Verified", unverified: "Unverified", individual: "Individual",
     },
     auth: {
       welcomeBack: "Welcome back",
@@ -98,6 +98,10 @@ export const translations = {
       lookingForWorkSub: "Find and apply to jobs",
       hiring: "I'm hiring",
       hiringSub: "Post jobs, review applicants",
+      hiringIndividual: "For myself",
+      hiringIndividualSub: "Hire a driver, maid, cook…",
+      hiringBusiness: "For a business",
+      hiringBusinessSub: "Company / agency hiring",
       noAccount: "Don't have an account?",
       signupFree: "Sign up free",
     },
@@ -272,9 +276,11 @@ export const translations = {
     idv: {
       verifiedTitle: "Identity verified",
       verifiedSub: "Employers can see you're a verified worker.",
+      verifiedSubEmployer: "Workers can see you're a verified individual.",
       endingIn: "Aadhaar ending {last4}",
       getTitle: "Verify your identity",
       getSub: "Add your Aadhaar to earn a verified badge — verified workers get hired faster.",
+      getSubEmployer: "Add your Aadhaar to earn a verified badge — workers trust verified employers.",
       aadhaarLabel: "Aadhaar number",
       verify: "Verify",
       verifying: "Verifying…",
@@ -457,7 +463,7 @@ export const translations = {
       viewDetails: "विवरण देखें",
       save: "सहेजें",
       saved: "सहेजा गया",
-      verified: "सत्यापित", unverified: "असत्यापित",
+      verified: "सत्यापित", unverified: "असत्यापित", individual: "व्यक्तिगत",
     },
     auth: {
       welcomeBack: "वापसी पर स्वागत है",
@@ -478,6 +484,10 @@ export const translations = {
       lookingForWorkSub: "नौकरियाँ खोजें और आवेदन करें",
       hiring: "मैं भर्ती कर रहा हूँ",
       hiringSub: "नौकरियाँ पोस्ट करें, आवेदकों की समीक्षा करें",
+      hiringIndividual: "अपने लिए",
+      hiringIndividualSub: "ड्राइवर, मेड, रसोइया रखें…",
+      hiringBusiness: "व्यवसाय के लिए",
+      hiringBusinessSub: "कंपनी / एजेंसी भर्ती",
       noAccount: "खाता नहीं है?",
       signupFree: "मुफ़्त साइन अप करें",
     },
@@ -652,9 +662,11 @@ export const translations = {
     idv: {
       verifiedTitle: "पहचान सत्यापित",
       verifiedSub: "नियोक्ता देख सकते हैं कि आप एक सत्यापित कामगार हैं।",
+      verifiedSubEmployer: "कामगार देख सकते हैं कि आप एक सत्यापित व्यक्ति हैं।",
       endingIn: "आधार {last4} पर समाप्त",
       getTitle: "अपनी पहचान सत्यापित करें",
       getSub: "सत्यापित बैज पाने के लिए अपना आधार जोड़ें — सत्यापित कामगार जल्दी काम पाते हैं।",
+      getSubEmployer: "सत्यापित बैज पाने के लिए अपना आधार जोड़ें — कामगार सत्यापित नियोक्ताओं पर भरोसा करते हैं।",
       aadhaarLabel: "आधार नंबर",
       verify: "सत्यापित करें",
       verifying: "सत्यापित हो रहा है…",
@@ -802,7 +814,7 @@ export const translations = {
     },
     card: {
       postedToday: "आज पोस्ट केले", daysAgo: "{n} दिवसांपूर्वी", opening: "जागा", openings: "जागा",
-      viewDetails: "तपशील पहा", save: "जतन करा", saved: "जतन केले", verified: "सत्यापित", unverified: "असत्यापित",
+      viewDetails: "तपशील पहा", save: "जतन करा", saved: "जतन केले", verified: "सत्यापित", unverified: "असत्यापित", individual: "वैयक्तिक",
     },
     auth: {
       welcomeBack: "पुन्हा स्वागत आहे", loginSubtitle: "तुमचा नोकरी शोध सुरू ठेवण्यासाठी लॉगिन करा.",
@@ -812,6 +824,10 @@ export const translations = {
       login: "लॉगिन", verifying: "पडताळणी होत आहे…", lookingForWork: "मी काम शोधत आहे",
       lookingForWorkSub: "नोकऱ्या शोधा आणि अर्ज करा", hiring: "मी भरती करत आहे",
       hiringSub: "नोकऱ्या पोस्ट करा, अर्जदार पहा", noAccount: "खाते नाही?", signupFree: "मोफत साइन अप करा",
+      hiringIndividual: "स्वतःसाठी",
+      hiringIndividualSub: "ड्रायव्हर, मोलकरीण, स्वयंपाकी ठेवा…",
+      hiringBusiness: "व्यवसायासाठी",
+      hiringBusinessSub: "कंपनी / एजन्सी भरती",
     },
     details: {
       back: "नोकऱ्यांकडे परत जा", applyNow: "आता अर्ज करा", applying: "अर्ज करत आहे…", applied: "अर्ज केला",
@@ -943,9 +959,11 @@ export const translations = {
     idv: {
       verifiedTitle: "ओळख सत्यापित",
       verifiedSub: "नियोक्ते पाहू शकतात की तुम्ही सत्यापित कामगार आहात.",
+      verifiedSubEmployer: "कामगार पाहू शकतात की तुम्ही एक सत्यापित व्यक्ती आहात.",
       endingIn: "आधार {last4} वर संपतो",
       getTitle: "तुमची ओळख सत्यापित करा",
       getSub: "सत्यापित बॅज मिळवण्यासाठी तुमचा आधार जोडा — सत्यापित कामगारांना लवकर काम मिळते.",
+      getSubEmployer: "सत्यापित बॅज मिळवण्यासाठी तुमचा आधार जोडा — कामगार सत्यापित नियोक्त्यांवर विश्वास ठेवतात.",
       aadhaarLabel: "आधार क्रमांक",
       verify: "सत्यापित करा",
       verifying: "सत्यापित होत आहे…",
@@ -1093,7 +1111,7 @@ export const translations = {
     },
     card: {
       postedToday: "আজ পোস্ট করা", daysAgo: "{n} দিন আগে", opening: "পদ", openings: "পদ",
-      viewDetails: "বিস্তারিত দেখুন", save: "সংরক্ষণ", saved: "সংরক্ষিত", verified: "যাচাইকৃত", unverified: "অযাচাইকৃত",
+      viewDetails: "বিস্তারিত দেখুন", save: "সংরক্ষণ", saved: "সংরক্ষিত", verified: "যাচাইকৃত", unverified: "অযাচাইকৃত", individual: "ব্যক্তিগত",
     },
     auth: {
       welcomeBack: "আবার স্বাগতম", loginSubtitle: "আপনার চাকরি অনুসন্ধান চালিয়ে যেতে লগইন করুন.",
@@ -1103,6 +1121,10 @@ export const translations = {
       login: "লগইন", verifying: "যাচাই করা হচ্ছে…", lookingForWork: "আমি কাজ খুঁজছি",
       lookingForWorkSub: "চাকরি খুঁজুন এবং আবেদন করুন", hiring: "আমি নিয়োগ দিচ্ছি",
       hiringSub: "চাকরি পোস্ট করুন, আবেদনকারী দেখুন", noAccount: "অ্যাকাউন্ট নেই?", signupFree: "বিনামূল্যে সাইন আপ করুন",
+      hiringIndividual: "নিজের জন্য",
+      hiringIndividualSub: "ড্রাইভার, গৃহকর্মী, রাঁধুনি নিন…",
+      hiringBusiness: "ব্যবসার জন্য",
+      hiringBusinessSub: "কোম্পানি / এজেন্সি নিয়োগ",
     },
     details: {
       back: "চাকরিতে ফিরে যান", applyNow: "এখন আবেদন করুন", applying: "আবেদন করা হচ্ছে…", applied: "আবেদন করা হয়েছে",
@@ -1234,9 +1256,11 @@ export const translations = {
     idv: {
       verifiedTitle: "পরিচয় যাচাইকৃত",
       verifiedSub: "নিয়োগকর্তারা দেখতে পারেন আপনি একজন যাচাইকৃত কর্মী।",
+      verifiedSubEmployer: "কর্মীরা দেখতে পারেন আপনি একজন যাচাইকৃত ব্যক্তি।",
       endingIn: "আধার {last4} দিয়ে শেষ",
       getTitle: "আপনার পরিচয় যাচাই করুন",
       getSub: "যাচাইকৃত ব্যাজ পেতে আপনার আধার যোগ করুন — যাচাইকৃত কর্মীরা দ্রুত কাজ পান।",
+      getSubEmployer: "যাচাইকৃত ব্যাজ পেতে আপনার আধার যোগ করুন — কর্মীরা যাচাইকৃত নিয়োগকর্তাদের বিশ্বাস করেন।",
       aadhaarLabel: "আধার নম্বর",
       verify: "যাচাই করুন",
       verifying: "যাচাই হচ্ছে…",
@@ -1384,7 +1408,7 @@ export const translations = {
     },
     card: {
       postedToday: "આજે પોસ્ટ કર્યું", daysAgo: "{n} દિવસ પહેલા", opening: "જગ્યા", openings: "જગ્યાઓ",
-      viewDetails: "વિગતો જુઓ", save: "સાચવો", saved: "સાચવ્યું", verified: "ચકાસાયેલ", unverified: "અચકાસાયેલ",
+      viewDetails: "વિગતો જુઓ", save: "સાચવો", saved: "સાચવ્યું", verified: "ચકાસાયેલ", unverified: "અચકાસાયેલ", individual: "વ્યક્તિગત",
     },
     auth: {
       welcomeBack: "ફરી સ્વાગત છે", loginSubtitle: "તમારી નોકરી શોધ ચાલુ રાખવા લૉગિન કરો.",
@@ -1394,6 +1418,10 @@ export const translations = {
       login: "લૉગિન", verifying: "ચકાસી રહ્યા છીએ…", lookingForWork: "હું કામ શોધી રહ્યો છું",
       lookingForWorkSub: "નોકરીઓ શોધો અને અરજી કરો", hiring: "હું ભરતી કરી રહ્યો છું",
       hiringSub: "નોકરીઓ પોસ્ટ કરો, અરજદારો જુઓ", noAccount: "ખાતું નથી?", signupFree: "મફત સાઇન અપ કરો",
+      hiringIndividual: "મારા માટે",
+      hiringIndividualSub: "ડ્રાઇવર, કામવાળી, રસોઇયો રાખો…",
+      hiringBusiness: "વ્યવસાય માટે",
+      hiringBusinessSub: "કંપની / એજન્સી ભરતી",
     },
     details: {
       back: "નોકરીઓ પર પાછા જાઓ", applyNow: "હમણાં અરજી કરો", applying: "અરજી કરી રહ્યા છીએ…", applied: "અરજી કરી",
@@ -1525,9 +1553,11 @@ export const translations = {
     idv: {
       verifiedTitle: "ઓળખ ચકાસાયેલ",
       verifiedSub: "નોકરીદાતાઓ જોઈ શકે છે કે તમે ચકાસાયેલ કામદાર છો.",
+      verifiedSubEmployer: "કામદારો જોઈ શકે છે કે તમે ચકાસાયેલ વ્યક્તિ છો.",
       endingIn: "આધાર {last4} પર સમાપ્ત",
       getTitle: "તમારી ઓળખ ચકાસો",
       getSub: "ચકાસાયેલ બેજ મેળવવા તમારો આધાર ઉમેરો — ચકાસાયેલ કામદારોને ઝડપથી કામ મળે છે.",
+      getSubEmployer: "ચકાસાયેલ બેજ મેળવવા તમારો આધાર ઉમેરો — કામદારો ચકાસાયેલ નોકરીદાતાઓ પર વિશ્વાસ કરે છે.",
       aadhaarLabel: "આધાર નંબર",
       verify: "ચકાસો",
       verifying: "ચકાસી રહ્યું છે…",
@@ -1675,7 +1705,7 @@ export const translations = {
     },
     card: {
       postedToday: "ਅੱਜ ਪੋਸਟ ਕੀਤਾ", daysAgo: "{n} ਦਿਨ ਪਹਿਲਾਂ", opening: "ਅਸਾਮੀ", openings: "ਅਸਾਮੀਆਂ",
-      viewDetails: "ਵੇਰਵੇ ਵੇਖੋ", save: "ਸੰਭਾਲੋ", saved: "ਸੰਭਾਲਿਆ", verified: "ਪ੍ਰਮਾਣਿਤ", unverified: "ਗੈਰ-ਪ੍ਰਮਾਣਿਤ",
+      viewDetails: "ਵੇਰਵੇ ਵੇਖੋ", save: "ਸੰਭਾਲੋ", saved: "ਸੰਭਾਲਿਆ", verified: "ਪ੍ਰਮਾਣਿਤ", unverified: "ਗੈਰ-ਪ੍ਰਮਾਣਿਤ", individual: "ਨਿੱਜੀ",
     },
     auth: {
       welcomeBack: "ਵਾਪਸੀ 'ਤੇ ਸੁਆਗਤ ਹੈ", loginSubtitle: "ਆਪਣੀ ਨੌਕਰੀ ਖੋਜ ਜਾਰੀ ਰੱਖਣ ਲਈ ਲੌਗਿਨ ਕਰੋ।",
@@ -1685,6 +1715,10 @@ export const translations = {
       login: "ਲੌਗਿਨ", verifying: "ਪੁਸ਼ਟੀ ਹੋ ਰਹੀ ਹੈ…", lookingForWork: "ਮੈਂ ਕੰਮ ਲੱਭ ਰਿਹਾ ਹਾਂ",
       lookingForWorkSub: "ਨੌਕਰੀਆਂ ਖੋਜੋ ਅਤੇ ਅਰਜ਼ੀ ਦਿਓ", hiring: "ਮੈਂ ਭਰਤੀ ਕਰ ਰਿਹਾ ਹਾਂ",
       hiringSub: "ਨੌਕਰੀਆਂ ਪੋਸਟ ਕਰੋ, ਅਰਜ਼ੀਕਾਰ ਵੇਖੋ", noAccount: "ਖਾਤਾ ਨਹੀਂ ਹੈ?", signupFree: "ਮੁਫ਼ਤ ਸਾਈਨ ਅੱਪ ਕਰੋ",
+      hiringIndividual: "ਆਪਣੇ ਲਈ",
+      hiringIndividualSub: "ਡਰਾਈਵਰ, ਨੌਕਰਾਣੀ, ਰਸੋਈਆ ਰੱਖੋ…",
+      hiringBusiness: "ਕਾਰੋਬਾਰ ਲਈ",
+      hiringBusinessSub: "ਕੰਪਨੀ / ਏਜੰਸੀ ਭਰਤੀ",
     },
     details: {
       back: "ਨੌਕਰੀਆਂ 'ਤੇ ਵਾਪਸ ਜਾਓ", applyNow: "ਹੁਣੇ ਅਰਜ਼ੀ ਦਿਓ", applying: "ਅਰਜ਼ੀ ਦੇ ਰਹੇ ਹਾਂ…", applied: "ਅਰਜ਼ੀ ਦਿੱਤੀ",
@@ -1816,9 +1850,11 @@ export const translations = {
     idv: {
       verifiedTitle: "ਪਛਾਣ ਤਸਦੀਕ ਹੋਈ",
       verifiedSub: "ਮਾਲਕ ਦੇਖ ਸਕਦੇ ਹਨ ਕਿ ਤੁਸੀਂ ਇੱਕ ਤਸਦੀਕਸ਼ੁਦਾ ਕਾਮਾ ਹੋ।",
+      verifiedSubEmployer: "ਕਾਮੇ ਦੇਖ ਸਕਦੇ ਹਨ ਕਿ ਤੁਸੀਂ ਇੱਕ ਤਸਦੀਕਸ਼ੁਦਾ ਵਿਅਕਤੀ ਹੋ।",
       endingIn: "ਆਧਾਰ {last4} ਉੱਤੇ ਖਤਮ",
       getTitle: "ਆਪਣੀ ਪਛਾਣ ਤਸਦੀਕ ਕਰੋ",
       getSub: "ਤਸਦੀਕਸ਼ੁਦਾ ਬੈਜ ਪਾਉਣ ਲਈ ਆਪਣਾ ਆਧਾਰ ਜੋੜੋ — ਤਸਦੀਕਸ਼ੁਦਾ ਕਾਮਿਆਂ ਨੂੰ ਜਲਦੀ ਕੰਮ ਮਿਲਦਾ ਹੈ।",
+      getSubEmployer: "ਤਸਦੀਕਸ਼ੁਦਾ ਬੈਜ ਪਾਉਣ ਲਈ ਆਪਣਾ ਆਧਾਰ ਜੋੜੋ — ਕਾਮੇ ਤਸਦੀਕਸ਼ੁਦਾ ਮਾਲਕਾਂ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹਨ।",
       aadhaarLabel: "ਆਧਾਰ ਨੰਬਰ",
       verify: "ਤਸਦੀਕ ਕਰੋ",
       verifying: "ਤਸਦੀਕ ਹੋ ਰਿਹਾ ਹੈ…",
@@ -1966,7 +2002,7 @@ export const translations = {
     },
     card: {
       postedToday: "இன்று இடப்பட்டது", daysAgo: "{n} நாட்களுக்கு முன்", opening: "காலியிடம்", openings: "காலியிடங்கள்",
-      viewDetails: "விவரங்களைப் பார்", save: "சேமி", saved: "சேமிக்கப்பட்டது", verified: "சரிபார்க்கப்பட்டது", unverified: "சரிபார்க்கப்படாதது",
+      viewDetails: "விவரங்களைப் பார்", save: "சேமி", saved: "சேமிக்கப்பட்டது", verified: "சரிபார்க்கப்பட்டது", unverified: "சரிபார்க்கப்படாதது", individual: "தனிநபர்",
     },
     auth: {
       welcomeBack: "மீண்டும் வரவேற்கிறோம்", loginSubtitle: "உங்கள் வேலை தேடலைத் தொடர உள்நுழையவும்.",
@@ -1976,6 +2012,10 @@ export const translations = {
       login: "உள்நுழை", verifying: "சரிபார்க்கிறது…", lookingForWork: "நான் வேலை தேடுகிறேன்",
       lookingForWorkSub: "வேலைகளைத் தேடி விண்ணப்பிக்கவும்", hiring: "நான் பணியமர்த்துகிறேன்",
       hiringSub: "வேலைகளை இடு, விண்ணப்பதாரர்களைப் பார்", noAccount: "கணக்கு இல்லையா?", signupFree: "இலவசமாக பதிவு செய்",
+      hiringIndividual: "எனக்காக",
+      hiringIndividualSub: "டிரைவர், வேலைக்காரி, சமையல்காரர்…",
+      hiringBusiness: "வணிகத்திற்காக",
+      hiringBusinessSub: "நிறுவனம் / ஏஜென்சி பணியமர்த்தல்",
     },
     details: {
       back: "வேலைகளுக்குத் திரும்பு", applyNow: "இப்போது விண்ணப்பி", applying: "விண்ணப்பிக்கிறது…", applied: "விண்ணப்பித்தது",
@@ -2107,9 +2147,11 @@ export const translations = {
     idv: {
       verifiedTitle: "அடையாளம் சரிபார்க்கப்பட்டது",
       verifiedSub: "நீங்கள் சரிபார்க்கப்பட்ட தொழிலாளர் என்பதை வேலை வழங்குநர்கள் பார்க்கலாம்.",
+      verifiedSubEmployer: "நீங்கள் சரிபார்க்கப்பட்ட நபர் என்பதைத் தொழிலாளர்கள் பார்க்கலாம்.",
       endingIn: "ஆதார் {last4} இல் முடிகிறது",
       getTitle: "உங்கள் அடையாளத்தைச் சரிபார்க்கவும்",
       getSub: "சரிபார்க்கப்பட்ட பேட்ஜைப் பெற உங்கள் ஆதாரைச் சேர்க்கவும் — சரிபார்க்கப்பட்ட தொழிலாளர்கள் விரைவாக வேலை பெறுகிறார்கள்.",
+      getSubEmployer: "சரிபார்க்கப்பட்ட பேட்ஜைப் பெற உங்கள் ஆதாரைச் சேர்க்கவும் — சரிபார்க்கப்பட்ட முதலாளிகளைத் தொழிலாளர்கள் நம்புகிறார்கள்.",
       aadhaarLabel: "ஆதார் எண்",
       verify: "சரிபார்",
       verifying: "சரிபார்க்கிறது…",
@@ -2257,7 +2299,7 @@ export const translations = {
     },
     card: {
       postedToday: "ఈరోజు పోస్ట్ చేయబడింది", daysAgo: "{n} రోజుల క్రితం", opening: "ఖాళీ", openings: "ఖాళీలు",
-      viewDetails: "వివరాలు చూడండి", save: "సేవ్", saved: "సేవ్ చేయబడింది", verified: "ధృవీకరించబడింది", unverified: "ధృవీకరించబడలేదు",
+      viewDetails: "వివరాలు చూడండి", save: "సేవ్", saved: "సేవ్ చేయబడింది", verified: "ధృవీకరించబడింది", unverified: "ధృవీకరించబడలేదు", individual: "వ్యక్తిగత",
     },
     auth: {
       welcomeBack: "తిరిగి స్వాగతం", loginSubtitle: "మీ ఉద్యోగ శోధనను కొనసాగించడానికి లాగిన్ అవ్వండి.",
@@ -2267,6 +2309,10 @@ export const translations = {
       login: "లాగిన్", verifying: "ధృవీకరిస్తోంది…", lookingForWork: "నేను పని వెతుకుతున్నాను",
       lookingForWorkSub: "ఉద్యోగాలు వెతికి దరఖాస్తు చేయండి", hiring: "నేను నియామకం చేస్తున్నాను",
       hiringSub: "ఉద్యోగాలు పోస్ట్ చేయండి, దరఖాస్తుదారులను చూడండి", noAccount: "ఖాతా లేదా?", signupFree: "ఉచితంగా సైన్ అప్ చేయండి",
+      hiringIndividual: "నా కోసం",
+      hiringIndividualSub: "డ్రైవర్, పనిమనిషి, వంటవాడు…",
+      hiringBusiness: "వ్యాపారం కోసం",
+      hiringBusinessSub: "కంపెనీ / ఏజెన్సీ నియామకం",
     },
     details: {
       back: "ఉద్యోగాలకు తిరిగి వెళ్లండి", applyNow: "ఇప్పుడు దరఖాస్తు చేయండి", applying: "దరఖాస్తు చేస్తోంది…", applied: "దరఖాస్తు చేయబడింది",
@@ -2398,9 +2444,11 @@ export const translations = {
     idv: {
       verifiedTitle: "గుర్తింపు ధృవీకరించబడింది",
       verifiedSub: "మీరు ధృవీకరించబడిన కార్మికుడని యజమానులు చూడగలరు.",
+      verifiedSubEmployer: "మీరు ధృవీకరించబడిన వ్యక్తి అని కార్మికులు చూడగలరు.",
       endingIn: "ఆధార్ {last4} తో ముగుస్తుంది",
       getTitle: "మీ గుర్తింపును ధృవీకరించండి",
       getSub: "ధృవీకరించబడిన బ్యాడ్జ్ పొందడానికి మీ ఆధార్‌ను జోడించండి — ధృవీకరించబడిన కార్మికులకు త్వరగా పని దొరుకుతుంది.",
+      getSubEmployer: "ధృవీకరించబడిన బ్యాడ్జ్ పొందడానికి మీ ఆధార్‌ను జోడించండి — ధృవీకరించబడిన యజమానులను కార్మికులు నమ్ముతారు.",
       aadhaarLabel: "ఆధార్ నంబర్",
       verify: "ధృవీకరించు",
       verifying: "ధృవీకరిస్తోంది…",

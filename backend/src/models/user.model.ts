@@ -46,6 +46,13 @@ const userSchema = new Schema<IUser>(
       },
       required: [true, 'Role is required'],
     },
+    // For employers: are they a registered business (posts under a company,
+    // GST-verified) or an individual (e.g. someone hiring a driver for their
+    // own car — posts directly, identity-verified via Aadhaar)?
+    employerType: {
+      type: String,
+      enum: ['individual', 'business'],
+    },
     // Preferred language for notifications and SMS. The UI language lives in
     // the browser, but server-generated messages (accept/reject SMS, in-app
     // notifications) need it persisted so a worker hears from us in their

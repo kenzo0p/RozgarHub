@@ -13,6 +13,7 @@ import { Link as LinkScroll } from "react-scroll";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
 import LanguageToggle from "./LanguageToggle";
+import LogoMark from "./Logo";
 import { useI18n } from "@/i18n/I18nProvider";
 
 function Navbar() {
@@ -20,6 +21,8 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useI18n();
+  // Individual employers hire for themselves — no company to manage.
+  const isIndividual = user?.employerType === "individual";
 
   const logoutHandler = async () => {
     try {
@@ -42,7 +45,8 @@ function Navbar() {
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16 px-4">
         {/* Logo */}
         <div>
-          <Link to="/">
+          <Link to="/" className="flex items-center gap-2">
+            <LogoMark className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
               Rozgar<span className="text-primary">Hub</span>
             </h1>
@@ -54,9 +58,11 @@ function Navbar() {
           <ul className="flex font-medium items-center gap-5 text-foreground">
             {user && user.role === "employer" ? (
               <>
-                <Link to="/admin/companies">
-                  <li className="hover:text-primary transition-colors">{t("nav.companies")}</li>
-                </Link>
+                {!isIndividual && (
+                  <Link to="/admin/companies">
+                    <li className="hover:text-primary transition-colors">{t("nav.companies")}</li>
+                  </Link>
+                )}
                 <Link to="/admin/jobs">
                   <li className="hover:text-primary transition-colors">{t("nav.jobs")}</li>
                 </Link>
@@ -160,11 +166,11 @@ function Navbar() {
                     </Link>
                   ) : (
                     <Link
-                      to="/admin/companies"
+                      to={isIndividual ? "/admin/jobs" : "/admin/companies"}
                       className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      {t("nav.myCompanies")}
+                      {isIndividual ? t("nav.jobs") : t("nav.myCompanies")}
                     </Link>
                   )}
                   <button
@@ -196,9 +202,11 @@ function Navbar() {
               <ul className="flex flex-col gap-2">
                 {user && user.role === "employer" ? (
                   <>
-                    <Link to="/admin/companies">
-                      <li>{t("nav.companies")}</li>
-                    </Link>
+                    {!isIndividual && (
+                      <Link to="/admin/companies">
+                        <li>{t("nav.companies")}</li>
+                      </Link>
+                    )}
                     <Link to="/admin/jobs">
                       <li>{t("nav.jobs")}</li>
                     </Link>

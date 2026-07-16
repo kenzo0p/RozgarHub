@@ -44,6 +44,7 @@ export interface IUser extends Document {
   phoneNumber: number;
   password?: string;
   role: UserRole;
+  employerType?: 'individual' | 'business';
   language: Language;
   profile: IUserProfile;
   ratingAverage: number;
@@ -94,8 +95,8 @@ export interface IJob extends Document {
   jobType: string;
   requiredCredential?: 'driving_license' | 'certificate';
   position: number;
-  company: Types.ObjectId | ICompany;
-  created_By: Types.ObjectId;
+  company?: Types.ObjectId | ICompany;
+  created_By: Types.ObjectId | IUser;
   applications: Types.ObjectId[];
   flagged: boolean;
   reportCount: number;

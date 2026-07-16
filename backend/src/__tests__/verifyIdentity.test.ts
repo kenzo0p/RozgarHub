@@ -45,7 +45,7 @@ describe('Worker identity verification', () => {
     expect(short.status).toBe(400);
   });
 
-  it('is worker-only (employers verify via their company GST)', async () => {
+  it('is also available to employers (individual employers build trust via Aadhaar)', async () => {
     const { cookies } = await createAuthedUser('employer');
 
     const res = await api()
@@ -53,7 +53,8 @@ describe('Worker identity verification', () => {
       .set('Cookie', cookies)
       .send({ idNumber: '234567890123' });
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(200);
+    expect(res.body.data.user.verificationStatus).toBe('verified');
   });
 
   it('requires authentication', async () => {

@@ -19,12 +19,13 @@ import logger from '../utils/logger.js';
  */
 async function getRecipient(
   userId: string,
-): Promise<{ phoneNumber?: number; language: Language }> {
+): Promise<{ phoneNumber?: number; language: Language; employerType?: string }> {
   try {
-    const user = await userRepository.findById(userId, 'phoneNumber language');
+    const user = await userRepository.findById(userId, 'phoneNumber language employerType');
     return {
       phoneNumber: user?.phoneNumber,
       language: (user?.language as Language) ?? DEFAULT_LANGUAGE,
+      employerType: user?.employerType,
     };
   } catch (error) {
     logger.warn(`Recipient lookup failed for user ${userId}: ${(error as Error).message}`);
@@ -135,15 +136,21 @@ export function registerEventHandlers(): void {
   // ─── User Events ────────────────────────────────────────────────────────────
 
   eventBus.on('user.registered', async (payload) => {
-    // Welcome notification in the user's language
-    const { language } = await getRecipient(payload.userId);
+    // Welcome notification in the user's language. Individual employers
+    // (someone hiring a driver/maid for themselves) have no company to set
+    // up, so they get their own onboarding message.
+    const { language, employerType } = await getRecipient(payload.userId);
+    const welcomeKey =
+      payload.role === 'employee'
+        ? 'welcome.employee'
+        : employerType === 'individual'
+          ? 'welcome.employerIndividual'
+          : 'welcome.employer';
     await notificationService.create({
       recipientId: payload.userId,
       type: NOTIFICATION_TYPES.SYSTEM,
       title: tn(language, 'welcome.title'),
-      message: payload.role === 'employee'
-        ? tn(language, 'welcome.employee')
-        : tn(language, 'welcome.employer'),
+      message: tn(language, welcomeKey),
     });
 
     logger.info(`[Event] user.registered → welcome notification for ${payload.email}`);

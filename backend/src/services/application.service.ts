@@ -117,6 +117,7 @@ export class ApplicationService {
         job?: {
           company?: { name?: string; contactPhone?: string };
           created_By?: { fullname?: string; phoneNumber?: number };
+          posterName?: string;
         };
       };
       const job = application.job;
@@ -138,8 +139,13 @@ export class ApplicationService {
         }
       }
 
-      // Drop the populated employer object so its phone never ships raw.
-      if (job) delete job.created_By;
+      // Drop the populated employer object so its phone never ships raw —
+      // but keep the poster's display name (already public on job cards) so
+      // individual jobs don't show a blank employer in "My applications".
+      if (job) {
+        job.posterName = job.company?.name || employer?.fullname;
+        delete job.created_By;
+      }
 
       return { ...application, employerContact };
     });

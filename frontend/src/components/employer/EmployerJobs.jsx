@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EmployerJobsTable from "./EmployerJobsTable";
+import WorkerVerification from "../WorkerVerification";
 import useGetAllEmployerJobs from "@/hooks/useGetAllEmployerJobs";
 import { setSearchJobByText } from "@/redux/jobSlice";
 import { Search, Plus } from "lucide-react";
@@ -15,6 +16,8 @@ function EmployerJobs() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useI18n();
+  const { user } = useSelector((store) => store.auth);
+  const isIndividual = user?.employerType === "individual";
 
   useEffect(() => {
     dispatch(setSearchJobByText(input));
@@ -39,6 +42,13 @@ function EmployerJobs() {
             {t("employer.postNewJob")}
           </Button>
         </div>
+
+        {/* Individual employers verify identity here to build trust with workers */}
+        {isIndividual && (
+          <div className="mt-6">
+            <WorkerVerification audience="employer" />
+          </div>
+        )}
 
         {/* Search */}
         <div className="mt-6 flex items-center gap-2 rounded-lg border border-border bg-card px-3 focus-within:border-primary/50 sm:max-w-xs">
