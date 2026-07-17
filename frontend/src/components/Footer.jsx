@@ -3,24 +3,25 @@ import { Link } from "react-router-dom";
 import { Link as LinkScroll } from "react-scroll";
 import { Linkedin, Twitter, Facebook, Mail } from "lucide-react";
 import LogoMark from "./shared/Logo";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /* Only destinations that actually exist in the app — a footer full of
    dead links erodes trust faster than a short one. */
 const LINK_GROUPS = [
   {
-    heading: "For workers",
+    headingKey: "footer.forWorkers",
     links: [
-      { label: "Find jobs", to: "/jobs" },
-      { label: "Browse by trade", to: "/jobs" },
-      { label: "My profile", to: "/profile" },
+      { labelKey: "footer.findJobs", to: "/jobs" },
+      { labelKey: "footer.browseTrade", to: "/jobs" },
+      { labelKey: "footer.myProfile", to: "/profile" },
     ],
   },
   {
-    heading: "For employers",
+    headingKey: "footer.forEmployers",
     links: [
-      { label: "Post a job", to: "/signup" },
-      { label: "Manage companies", to: "/admin/companies" },
-      { label: "View applicants", to: "/admin/jobs" },
+      { labelKey: "footer.postJob", to: "/signup" },
+      { labelKey: "footer.manageCompanies", to: "/admin/companies" },
+      { labelKey: "footer.viewApplicants", to: "/admin/jobs" },
     ],
   },
 ];
@@ -32,6 +33,8 @@ const SOCIALS = [
 ];
 
 function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="border-t border-border bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 py-14">
@@ -45,8 +48,7 @@ function Footer() {
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Connecting India&apos;s skilled workers with verified employers —
-              no middlemen, no fees.
+              {t("footer.tagline")}
             </p>
             <div className="mt-5 flex items-center gap-2">
               {SOCIALS.map(({ label, href, icon: Icon }) => (
@@ -63,7 +65,7 @@ function Footer() {
               ))}
               <a
                 href="mailto:support@rozgarhub.com"
-                aria-label="Email support"
+                aria-label={t("footer.emailSupport")}
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 <Mail className="h-4 w-4" aria-hidden="true" />
@@ -72,14 +74,14 @@ function Footer() {
           </div>
 
           {/* Link columns */}
-          {LINK_GROUPS.map(({ heading, links }) => (
-            <div key={heading}>
-              <h3 className="text-sm font-semibold text-foreground">{heading}</h3>
+          {LINK_GROUPS.map(({ headingKey, links }) => (
+            <div key={headingKey}>
+              <h3 className="text-sm font-semibold text-foreground">{t(headingKey)}</h3>
               <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-                {links.map(({ label, to }) => (
-                  <li key={label}>
+                {links.map(({ labelKey, to }) => (
+                  <li key={labelKey}>
                     <Link to={to} className="transition-colors hover:text-primary">
-                      {label}
+                      {t(labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -89,7 +91,7 @@ function Footer() {
 
           {/* Platform column (scroll anchors on the landing page) */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Platform</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t("footer.platform")}</h3>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               <li>
                 <LinkScroll
@@ -99,7 +101,7 @@ function Footer() {
                   offset={-64}
                   className="cursor-pointer transition-colors hover:text-primary"
                 >
-                  Why RozgarHub
+                  {t("footer.why")}
                 </LinkScroll>
               </li>
               <li>
@@ -110,7 +112,7 @@ function Footer() {
                   offset={-64}
                   className="cursor-pointer transition-colors hover:text-primary"
                 >
-                  FAQ
+                  {t("footer.faq")}
                 </LinkScroll>
               </li>
               <li>
@@ -118,7 +120,7 @@ function Footer() {
                   href="mailto:support@rozgarhub.com"
                   className="transition-colors hover:text-primary"
                 >
-                  Support
+                  {t("footer.support")}
                 </a>
               </li>
             </ul>
@@ -127,8 +129,8 @@ function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} RozgarHub. All rights reserved.</p>
-          <p>Made in India, for India&apos;s workforce 🇮🇳</p>
+          <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
+          <p>{t("footer.madeIn")}</p>
         </div>
       </div>
     </footer>

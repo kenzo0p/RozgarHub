@@ -6,16 +6,17 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useNotifications from "../../hooks/useNotifications";
+import { useI18n } from "@/i18n/I18nProvider";
 
-function timeAgo(dateString) {
+function timeAgo(dateString, t) {
   const seconds = Math.floor((Date.now() - new Date(dateString)) / 1000);
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return t("bell.justNow");
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return t("bell.minAgo", { n: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t("bell.hrAgo", { n: hours });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) return t("bell.dayAgo", { n: days });
   return new Date(dateString).toLocaleDateString();
 }
 
@@ -35,6 +36,7 @@ function NotificationBell() {
   } = useNotifications();
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const handleOpenChange = (open) => {
     if (open) fetchNotifications();
@@ -54,7 +56,7 @@ function NotificationBell() {
           variant="ghost"
           size="icon"
           className="relative h-9 w-9 rounded-full"
-          aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
+          aria-label={`${t("bell.title")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
         >
           <Bell className="h-4 w-4" aria-hidden="true" />
           {unreadCount > 0 && (
@@ -68,7 +70,7 @@ function NotificationBell() {
       <PopoverContent align="end" className="w-80 p-0">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("bell.title")}</h3>
           {unreadCount > 0 && (
             <button
               type="button"
@@ -76,7 +78,7 @@ function NotificationBell() {
               className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
             >
               <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
-              Mark all read
+              {t("bell.markAllRead")}
             </button>
           )}
         </div>
@@ -85,15 +87,13 @@ function NotificationBell() {
         {loading && notifications.length === 0 ? (
           <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            Loading…
+            {t("bell.loading")}
           </div>
         ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-10 text-center">
             <Inbox className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-            <p className="text-sm font-medium text-foreground">All caught up</p>
-            <p className="px-6 text-xs text-muted-foreground">
-              Updates about your applications will show up here.
-            </p>
+            <p className="text-sm font-medium text-foreground">{t("bell.caughtUp")}</p>
+            <p className="px-6 text-xs text-muted-foreground">{t("bell.caughtUpSub")}</p>
           </div>
         ) : (
           <ScrollArea className="max-h-96">
@@ -121,7 +121,7 @@ function NotificationBell() {
                         {notification.message}
                       </span>
                       <span className="mt-1 block text-[11px] text-muted-foreground/70">
-                        {timeAgo(notification.createdAt)}
+                        {timeAgo(notification.createdAt, t)}
                       </span>
                     </span>
                   </button>

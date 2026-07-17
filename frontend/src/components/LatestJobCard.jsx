@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin, Briefcase, Users, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
+import { jobTypeLabel } from "@/utils/jobType";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -64,7 +65,7 @@ function LatestJobCard({ job }) {
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Briefcase className="h-3 w-3" aria-hidden="true" />
-          {job?.jobType}
+          {jobTypeLabel(job?.jobType, t)}
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Users className="h-3 w-3" aria-hidden="true" />

@@ -20,6 +20,7 @@ import EmptyState from "./shared/EmptyState";
 import ErrorBoundary from "./shared/ErrorBoundary";
 import VoiceSearchButton from "./shared/VoiceSearchButton";
 import { useI18n } from "@/i18n/I18nProvider";
+import { jobTypeLabel } from "@/utils/jobType";
 
 const LOCATIONS = ["Pune", "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"];
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
@@ -169,7 +170,7 @@ function Jobs() {
                 <SelectItem value={ALL}>{t("jobs.allTypes")}</SelectItem>
                 {JOB_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
-                    {type}
+                    {jobTypeLabel(type, t)}
                   </SelectItem>
                 ))}
               </SelectContent>

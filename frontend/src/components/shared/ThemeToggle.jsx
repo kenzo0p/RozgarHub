@@ -1,6 +1,7 @@
 import { Sun, Moon } from "lucide-react";
 import { Button } from "../ui/button";
 import useTheme from "../../hooks/useTheme";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * ThemeToggle — sun/moon button for dark mode switching.
@@ -8,6 +9,7 @@ import useTheme from "../../hooks/useTheme";
  */
 function ThemeToggle() {
   const { isDark, toggleTheme } = useTheme();
+  const { t } = useI18n();
 
   return (
     <Button
@@ -15,7 +17,7 @@ function ThemeToggle() {
       size="icon"
       onClick={toggleTheme}
       className="relative h-9 w-9 rounded-full"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? t("a11y.toLight") : t("a11y.toDark")}
     >
       <Sun
         className={`h-4 w-4 transition-all duration-300 ${

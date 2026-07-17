@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
+import { jobTypeLabel } from "@/utils/jobType";
 import useSavedJobs from "../hooks/useSavedJobs";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -51,7 +52,7 @@ function Job({ job }) {
             saved ? "text-primary" : "text-muted-foreground hover:text-primary"
           }`}
           onClick={() => toggleSave(job?._id)}
-          aria-label={saved ? "Remove from saved" : "Save for later"}
+          aria-label={saved ? t("a11y.unsave") : t("a11y.save")}
         >
           {saved ? (
             <BookmarkCheck className="h-4 w-4 fill-current" aria-hidden="true" />
@@ -103,7 +104,7 @@ function Job({ job }) {
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Briefcase className="h-3 w-3" aria-hidden="true" />
-          {job?.jobType}
+          {jobTypeLabel(job?.jobType, t)}
         </span>
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-muted-foreground">
           <Users className="h-3 w-3" aria-hidden="true" />

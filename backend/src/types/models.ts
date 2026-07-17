@@ -104,6 +104,23 @@ export interface IJob extends Document {
   updatedAt: Date;
 }
 
+// ─── Job translation (cached MT of employer-typed content) ────────────────────
+
+export interface IJobTranslation extends Document {
+  _id: Types.ObjectId;
+  job: Types.ObjectId | IJob;
+  lang: string;
+  title: string;
+  description: string;
+  requirements?: string;
+  // The posting company's description — shown on the same job page, so it's
+  // translated and cached together with the job's own content.
+  companyDescription?: string;
+  sourceHash: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ─── Application ───────────────────────────────────────────────────────────────
 
 export type ApplicationStatus =

@@ -23,24 +23,26 @@ import { useDispatch } from "react-redux";
 import { setSearchedQuery } from "@/redux/jobSlice";
 import { useI18n } from "@/i18n/I18nProvider";
 
+// `query` stays in English (jobs are stored in English) — only the visible
+// label is translated via `labelKey`.
 const CATEGORIES = [
-  { label: "Carpenter", icon: Hammer },
-  { label: "Electrician", icon: Zap },
-  { label: "Plumber", icon: Wrench },
-  { label: "Mason", icon: BrickWall },
-  { label: "Factory Worker", icon: Factory },
-  { label: "Machine Operator", icon: Cog },
-  { label: "Assembly Line Worker", icon: Boxes },
-  { label: "Delivery Driver", icon: Bike },
-  { label: "Truck Driver", icon: Truck },
-  { label: "Warehouse Worker", icon: Warehouse },
-  { label: "HVAC Technician", icon: AirVent },
-  { label: "Auto Mechanic", icon: Car },
-  { label: "Maintenance Worker", icon: Settings },
-  { label: "Security Guard", icon: Shield },
-  { label: "Driver", icon: CarFront },
-  { label: "Construction Worker", icon: HardHat },
-  { label: "Fire Safety Officer", icon: FireExtinguisher },
+  { query: "Carpenter", labelKey: "trade.carpenter", icon: Hammer },
+  { query: "Electrician", labelKey: "trade.electrician", icon: Zap },
+  { query: "Plumber", labelKey: "trade.plumber", icon: Wrench },
+  { query: "Mason", labelKey: "trade.mason", icon: BrickWall },
+  { query: "Factory Worker", labelKey: "trade.factoryWorker", icon: Factory },
+  { query: "Machine Operator", labelKey: "trade.machineOperator", icon: Cog },
+  { query: "Assembly Line Worker", labelKey: "trade.assemblyLineWorker", icon: Boxes },
+  { query: "Delivery Driver", labelKey: "trade.deliveryDriver", icon: Bike },
+  { query: "Truck Driver", labelKey: "trade.truckDriver", icon: Truck },
+  { query: "Warehouse Worker", labelKey: "trade.warehouseWorker", icon: Warehouse },
+  { query: "HVAC Technician", labelKey: "trade.hvacTechnician", icon: AirVent },
+  { query: "Auto Mechanic", labelKey: "trade.autoMechanic", icon: Car },
+  { query: "Maintenance Worker", labelKey: "trade.maintenanceWorker", icon: Settings },
+  { query: "Security Guard", labelKey: "trade.securityGuard", icon: Shield },
+  { query: "Driver", labelKey: "trade.driver", icon: CarFront },
+  { query: "Construction Worker", labelKey: "trade.constructionWorker", icon: HardHat },
+  { query: "Fire Safety Officer", labelKey: "trade.fireSafetyOfficer", icon: FireExtinguisher },
 ];
 
 /**
@@ -69,18 +71,18 @@ function CategoryCaraousal() {
       </div>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        {CATEGORIES.map(({ label, icon: Icon }) => (
+        {CATEGORIES.map(({ query, labelKey, icon: Icon }) => (
           <button
-            key={label}
+            key={labelKey}
             type="button"
-            onClick={() => searchJobHandler(label)}
+            onClick={() => searchJobHandler(query)}
             className="group flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-md"
           >
             <Icon
               className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary"
               aria-hidden="true"
             />
-            {label}
+            {t(labelKey)}
           </button>
         ))}
       </div>

@@ -34,7 +34,7 @@ function Login() {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!input.role) {
-      toast.error("Please select how you use RozgarHub.");
+      toast.error(t("auth.selectRole"));
       return;
     }
     try {
@@ -49,7 +49,7 @@ function Login() {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || t("auth.genericError"));
     } finally {
       dispatch(setLoading(false));
     }
@@ -104,7 +104,7 @@ function Login() {
         />
 
         <div className="space-y-1.5">
-          <Label htmlFor="login-username">Username</Label>
+          <Label htmlFor="login-username">{t("auth.username")}</Label>
           <Input
             id="login-username"
             value={input.username}
@@ -117,7 +117,7 @@ function Login() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="login-email">Email</Label>
+          <Label htmlFor="login-email">{t("auth.email")}</Label>
           <Input
             id="login-email"
             value={input.email}
@@ -130,13 +130,13 @@ function Login() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="login-password">Password</Label>
+          <Label htmlFor="login-password">{t("auth.password")}</Label>
           <PasswordInput
             id="login-password"
             name="password"
             value={input.password}
             onChange={changeEventHandler}
-            placeholder="Your password"
+            placeholder={t("auth.yourPassword")}
           />
         </div>
 
@@ -144,17 +144,17 @@ function Login() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              Logging in…
+              {t("auth.loggingIn")}
             </>
           ) : (
-            "Log in"
+            t("auth.logIn")
           )}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <Link to="/signup" className="font-semibold text-primary hover:underline">
-            Sign up free
+            {t("auth.signupFree")}
           </Link>
         </p>
       </form>

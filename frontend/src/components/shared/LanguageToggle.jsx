@@ -24,7 +24,7 @@ const LANGS = [
  * Kept icon-forward so it reads regardless of the user's language.
  */
 function LanguageToggle() {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t } = useI18n();
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ function LanguageToggle() {
           variant="ghost"
           size="icon"
           className="relative h-9 w-9 rounded-full"
-          aria-label="Change language"
+          aria-label={t("a11y.changeLang")}
         >
           <Languages className="h-4 w-4" aria-hidden="true" />
         </Button>

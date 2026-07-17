@@ -1,6 +1,7 @@
 import { SearchX, FileX, Inbox, Bookmark, Briefcase } from "lucide-react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * EmptyState — reusable component for "nothing to show" states.
@@ -12,46 +13,47 @@ import { useNavigate } from "react-router-dom";
 const EMPTY_VARIANTS = {
   noJobs: {
     icon: SearchX,
-    title: "No jobs found",
-    description: "Try adjusting your search or filters to find what you're looking for.",
-    actionLabel: "Clear Filters",
+    titleKey: "empty.noJobsTitle",
+    descKey: "empty.noJobsDesc",
+    actionKey: "empty.noJobsAction",
     actionPath: "/jobs",
   },
   noApplications: {
     icon: FileX,
-    title: "No applications yet",
-    description: "Start applying to jobs that match your skills. Your applications will appear here.",
-    actionLabel: "Browse Jobs",
+    titleKey: "empty.noAppsTitle",
+    descKey: "empty.noAppsDesc",
+    actionKey: "empty.noAppsAction",
     actionPath: "/jobs",
   },
   noSavedJobs: {
     icon: Bookmark,
-    title: "No saved jobs",
-    description: "Bookmark jobs you're interested in to view them later.",
-    actionLabel: "Explore Jobs",
+    titleKey: "empty.noSavedTitle",
+    descKey: "empty.noSavedDesc",
+    actionKey: "empty.noSavedAction",
     actionPath: "/jobs",
   },
   noNotifications: {
     icon: Inbox,
-    title: "All caught up!",
-    description: "You have no notifications right now. We'll notify you when something important happens.",
+    titleKey: "empty.noNotifsTitle",
+    descKey: "empty.noNotifsDesc",
   },
   noApplicants: {
     icon: FileX,
-    title: "No applicants yet",
-    description: "Share your job posting to start receiving applications.",
+    titleKey: "empty.noApplicantsTitle",
+    descKey: "empty.noApplicantsDesc",
   },
   noCompanies: {
     icon: Briefcase,
-    title: "No companies registered",
-    description: "Create your company profile to start posting jobs.",
-    actionLabel: "Create Company",
+    titleKey: "empty.noCompaniesTitle",
+    descKey: "empty.noCompaniesDesc",
+    actionKey: "empty.noCompaniesAction",
     actionPath: "/admin/companies/create",
   },
 };
 
 function EmptyState({ variant = "noJobs", className = "", onAction }) {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const config = EMPTY_VARIANTS[variant] || EMPTY_VARIANTS.noJobs;
   const Icon = config.icon;
 
@@ -69,14 +71,14 @@ function EmptyState({ variant = "noJobs", className = "", onAction }) {
         <Icon className="h-10 w-10 text-muted-foreground" />
       </div>
       <h3 className="text-lg font-semibold text-foreground mb-1">
-        {config.title}
+        {t(config.titleKey)}
       </h3>
       <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
-        {config.description}
+        {t(config.descKey)}
       </p>
-      {config.actionLabel && (
+      {config.actionKey && (
         <Button onClick={handleAction} variant="outline" size="sm">
-          {config.actionLabel}
+          {t(config.actionKey)}
         </Button>
       )}
     </div>

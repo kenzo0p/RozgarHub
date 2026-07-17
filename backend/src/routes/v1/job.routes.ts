@@ -3,7 +3,7 @@ import * as jobController from '../../controllers/job.controller.js';
 import { authenticate } from '../../middlewares/auth.middleware.js';
 import { authorize } from '../../middlewares/rbac.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
-import { createJobSchema, jobQuerySchema, reportJobSchema } from '../../validators/job.validator.js';
+import { createJobSchema, jobQuerySchema, reportJobSchema, translationQuerySchema } from '../../validators/job.validator.js';
 import { cacheResponse } from '../../middlewares/cache.middleware.js';
 import { CACHE_TTL } from '../../utils/cache.js';
 import { auditLog } from '../../middlewares/audit.middleware.js';
@@ -62,6 +62,15 @@ router.post(
   authorize('employee'),
   validate(reportJobSchema),
   jobController.reportJob,
+);
+
+// Employer-typed job content in the worker's language (MT, cached per
+// job+lang server-side).
+router.get(
+  '/:id/translation',
+  authenticate,
+  validate(translationQuerySchema, 'query'),
+  jobController.getJobTranslation,
 );
 
 // No response cache here: the payload includes viewer-specific data

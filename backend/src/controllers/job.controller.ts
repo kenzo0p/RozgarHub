@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { jobService } from '../services/job.service.js';
+import { translationService } from '../services/translation.service.js';
 import type { AuthRequest } from '../types/express.js';
 
 export const postJob = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -70,6 +71,19 @@ export const getAdminJobs = asyncHandler(async (req: AuthRequest, res: Response)
 
   res.status(200).json(
     ApiResponse.success({ jobs }, 'Jobs retrieved successfully'),
+  );
+});
+
+// Job content (title/description/requirements) in the worker's language,
+// machine-translated once per (job, lang) and cached.
+export const getJobTranslation = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const result = await translationService.getJobTranslation(
+    req.params.id as string,
+    String(req.query.lang),
+  );
+
+  res.status(200).json(
+    ApiResponse.success(result, 'Job translation retrieved'),
   );
 });
 

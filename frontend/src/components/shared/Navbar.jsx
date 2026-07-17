@@ -217,19 +217,19 @@ function Navbar() {
                 ) : user ? (
                   <>
                     <Link to="/jobs">
-                      <li>Jobs</li>
+                      <li>{t("nav.jobs")}</li>
                     </Link>
                     <Link to="/profile">
-                      <li>My applications</li>
+                      <li>{t("nav.myApplications")}</li>
                     </Link>
                   </>
                 ) : (
                   <>
                     <Link to="/">
-                      <li>Home</li>
+                      <li>{t("nav.home")}</li>
                     </Link>
                     <Link to="/jobs">
-                      <li>Jobs</li>
+                      <li>{t("nav.jobs")}</li>
                     </Link>
                     <LinkScroll
                       className="cursor-pointer"
@@ -238,7 +238,7 @@ function Navbar() {
                       duration={500}
                       offset={-50}
                     >
-                      About us
+                      {t("nav.about")}
                     </LinkScroll>
                   </>
                 )}
@@ -247,12 +247,12 @@ function Navbar() {
                 <div className="flex flex-col gap-2 mt-4">
                   <Link to="/login">
                     <Button variant="outline" className="w-full">
-                      Login
+                      {t("nav.login")}
                     </Button>
                   </Link>
                   <Link to="/signup">
                     <Button className="w-full">
-                      Signup
+                      {t("nav.signup")}
                     </Button>
                   </Link>
                 </div>
@@ -264,7 +264,7 @@ function Navbar() {
                       className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                     >
                       <User2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                      View profile
+                      {t("nav.viewProfile")}
                     </Link>
                   )}
                   <button
@@ -273,7 +273,7 @@ function Navbar() {
                     className="flex items-center gap-2.5 rounded-md px-2 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
                   >
                     <LogOut className="h-4 w-4" aria-hidden="true" />
-                    Logout
+                    {t("nav.logout")}
                   </button>
                 </div>
               )}

@@ -5,6 +5,7 @@ import { Briefcase, Users, MapPin, Plus } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { formatWage } from "@/utils/wage";
+import { jobTypeLabel } from "@/utils/jobType";
 import { useI18n } from "@/i18n/I18nProvider";
 
 function JobRow({ job }) {
@@ -45,7 +46,7 @@ function JobRow({ job }) {
             </span>
             <span className="inline-flex items-center gap-1">
               <Briefcase className="h-3 w-3" aria-hidden="true" />
-              {job?.jobType}
+              {jobTypeLabel(job?.jobType, t)}
             </span>
           </div>
         </div>

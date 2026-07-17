@@ -9,7 +9,14 @@ import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useI18n } from "@/i18n/I18nProvider";
 
-const POPULAR_SEARCHES = ["Electrician", "Driver", "Plumber", "Security Guard"];
+// Search queries stay in English (job data is stored in English); only the
+// visible chip label is translated.
+const POPULAR_SEARCHES = [
+  { query: "Electrician", labelKey: "trade.electrician" },
+  { query: "Driver", labelKey: "trade.driver" },
+  { query: "Plumber", labelKey: "trade.plumber" },
+  { query: "Security Guard", labelKey: "trade.securityGuard" },
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -124,7 +131,7 @@ function HeroSection() {
         >
           <Search className="ml-3 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
           <label htmlFor="hero-search" className="sr-only">
-            Search jobs by trade, title, or keyword
+            {t("a11y.searchLabel")}
           </label>
           <input
             id="hero-search"
@@ -154,14 +161,14 @@ function HeroSection() {
           className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm"
         >
           <span className="text-muted-foreground">{t("hero.popular")}</span>
-          {POPULAR_SEARCHES.map((term) => (
+          {POPULAR_SEARCHES.map(({ query: term, labelKey }) => (
             <button
-              key={term}
+              key={labelKey}
               type="button"
               onClick={() => searchJobHandler(term)}
               className="rounded-full border border-border bg-background px-3 py-1 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
             >
-              {term}
+              {t(labelKey)}
             </button>
           ))}
         </motion.div>

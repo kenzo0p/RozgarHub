@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import useSavedJobs from "../hooks/useSavedJobs";
 import { getCityCoords } from "@/utils/cityCoords";
 import { formatWage } from "@/utils/wage";
+import { jobTypeLabel } from "@/utils/jobType";
 import {
   ArrowLeft,
   MapPin,
@@ -26,6 +27,7 @@ import {
   SearchX,
   Flag,
   BadgeCheck,
+  Languages,
 } from "lucide-react";
 import VerifiedBadge from "./shared/VerifiedBadge";
 import ListenButton from "./shared/ListenButton";
@@ -70,7 +72,11 @@ function JobDetails() {
   const params = useParams();
   const jobId = params.id;
   const dispatch = useDispatch();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  // Machine translation of employer-typed content (title/description/
+  // requirements) into the UI language; null = show the original English.
+  const [translation, setTranslation] = useState(null);
+  const [showOriginal, setShowOriginal] = useState(false);
   const navigate = useNavigate();
   const { isJobSaved, toggleSave } = useSavedJobs();
   const saved = isJobSaved(jobId);
@@ -118,6 +124,36 @@ function JobDetails() {
       cancelled = true;
     };
   }, [jobId, dispatch]);
+
+  // Fetch the job content in the worker's language. Fails silently — the
+  // original English simply stays on screen if the translation isn't ready.
+  useEffect(() => {
+    let cancelled = false;
+    setTranslation(null);
+    setShowOriginal(false);
+    if (lang === "en") return undefined;
+    api
+      .get(`${JOB_API_END_POINT}/${jobId}/translation?lang=${lang}`)
+      .then((res) => {
+        if (!cancelled && res.data.success && res.data.data.translated) {
+          setTranslation(res.data.data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [jobId, lang]);
+
+  const showTranslated = !!translation && !showOriginal && translation.lang === lang;
+  const displayTitle = showTranslated ? translation.title : singleJob?.title;
+  const displayDescription = showTranslated ? translation.description : singleJob?.description;
+  const displayRequirements = showTranslated
+    ? translation.requirements || singleJob?.requirements
+    : singleJob?.requirements;
+  const displayCompanyDescription = showTranslated
+    ? translation.companyDescription || singleJob?.company?.description
+    : singleJob?.company?.description;
 
   const postedDate = singleJob?.createdAt
     ? new Date(singleJob.createdAt).toLocaleDateString("en-IN", {
@@ -233,14 +269,14 @@ function JobDetails() {
               </div>
 
               <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {singleJob?.title}
+                {displayTitle}
               </h1>
 
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <MetaChip icon={IndianRupee} highlight>
                   {formatWage(singleJob?.salary, singleJob?.wageType)}
                 </MetaChip>
-                <MetaChip icon={Briefcase}>{singleJob?.jobType}</MetaChip>
+                <MetaChip icon={Briefcase}>{jobTypeLabel(singleJob?.jobType, t)}</MetaChip>
                 <MetaChip icon={Users}>
                   {singleJob?.position}{" "}
                   {singleJob?.position === 1 ? t("details.opening") : t("details.openings")}
@@ -266,22 +302,35 @@ function JobDetails() {
                   {t("details.description")}
                 </h2>
                 <ListenButton
-                  text={[singleJob?.title, singleJob?.description, singleJob?.requirements]
+                  text={[displayTitle, displayDescription, displayRequirements]
                     .filter(Boolean)
                     .join(". ")}
                 />
               </div>
+              {translation && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Languages className="h-3.5 w-3.5" aria-hidden="true" />
+                  {showOriginal ? t("mt.original") : t("mt.translated")}
+                  <button
+                    type="button"
+                    onClick={() => setShowOriginal((v) => !v)}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {showOriginal ? t("mt.showTranslated") : t("mt.showOriginal")}
+                  </button>
+                </div>
+              )}
               <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                {singleJob?.description}
+                {displayDescription}
               </p>
 
-              {singleJob?.requirements && (
+              {displayRequirements && (
                 <>
                   <h2 className="mt-6 text-lg font-bold tracking-tight text-foreground">
                     {t("details.requirements")}
                   </h2>
                   <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                    {singleJob.requirements}
+                    {displayRequirements}
                   </p>
                 </>
               )}
@@ -338,7 +387,7 @@ function JobDetails() {
 
               <div className="mt-4 divide-y divide-border border-y border-border">
                 <FactRow icon={Users} label={t("details.applicants")} value={totalApplications} />
-                <FactRow icon={Briefcase} label={t("details.jobType")} value={singleJob?.jobType} />
+                <FactRow icon={Briefcase} label={t("details.jobType")} value={jobTypeLabel(singleJob?.jobType, t)} />
                 <FactRow
                   icon={GraduationCap}
                   label={t("details.experience")}
@@ -442,9 +491,9 @@ function JobDetails() {
                     <p className="text-xs text-muted-foreground">{location}</p>
                   </div>
                 </div>
-                {singleJob?.company?.description && (
+                {displayCompanyDescription && (
                   <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
-                    {singleJob.company.description}
+                    {displayCompanyDescription}
                   </p>
                 )}
               </div>

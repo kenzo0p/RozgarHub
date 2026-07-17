@@ -26,7 +26,7 @@ function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, user } = useSelector((store) => store.auth);
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -39,7 +39,7 @@ function Signup() {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!input.role) {
-      toast.error("Please select how you'll use RozgarHub.");
+      toast.error(t("auth.selectRole"));
       return;
     }
     const formData = new FormData();
@@ -68,7 +68,7 @@ function Signup() {
       }
     } catch (error) {
       console.log(error, "ERROR IN SIGNUP PAGE");
-      toast.error(error.response?.data?.message || "Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || t("auth.genericError"));
     } finally {
       dispatch(setLoading(false));
     }
@@ -82,8 +82,8 @@ function Signup() {
 
   return (
     <AuthLayout
-      title="Create your account"
-      subtitle="Free forever for job seekers — start in under two minutes."
+      title={t("auth.signupTitle")}
+      subtitle={t("auth.signupSubtitle")}
     >
       <form onSubmit={submitHandler} className="space-y-5">
         <RoleSelector
@@ -100,7 +100,7 @@ function Signup() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="signup-fullname">Full name</Label>
+            <Label htmlFor="signup-fullname">{t("auth.fullName")}</Label>
             <Input
               id="signup-fullname"
               value={input.fullname}
@@ -112,7 +112,7 @@ function Signup() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="signup-username">Username</Label>
+            <Label htmlFor="signup-username">{t("auth.username")}</Label>
             <Input
               id="signup-username"
               value={input.username}
@@ -127,7 +127,7 @@ function Signup() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="signup-email">Email</Label>
+            <Label htmlFor="signup-email">{t("auth.email")}</Label>
             <Input
               id="signup-email"
               value={input.email}
@@ -139,7 +139,7 @@ function Signup() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="signup-phone">Phone number</Label>
+            <Label htmlFor="signup-phone">{t("auth.phone")}</Label>
             <Input
               id="signup-phone"
               value={input.phoneNumber}
@@ -153,20 +153,20 @@ function Signup() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="signup-password">Password</Label>
+          <Label htmlFor="signup-password">{t("auth.password")}</Label>
           <PasswordInput
             id="signup-password"
             name="password"
             value={input.password}
             onChange={changeEventHandler}
-            placeholder="At least 6 characters"
+            placeholder={t("auth.passwordHint")}
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="signup-photo" className="flex items-center gap-1.5">
             <ImagePlus className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-            Profile photo <span className="font-normal text-muted-foreground">(optional)</span>
+            {t("auth.profilePhoto")} <span className="font-normal text-muted-foreground">{t("auth.optional")}</span>
           </Label>
           <Input
             id="signup-photo"
@@ -176,7 +176,7 @@ function Signup() {
             className="cursor-pointer file:mr-3 file:font-medium file:text-foreground"
           />
           {input.file && (
-            <p className="text-xs text-muted-foreground">Selected: {input.file.name}</p>
+            <p className="text-xs text-muted-foreground">{t("auth.selectedFile", { name: input.file.name })}</p>
           )}
         </div>
 
@@ -184,17 +184,17 @@ function Signup() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              Creating account…
+              {t("auth.creating")}
             </>
           ) : (
-            "Create account"
+            t("auth.createAccount")
           )}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <Link to="/login" className="font-semibold text-primary hover:underline">
-            Log in
+            {t("auth.logIn")}
           </Link>
         </p>
       </form>

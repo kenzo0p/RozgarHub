@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import api from "../lib/api";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * useSavedJobs — bookmark management with optimistic UI.
@@ -16,6 +17,7 @@ import api from "../lib/api";
  */
 function useSavedJobs() {
   const { user } = useSelector((store) => store.auth);
+  const { t } = useI18n();
   const [savedJobIds, setSavedJobIds] = useState(new Set());
   const [loading] = useState(false);
 
@@ -42,7 +44,7 @@ function useSavedJobs() {
   const toggleSave = useCallback(
     async (jobId) => {
       if (!user) {
-        toast.error("Please log in to save jobs");
+        toast.error(t("saved.loginFirst"));
         return;
       }
 
@@ -62,10 +64,10 @@ function useSavedJobs() {
       try {
         if (isSaved) {
           await api.delete(`/saved-jobs/unsave/${jobId}`);
-          toast.success("Job removed from saved");
+          toast.success(t("saved.removed"));
         } else {
           await api.post(`/saved-jobs/save/${jobId}`);
-          toast.success("Job saved for later");
+          toast.success(t("saved.added"));
         }
       } catch (error) {
         // Rollback — restore previous state
@@ -79,12 +81,11 @@ function useSavedJobs() {
           return next;
         });
 
-        const message =
-          error.response?.data?.message || "Failed to update saved jobs";
+        const message = error.response?.data?.message || t("saved.failed");
         toast.error(message);
       }
     },
-    [user, savedJobIds]
+    [user, savedJobIds, t]
   );
 
   const isJobSaved = useCallback(

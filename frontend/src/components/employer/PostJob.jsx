@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Loader2, Building2 } from "lucide-react";
 import useGetAllCompanies from "@/hooks/useGetAllCompanies";
 import { useI18n } from "@/i18n/I18nProvider";
+import { jobTypeLabel } from "@/utils/jobType";
 
 const JOB_TYPES = ["Full-Time", "Part-Time", "Contract"];
 const WAGE_TYPES = [
@@ -233,7 +234,7 @@ function PostJob() {
                     <SelectContent>
                       {JOB_TYPES.map((type) => (
                         <SelectItem key={type} value={type}>
-                          {type}
+                          {jobTypeLabel(type, t)}
                         </SelectItem>
                       ))}
                     </SelectContent>

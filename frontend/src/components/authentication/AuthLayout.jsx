@@ -4,17 +4,14 @@ import { CheckCircle2, User, Briefcase, Home, Building2, Eye, EyeOff } from "luc
 import LogoMark from "../shared/Logo";
 import { useI18n } from "@/i18n/I18nProvider";
 
-const SELLING_POINTS = [
-  "Thousands of verified job openings",
-  "Zero fees — free for job seekers, forever",
-  "Instant notifications when employers respond",
-];
+const SELLING_POINT_KEYS = ["brand.point1", "brand.point2", "brand.point3"];
 
 /**
  * Two-column auth shell: brand panel on the left (desktop only),
  * form content on the right. Shared by Login and Signup.
  */
 export function AuthLayout({ title, subtitle, children }) {
+  const { t } = useI18n();
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
       {/* ─── Left: brand panel ─────────────────────────────────────────── */}
@@ -32,21 +29,19 @@ export function AuthLayout({ title, subtitle, children }) {
 
         <div className="relative">
           <h2 className="max-w-md text-3xl font-bold leading-tight xl:text-4xl">
-            Work that values your skills is one login away.
+            {t("brand.headline")}
           </h2>
           <ul className="mt-8 space-y-4">
-            {SELLING_POINTS.map((point) => (
-              <li key={point} className="flex items-start gap-3 text-white/90">
+            {SELLING_POINT_KEYS.map((pointKey) => (
+              <li key={pointKey} className="flex items-start gap-3 text-white/90">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-white" aria-hidden="true" />
-                {point}
+                {t(pointKey)}
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="relative text-sm text-white/70">
-          Trusted by workers and employers across India 🇮🇳
-        </p>
+        <p className="relative text-sm text-white/70">{t("brand.trusted")}</p>
       </div>
 
       {/* ─── Right: form column ────────────────────────────────────────── */}
@@ -159,6 +154,7 @@ export function EmployerTypeSelector({ value, onChange }) {
  */
 export function PasswordInput({ id, name, value, onChange, placeholder }) {
   const [visible, setVisible] = React.useState(false);
+  const { t } = useI18n();
   return (
     <div className="relative">
       <input
@@ -173,7 +169,7 @@ export function PasswordInput({ id, name, value, onChange, placeholder }) {
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        aria-label={visible ? "Hide password" : "Show password"}
+        aria-label={visible ? t("auth.hidePassword") : t("auth.showPassword")}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
       >
         {visible ? (

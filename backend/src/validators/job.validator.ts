@@ -73,6 +73,11 @@ export const reportJobSchema = z.object({
   note: z.string().max(500).optional(),
 });
 
+// Target language for machine-translated job content ('en' is the source).
+export const translationQuerySchema = z.object({
+  lang: z.enum(['hi', 'mr', 'bn', 'gu', 'pa', 'ta', 'te']),
+});
+
 export type CreateJobInput = z.infer<typeof createJobSchema>;
 export type JobQueryInput = z.infer<typeof jobQuerySchema>;
 export type ReportJobInput = z.infer<typeof reportJobSchema>;
